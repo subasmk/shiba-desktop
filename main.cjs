@@ -3,14 +3,14 @@ const fs=require('node:fs');const path=require('node:path');const {localUrl,free
 let panel,pet,drag=false,settings={},savePath;let cloudKey='';
 function save(){fs.writeFileSync(savePath,JSON.stringify(settings,null,2),{mode:0o600});}
 function win(w,h){const x=new BrowserWindow({width:w,height:h,frame:false,thickFrame:false,transparent:true,resizable:false,alwaysOnTop:true,skipTaskbar:true,show:false,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true}});x.setAlwaysOnTop(true,'floating');x.webContents.setWindowOpenHandler(()=>({action:'deny'}));x.webContents.on('will-navigate',e=>e.preventDefault());return x;}
-function panelSize(open){const area=screen.getPrimaryDisplay().workArea;panel.setBounds({x:Math.round(area.x+(area.width-650)/2),y:area.y,width:650,height:open?260:24});panel.webContents.send('panel-state',open);}
+function panelSize(open){const area=screen.getPrimaryDisplay().workArea;panel.setBounds({x:Math.round(area.x+(area.width-650)/2),y:area.y,width:650,height:open?260:24});if(process.platform==='win32')panel.setShape(open?[]:[{x:0,y:0,width:650,height:24}]);panel.webContents.send('panel-state',open);}
 app.whenReady().then(()=>{savePath=path.join(app.getPath('userData'),'settings.json');try{settings=JSON.parse(fs.readFileSync(savePath));}catch{};if(settings.cloudSecret&&safeStorage.isEncryptionAvailable()){try{cloudKey=safeStorage.decryptString(Buffer.from(settings.cloudSecret,'base64'));}catch{}}
  panel=win(650,24);panel.loadFile(path.join(__dirname,'index.html'),{query:{mode:'panel'}});panel.once('ready-to-show',()=>{panelSize(false);panel.showInactive();});
  pet=win(120,130);pet.loadFile(path.join(__dirname,'index.html'),{query:{mode:'pet'}});
  ipcMain.handle('get-state',()=>({...settings,cloudSecret:undefined,hasCloudKey:!!cloudKey}));
  ipcMain.handle('save-settings',(_,data)=>{const allowed=['notes','personality','size','roaming','voice','ollamaModel'];for(const k of allowed)if(k in data)settings[k]=typeof data[k]==='string'?data[k].slice(0,k==='notes'?50000:200):data[k];if('n8n' in data){localUrl(data.n8n);settings.n8n=data.n8n;}save();return true;});
  ipcMain.on('panel',(_,open)=>panelSize(!!open));
- ipcMain.on('drawer-size',()=>{const b=panel.getBounds();panel.setBounds({...b,height:650});});
+ ipcMain.on('drawer-size',()=>{const b=panel.getBounds();panel.setBounds({...b,height:650});if(process.platform==='win32')panel.setShape([]);});
  ipcMain.on('extract',()=>{drag=true;const c=screen.getCursorScreenPoint();pet.setPosition(c.x-60,c.y-25);pet.showInactive();pet.webContents.send('pet-state','drag');});
  ipcMain.on('move-pet',(_,p)=>{if(!drag)return;const c=screen.getCursorScreenPoint();pet.setPosition(c.x-60,c.y-25);});
  ipcMain.on('drag-start',()=>{drag=true;pet.webContents.send('pet-state','drag');});
