@@ -1,0 +1,286 @@
+{
+  "idle": [
+    {
+      "file": "idle-01.png",
+      "ms": 380,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "file": "idle-02.png",
+      "ms": 380,
+      "x": 160,
+      "y": 0
+    },
+    {
+      "file": "idle-03.png",
+      "ms": 380,
+      "x": 320,
+      "y": 0
+    },
+    {
+      "file": "idle-04.png",
+      "ms": 380,
+      "x": 480,
+      "y": 0
+    },
+    {
+      "file": "idle-03.png",
+      "ms": 380,
+      "x": 320,
+      "y": 0
+    },
+    {
+      "file": "idle-02.png",
+      "ms": 380,
+      "x": 160,
+      "y": 0
+    }
+  ],
+  "drag": [
+    {
+      "file": "drag-01.png",
+      "ms": 600,
+      "x": 640,
+      "y": 0
+    }
+  ],
+  "landing": [
+    {
+      "file": "click-07.png",
+      "ms": 120,
+      "x": 800,
+      "y": 0
+    },
+    {
+      "file": "click-08.png",
+      "ms": 120,
+      "x": 960,
+      "y": 0
+    },
+    {
+      "file": "landing-dust-01.png",
+      "ms": 70,
+      "x": 1120,
+      "y": 0
+    },
+    {
+      "file": "landing-dust-02.png",
+      "ms": 70,
+      "x": 0,
+      "y": 160
+    },
+    {
+      "file": "landing-dust-03.png",
+      "ms": 70,
+      "x": 160,
+      "y": 160
+    },
+    {
+      "file": "landing-dust-04.png",
+      "ms": 70,
+      "x": 320,
+      "y": 160
+    },
+    {
+      "file": "landing-dust-05.png",
+      "ms": 70,
+      "x": 480,
+      "y": 160
+    },
+    {
+      "file": "landing-dust-06.png",
+      "ms": 70,
+      "x": 640,
+      "y": 160
+    }
+  ],
+  "click": [
+    {
+      "file": "click-01.png",
+      "ms": 350,
+      "x": 800,
+      "y": 160
+    },
+    {
+      "file": "click-02.png",
+      "ms": 350,
+      "x": 960,
+      "y": 160
+    }
+  ],
+  "wave": [
+    {
+      "file": "rest-04.png",
+      "ms": 300,
+      "x": 1120,
+      "y": 160
+    },
+    {
+      "file": "rest-05.png",
+      "ms": 300,
+      "x": 0,
+      "y": 320
+    },
+    {
+      "file": "rest-06.png",
+      "ms": 300,
+      "x": 160,
+      "y": 320
+    },
+    {
+      "file": "rest-05.png",
+      "ms": 300,
+      "x": 0,
+      "y": 320
+    }
+  ],
+  "bow": [
+    {
+      "file": "bonus-01.png",
+      "ms": 250,
+      "x": 320,
+      "y": 320
+    },
+    {
+      "file": "bonus-02.png",
+      "ms": 250,
+      "x": 480,
+      "y": 320
+    },
+    {
+      "file": "bonus-03.png",
+      "ms": 250,
+      "x": 640,
+      "y": 320
+    },
+    {
+      "file": "bonus-02.png",
+      "ms": 250,
+      "x": 480,
+      "y": 320
+    },
+    {
+      "file": "bonus-01.png",
+      "ms": 250,
+      "x": 320,
+      "y": 320
+    }
+  ],
+  "sleep": [
+    {
+      "file": "rest-01.png",
+      "ms": 700,
+      "x": 800,
+      "y": 320
+    },
+    {
+      "file": "rest-02.png",
+      "ms": 700,
+      "x": 960,
+      "y": 320
+    },
+    {
+      "file": "rest-03.png",
+      "ms": 700,
+      "x": 1120,
+      "y": 320
+    },
+    {
+      "file": "rest-02.png",
+      "ms": 700,
+      "x": 960,
+      "y": 320
+    }
+  ],
+  "ramen": [
+    {
+      "file": "extra-01.png",
+      "ms": 400,
+      "x": 0,
+      "y": 480
+    },
+    {
+      "file": "extra-02.png",
+      "ms": 400,
+      "x": 160,
+      "y": 480
+    },
+    {
+      "file": "extra-03.png",
+      "ms": 400,
+      "x": 320,
+      "y": 480
+    },
+    {
+      "file": "extra-02.png",
+      "ms": 400,
+      "x": 160,
+      "y": 480
+    },
+    {
+      "file": "extra-01.png",
+      "ms": 400,
+      "x": 0,
+      "y": 480
+    }
+  ],
+  "rage": [
+    {
+      "file": "click-04.png",
+      "ms": 300,
+      "x": 480,
+      "y": 480
+    },
+    {
+      "file": "click-05.png",
+      "ms": 300,
+      "x": 640,
+      "y": 480
+    },
+    {
+      "file": "click-06.png",
+      "ms": 300,
+      "x": 800,
+      "y": 480
+    }
+  ],
+  "walk": [
+    {
+      "file": "quad-walk-01.png",
+      "ms": 220,
+      "x": 960,
+      "y": 480
+    },
+    {
+      "file": "quad-walk-02.png",
+      "ms": 220,
+      "x": 1120,
+      "y": 480
+    },
+    {
+      "file": "quad-walk-03.png",
+      "ms": 220,
+      "x": 0,
+      "y": 640
+    },
+    {
+      "file": "quad-walk-04.png",
+      "ms": 220,
+      "x": 160,
+      "y": 640
+    },
+    {
+      "file": "quad-walk-05.png",
+      "ms": 220,
+      "x": 320,
+      "y": 640
+    },
+    {
+      "file": "quad-walk-06.png",
+      "ms": 220,
+      "x": 480,
+      "y": 640
+    }
+  ]
+}
