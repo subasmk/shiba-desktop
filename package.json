@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "description": "Standalone small desktop companion",
-  "main": "src/main.cjs",
+  "main": "main.cjs",
   "scripts": {
     "start": "electron .",
-    "test": "node --test test/*.test.cjs",
-    "check": "node --check src/main.cjs && node --check src/preload.cjs && node --check src/core.cjs && node --check src/renderer.js",
+    "test": "node --test core.test.cjs",
+    "check": "node --check main.cjs && node --check preload.cjs && node --check core.cjs && node --check renderer.js",
     "build:win": "electron-builder --win portable --x64"
   },
   "devDependencies": {
@@ -19,9 +19,12 @@
     "appId": "local.shiba.desktop",
     "productName": "Shiba Desktop",
     "files": [
-      "src/**/*",
-      "assets/**/*",
-      "package.json"
+      "*.cjs",
+      "*.html",
+      "*.css",
+      "*.js",
+      "*.json",
+      "*.png"
     ],
     "win": {
       "target": "portable"
