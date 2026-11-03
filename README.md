@@ -22,10 +22,12 @@ Node.js 20 or newer: `npm ci`, then `npm start`. No administrator permission req
 
 ## Verification and limits
 
-Syntax checks, pure security/helper tests, mocked renderer tests and a real Linux Electron smoke flow are included. See TESTING.md. Windows transparent-window behavior, actual laptop performance, cloud inference, local model inference and installed system voices must be tested on the target device. n8n/ChatGPT shortcut availability does not mean integrated automation. Laptop-hosted services need the laptop awake. The sprite art has sparse poses; dust/easing cannot replace missing hand-drawn body transitions.
+Syntax checks, pure security/helper tests, mocked renderer tests and a real Linux Electron smoke flow are included. See TESTING.md. Windows runner interaction, native24px drawing/hit clipping and portable packaging passed. Actual laptop performance, cloud inference, local model inference and installed system voices remain unverified. n8n/ChatGPT shortcut availability does not mean integrated automation. Laptop-hosted services need the laptop awake. The sprite art has sparse poses; dust/easing cannot replace missing hand-drawn body transitions.
 
 ## Sources
 
 User-supplied Shiba sheets, cleaned locally. No new online art generation. Do not redistribute supplied art without verifying its rights.
 
 Free access references: https://help.openai.com/en/articles/9275245-chatgpt-free-tier-faq ; https://help.openai.com/en/articles/9039756-managing-billing-for-chatgpt-and-the-api-platform ; https://docs.n8n.io/deploy/host-n8n/community-edition-features ; https://openrouter.ai/docs/guides/routing/model-variants/free . Free services have limits and may change. n8n external nodes may still be paid.
+
+Windows preview: use the private repository Releases page. The portable is unsigned and requires no administrator rights. Source uses Electron45.2.1; dependency audit has15 moderate build-chain findings and no high findings. See TESTING.md for the actual checks and remaining limitations.
