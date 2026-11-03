@@ -1,0 +1,35 @@
+name: Windows preview build
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - name: Windows Electron smoke check
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force C:/downloads | Out-Null
+          $source = Get-Content electron-test.cjs -Raw
+          $source = $source.Replace('/downloads/', 'C:/downloads/')
+          Set-Content windows-smoke.cjs $source
+          node windows-smoke.cjs
+      - run: npm run build:win
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Attach to private draft release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload v0.1.0-preview 'dist/Shiba Desktop 0.1.0.exe' --clobber
+          Get-FileHash 'dist/Shiba Desktop 0.1.0.exe' -Algorithm SHA256 | Format-List
