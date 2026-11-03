@@ -6,7 +6,7 @@ async function save(data){await api.call('save-settings',data);Object.assign(sta
 function close(){api.send('panel',false);}
 if(mode==='pet'){
  root.innerHTML='<div class="pet-stage"><span class="reaction"></span><canvas class="pet-image" width="160" height="160" aria-label="Shiba desktop pet"></canvas></div>';
- const atlas=new Image();atlas.src='10-sprites.png';let sprites={},seq=[],idx=0,nextAt=0,anim='idle',down=false,moved=false,sx=0,sy=0;fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;play('idle');});
+ const atlas=new Image();atlas.src='12-12-sprites.png';let sprites={},seq=[],idx=0,nextAt=0,anim='idle',down=false,moved=false,sx=0,sy=0;fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;play('idle');});
  function play(name){anim=name;seq=sprites[name]||sprites.idle||[];idx=0;nextAt=0;}
  function tick(t){if(seq.length&&t>=nextAt){const frame=seq[idx];const canvas=$('.pet-image');canvas.dataset.frame=frame.file;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,160,160);if(atlas.complete)ctx.drawImage(atlas,frame.x,frame.y,160,160,0,0,160,160);nextAt=t+frame.ms;idx++;if(idx>=seq.length){if(['landing','wave','click','bow','ramen','rage'].includes(anim)){play('idle');}else idx=0;}}requestAnimationFrame(tick);}requestAnimationFrame(tick);
  api.on('pet-state',play);
