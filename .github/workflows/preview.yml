@@ -31,5 +31,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload v0.1.0-preview 'dist/Shiba Desktop 0.1.0.exe' --clobber
+          gh release upload v0.1.0-preview 'dist/Shiba Desktop 0.1.0.exe' 'C:/downloads/windows-desktop-collapsed.png' 'C:/downloads/windows-region.json' 'C:/downloads/shiba-electron-launcher.png' 'C:/downloads/shiba-electron-idle.png' --clobber
           Get-FileHash 'dist/Shiba Desktop 0.1.0.exe' -Algorithm SHA256 | Format-List
