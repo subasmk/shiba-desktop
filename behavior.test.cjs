@@ -1,0 +1,3 @@
+const{test}=require('node:test');const a=require('node:assert/strict');const{PetBehavior}=require('./pet-behavior.cjs');
+test('tap, jitter, deliberate drag and cancel',()=>{const b=new PetBehavior(()=>0);b.down(10,10,0);a.equal(b.move(12,12,500),false);a.equal(b.up(),'tap');b.down(10,10,0);a.equal(b.move(40,10,20),false);a.equal(b.move(40,10,100),true);a.equal(b.up(),'drop');b.down(0,0,0);a.equal(b.up(true),'none');});
+test('quiet idle only, no repeats, suspend while pressing',()=>{const b=new PetBehavior(()=>0);b.quiet(0);a.equal(b.due(6000,'idle'),null);a.equal(b.due(7000,'drag'),null);const x=b.due(7000,'idle');a.equal(x,'wave');b.down(0,0,8000);a.equal(b.due(15000,'idle'),null);b.up();a.notEqual(b.due(15000,'idle'),x);});
