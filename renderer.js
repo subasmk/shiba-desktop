@@ -6,21 +6,36 @@ async function save(data){await api.call('save-settings',data);Object.assign(sta
 function close(){api.send('panel',false);}
 if(mode==='pet'){
  root.innerHTML='<div class="pet-stage"><span class="reaction"></span><canvas class="pet-image" width="160" height="160" aria-label="Shiba desktop pet"></canvas></div>';
- const atlas=new Image();atlas.src='12-12-sprites.png';let sprites={},seq=[],idx=0,nextAt=0,anim='idle',down=false,moved=false,sx=0,sy=0;fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;play('idle');});
- function play(name){anim=name;seq=sprites[name]||sprites.idle||[];idx=0;nextAt=0;}
- function tick(t){if(seq.length&&t>=nextAt){const frame=seq[idx];const canvas=$('.pet-image');canvas.dataset.frame=frame.file;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,160,160);if(atlas.complete)ctx.drawImage(atlas,frame.x,frame.y,160,160,0,0,160,160);nextAt=t+frame.ms;idx++;if(idx>=seq.length){if(['landing','wave','click','bow','ramen','rage'].includes(anim)){play('idle');}else idx=0;}}requestAnimationFrame(tick);}requestAnimationFrame(tick);
- api.on('pet-state',play);
- const stage=$('.pet-stage');stage.addEventListener('pointerdown',e=>{if(e.button!==0)return;down=true;moved=false;sx=e.screenX;sy=e.screenY;stage.setPointerCapture(e.pointerId);});
- stage.addEventListener('pointermove',e=>{if(!down)return;if(Math.hypot(e.screenX-sx,e.screenY-sy)>4&&!moved){moved=true;api.send('drag-start');}if(moved)api.send('move-pet');});
- stage.addEventListener('pointerup',()=>{if(!down)return;down=false;if(moved)api.send('drag-end');else{play('click');$('.reaction').textContent='Hey!';setTimeout(()=>$('.reaction').textContent='',900);}});
- stage.addEventListener('contextmenu',e=>{e.preventDefault();api.send('dock');});
+ const atlas=new Image();atlas.src='1-sprites-clean.png';let sprites={},seq=[],idx=0,nextAt=0,anim='idle',finished=false;const behavior=new PetBehavior();behavior.quiet(performance.now());
+ const finite=new Set(['landing','wave','click','bow','ramen','rage','sleep','touch-head','touch-body','touch-paws']);
+ fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;play('idle');});
+ function play(name){anim=name;seq=sprites[name]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;}
+ function tick(t){
+  if(seq.length&&t>=nextAt){
+   if(finished){play('idle');behavior.quiet(t);}
+   const frame=seq[idx];const canvas=$('.pet-image');canvas.dataset.frame=frame.file;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,160,160);if(atlas.complete&&atlas.naturalWidth)ctx.drawImage(atlas,frame.x,frame.y,160,160,0,0,160,160);
+   nextAt=t+frame.ms;idx++;if(idx>=seq.length){if(finite.has(anim))finished=true;else idx=0;}
+  }
+  const action=behavior.due(t,anim);if(action)play(action);requestAnimationFrame(tick);
+ }requestAnimationFrame(tick);
+ api.on('pet-state',name=>{behavior.quiet(performance.now());play(name);});
+ const stage=$('.pet-stage');stage.addEventListener('pointerdown',e=>{if(e.button!==0||!hitRegion(e))return;behavior.down(e.screenX,e.screenY,performance.now());stage.setPointerCapture(e.pointerId);});
+ stage.addEventListener('pointermove',e=>{const was=behavior.press?.dragging;if(behavior.move(e.screenX,e.screenY,performance.now())){if(!was)api.send('drag-start');api.send('move-pet');}});
+ function hitRegion(e){const c=$('.pet-image'),r=c.getBoundingClientRect();const x=Math.floor((e.clientX-r.left)*160/r.width),y=Math.floor((e.clientY-r.top)*160/r.height);if(x<0||y<0||x>=160||y>=160)return null;const ctx=c.getContext('2d');if(ctx.getImageData(x,y,1,1).data[3]<40)return null;
+  // Classify within current visible silhouette, not the whole transparent window.
+  const pixels=ctx.getImageData(0,0,160,160).data;let top=160,bottom=0;for(let yy=0;yy<160;yy++)for(let xx=0;xx<160;xx++)if(pixels[(yy*160+xx)*4+3]>40){top=Math.min(top,yy);bottom=Math.max(bottom,yy);}const p=(y-top)/Math.max(1,bottom-top);return p<.47?'head':p>.82?'paws':'body';}
+ function release(e,cancel){const result=behavior.up(cancel);if(stage.hasPointerCapture(e.pointerId))stage.releasePointerCapture(e.pointerId);if(result==='drop')api.send('drag-end');else if(result==='tap'){const region=hitRegion(e);if(region){play('touch-'+region);$('.pet-image').dataset.touch=region;$('.reaction').textContent=region==='head'?'Hey!':region==='body'?'Oof!':'Whoa!';setTimeout(()=>$('.reaction').textContent='',900);}}behavior.quiet(performance.now());}
+ stage.addEventListener('pointerup',e=>release(e,false));stage.addEventListener('pointercancel',e=>release(e,true));stage.addEventListener('lostpointercapture',e=>{if(behavior.press)release(e,true);});
+ stage.addEventListener('contextmenu',e=>{e.preventDefault();behavior.up(true);api.send('dock');});
  returnPetKeys();function returnPetKeys(){document.addEventListener('keydown',e=>{if(e.key==='Escape')api.send('dock');});}
 }else{
  root.innerHTML=`<div class="handle" title="Hover to reveal controls (provisional)"><img src="2-head.png" alt="Pet ears"></div><section class="launcher hidden"><header class="header"><span class="local">◆ LOCAL</span><span class="muted">Desktop pet</span><img class="head" src="2-head.png" draggable="false" alt="Drag pet onto desktop"><div class="header-actions"><button class="quiet" id="hide" aria-label="Close panel">-</button><button class="quiet" id="quit" aria-label="Quit app">×</button></div></header><div class="tiles"><button class="tile chatgpt" data-tool="chatgpt">${icon.chat}<strong>ChatGPT</strong><small>Browser shortcut</small></button><button class="tile n8n" data-drawer="n8n">${icon.n8n}<strong>n8n</strong><small>Local / set up</small></button><button class="tile tools" data-drawer="tools">${icon.tools}<strong>Tools</strong><small>Search actions</small></button></div><div class="secondary">${[['Animations','Preview','>','animations'],['Skills','Local tools','+','tools'],['Personality','Calm','*','personality'],['Brain','Not connected','o','brain']].map(([n,d,i,k])=>`<button data-drawer="${k}"><b>${i}</b><span>${n}<small>${d}</small></span></button>`).join('')}</div></section><section class="drawer hidden" id="drawer"></section>`;
  $('.handle').onmouseenter=()=>api.send('panel',true);$('#hide').onclick=close;$('#quit').onclick=()=>api.send('quit');
  api.on('panel-state',open=>{$('.launcher').classList.toggle('hidden',!open);$('.handle').classList.toggle('hidden',open);if(!open)$('#drawer').classList.add('hidden');});api.on('docked',()=>{extracted=false;$('.head').style.visibility='visible';$('.handle img').classList.remove('hidden');});
- let dragging=false;const head=$('.head');head.addEventListener('pointerdown',e=>{if(e.button!==0)return;dragging=true;head.setPointerCapture(e.pointerId);api.send('extract');extracted=true;head.style.visibility='hidden';$('.handle img').classList.add('hidden');});
- document.addEventListener('pointermove',()=>{if(dragging)api.send('move-pet');});document.addEventListener('pointerup',()=>{if(dragging){dragging=false;api.send('drag-end');}});
+ let dragging=false;const headerGesture=new PetBehavior();const head=$('.head');head.addEventListener('pointerdown',e=>{if(e.button!==0)return;headerGesture.down(e.screenX,e.screenY,performance.now());head.setPointerCapture(e.pointerId);});
+ document.addEventListener('pointermove',e=>{if(headerGesture.move(e.screenX,e.screenY,performance.now())){if(!dragging){dragging=true;api.send('extract');extracted=true;head.style.visibility='hidden';$('.handle img').classList.add('hidden');}api.send('move-pet');}});
+ function releaseHeader(e){headerGesture.up(true);if(dragging){dragging=false;api.send('drag-end');}if(head.hasPointerCapture(e.pointerId))head.releasePointerCapture(e.pointerId);}
+ document.addEventListener('pointerup',releaseHeader);document.addEventListener('pointercancel',releaseHeader);
  document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
  root.addEventListener('click',e=>{const b=e.target.closest('[data-drawer],[data-tool]');if(!b)return;if(b.dataset.drawer)drawer(b.dataset.drawer);else task(()=>api.call('open-tool',b.dataset.tool));});
  api.call('get-state').then(x=>{state=x;});
