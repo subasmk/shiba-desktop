@@ -25,3 +25,13 @@ jobs:
         run: node vi-routines.cjs
       - name: Windows art/animation smoke
         run: node vi-art-regression.cjs
+      - name: Upload Windows screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-smoke-screenshots
+          path: |
+            C:/tmp/pet-*.png
+            C:/tmp/shiba-routines-drawer.png
+            C:/tmp/shiba-ground-panel.png
+          if-no-files-found: warn

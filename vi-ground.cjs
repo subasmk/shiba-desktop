@@ -16,6 +16,7 @@ const {_electron:electron}=require('playwright'),assert=require('node:assert/str
   assert.match(reply,/not opened any app|0/);
   assert.ok(!/five|5 apps/i.test(reply));
   // routines drawer renders
+  await p.screenshot({path:'/tmp/shiba-ground-panel.png'});
   console.log('GROUND PASS');
  }finally{await app.close();}process.exit(0);
 })().catch(e=>{console.error('GROUND FAIL',e.message||e);process.exit(1)});
