@@ -1,14 +1,31 @@
-Corresponding sources for bundled components (GPL and provenance):
-- espeak-ng (GPL v3, statically linked inside piper-phonemize wasm):
-  https://github.com/espeak-ng/espeak-ng
-- piper-phonemize (wasm build ships in the sherpa-onnx release bundle):
-  https://github.com/rhasspy/piper-phonemize
-- sherpa-onnx v2.0.1 (wasm + native): https://github.com/k2-fsa/sherpa-onnx
-- Kokoro-82M weights (Apache-2.0): https://huggingface.co/hexgrad/Kokoro-82M
-  int8 quantization: k2-fsa sherpa-onnx tts-models release
-- whisper-tiny (MIT): https://github.com/openai/whisper
-  sherpa int8 export: k2-fsa sherpa-onnx release assets
+Corresponding-source and provenance notes for bundled components.
+Verified 2026-11-05 against upstream sources.
+
+BUNDLED in this repository (tts-wasm/) and in built executables:
+- sherpa-onnx v2.0.1 - wasm TTS runtime; native node binding in desktop builds.
+  License: Apache-2.0
+  Source: https://github.com/k2-fsa/sherpa-onnx/tree/v2.0.1
+  License text: https://github.com/k2-fsa/sherpa-onnx/blob/v2.0.1/LICENSE
+  Note: sherpa-onnx >= v2.0.0 no longer uses or links espeak-ng; language is
+  determined by lexicon files instead (confirmed in the upstream v2.0.1 build
+  configuration, which has no espeak-ng/piper-phonemize integration, and in the
+  bundled wasm itself, which carries no espeak-ng code or data). An earlier
+  revision of this file claimed espeak-ng (GPLv3) was statically linked inside
+  a piper-phonemize wasm in this bundle; that claim was incorrect for v2.0.1
+  and has been removed. No GPL-licensed code is bundled.
 - onnxruntime (MIT): https://github.com/microsoft/onnxruntime
-- Tamil spike voice ta_IN-ValluvarNeural-medium (self-declared Apache-2.0,
-  no LICENSE file, provenance unverified - personal prototype use only):
+  License text: licenses/mit-onnxruntime.txt
+
+DOWNLOADED at first-run setup, NOT bundled in this repository or executables:
+- Kokoro-82M TTS weights (Apache-2.0): https://huggingface.co/hexgrad/Kokoro-82M
+  int8 export: k2-fsa sherpa-onnx tts-models release assets
+- whisper-tiny ASR (MIT): https://github.com/openai/whisper
+  sherpa int8 export: k2-fsa sherpa-onnx release assets
+  License text: licenses/mit-whisper.txt
+- Tamil prototype voice ta_IN-ValluvarNeural-medium: self-declared Apache-2.0,
+  no LICENSE file, provenance unverified. Personal prototype use only; not
+  wired into the app, not distributed.
   https://huggingface.co/Jeyaram-K/piper-tamil-voices
+
+The GPL v3 text (licenses/gpl-3.0-espeak-ng.txt) is retained for reference
+only; no GPLv3 component is currently bundled.
