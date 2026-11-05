@@ -1,27 +1,36 @@
 name: Windows quit-path probe
 on:
   workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'sha/ref to test (probe script itself comes from origin/main)'
+        required: false
+        default: 'main'
+      variant:
+        description: 'watch | early | late'
+        required: false
+        default: 'late'
 permissions:
   contents: read
 jobs:
   probe:
     runs-on: windows-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 0
+      - name: Restore probe script from origin/main (old refs do not carry it)
+        shell: bash
+        run: |
+          git fetch origin main --depth 1
+          git checkout FETCH_HEAD -- vi-quit-probe.cjs
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - run: npm ci
-      - name: Probe watch (no quit, 30s health pings)
+      - name: Probe variant
         run: node vi-quit-probe.cjs
         env:
-          PROBE_VARIANT: watch
-      - name: Probe early quit (600ms)
-        run: node vi-quit-probe.cjs
-        env:
-          PROBE_VARIANT: early
-      - name: Probe late quit (8s)
-        run: node vi-quit-probe.cjs
-        env:
-          PROBE_VARIANT: late
+          PROBE_VARIANT: ${{ inputs.variant }}
