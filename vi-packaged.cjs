@@ -6,7 +6,7 @@ const {_electron:electron}=require('playwright'),assert=require('node:assert/str
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{
  const exe=process.env.PACKAGED_EXE;if(!exe)throw Error('PACKAGED_EXE not set');
- const app=await electron.launch({executablePath:exe,args:['--no-sandbox','--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--use-file-for-fake-audio-capture='+path.join(process.cwd(),'mic-fixture-short.wav')],env:{...process.env,VOICE_TIMING:'D:/tmp/voice-timing.log'}});
+ const app=await electron.launch({executablePath:exe,args:['--no-sandbox','--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--use-file-for-fake-audio-capture='+path.join(process.cwd(),'mic-fixture-short.wav')],env:{...process.env,VOICE_TIMING:path.join(process.cwd(),'voice-timing.log')}});
  const proc=app.process();if(proc.stdout)proc.stdout.on('data',d=>process.stdout.write('[main-out] '+d));if(proc.stderr)proc.stderr.on('data',d=>process.stdout.write('[main-err] '+d));
  try{
   await app.firstWindow();await sleep(2000);

@@ -39,6 +39,9 @@ jobs:
         run: npm run build:win
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Prepare temp dirs
+        shell: pwsh
+        run: New-Item -ItemType Directory -Force D:/tmp | Out-Null
       - name: Packaged exe full voice chain with real brain
         run: node vi-packaged.cjs
         env:
@@ -51,7 +54,7 @@ jobs:
           New-Item -ItemType Directory -Force pkg-shots | Out-Null
           Copy-Item D:/tmp/shiba-packaged-voice.png pkg-shots/ -ErrorAction SilentlyContinue
           Copy-Item C:/tmp/shiba-packaged-voice.png pkg-shots/ -ErrorAction SilentlyContinue
-          Copy-Item D:/tmp/voice-timing.log pkg-shots/ -ErrorAction SilentlyContinue
+          Copy-Item ./voice-timing.log pkg-shots/ -ErrorAction SilentlyContinue
           Get-ChildItem pkg-shots
       - name: Upload packaged-run screenshots
         if: always()
