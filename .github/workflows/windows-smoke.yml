@@ -18,7 +18,7 @@ jobs:
         # voice-backend.test.cjs forks the real voice worker and needs the
         # downloaded voice models at SHIBA_MODELS; it is validated where models
         # exist (Linux suite 19/19, user laptop final test). CI covers the rest.
-        run: node --test core.test.cjs apps.test.cjs pet-history.test.cjs voice-session.test.cjs routines.test.cjs
+        run: npm run test:ci
       - name: Windows app launch + deterministic grounding smoke
         run: node vi-ground.cjs
       - name: Windows routines drawer smoke

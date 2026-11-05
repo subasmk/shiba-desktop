@@ -1,7 +1,9 @@
 // Packaged-build parity + full voice chain on Windows CI:
 // mic fixture -> VAD -> Whisper ASR (native) -> REAL local Ollama brain -> Kokoro WASM TTS
-// -> playback-to-end, second turn without restart, barge-in interruption, stop-off.
+// -> chunked playback-to-end, second turn without restart, barge-in interruption, stop-off.
 // Requires: PACKAGED_EXE (dist/win-unpacked exe), SHIBA_MODELS (voice models), Ollama on 127.0.0.1:11434.
+// Turn detection is transcript-based (#voice-transcript flips You: -> Pet: per turn) because
+// streaming TTS plays one playback per sentence chunk; playback identity cannot mark turns.
 const {_electron:electron}=require('playwright'),assert=require('node:assert/strict'),path=require('node:path');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{
@@ -17,47 +19,45 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   await p.evaluate(()=>window.petAPI.call('save-settings',{ollamaModel:'qwen3:0.6b'}));
   await p.locator('.handle').dispatchEvent('mouseenter');await p.locator('.tools').click();
   await p.locator('[data-drawer="voice-call"]').click();await p.locator('#voice-start').click();
-  // wait for a condition with periodic state dumps, so CI logs show where the chain stalls
-  async function waitState(label,fn,timeoutMs,arg){
+  async function state(){return p.evaluate(()=>({phase:window.shibaVoice?.session?.phase,err:window.shibaVoice?.lastError||null,samples:window.shibaVoice?.lastAudioSamples||0,tx:document.querySelector('#voice-transcript')?.textContent||'',pb:window.shibaVoice?.lastPlayback?{started:window.shibaVoice.lastPlayback.started,ended:window.shibaVoice.lastPlayback.ended,ms:Math.round(1000*window.shibaVoice.lastPlayback.samples/(window.shibaVoice.lastAudioSampleRate||16000))}:null})).catch(e=>({evalErr:e.message}));}
+  async function waitFor(label,fn,timeoutMs){
    const t0=Date.now();
    while(Date.now()-t0<timeoutMs){
-    const st=await p.evaluate(()=>({phase:window.shibaVoice?.session?.phase,err:window.shibaVoice?.lastError||null,samples:window.shibaVoice?.lastAudioSamples||0,tx:document.querySelector('#voice-transcript')?.textContent||''})).catch(e=>({evalErr:e.message}));
-    if(st.err){console.log('STATE',label,JSON.stringify(st));throw Error('voice error during '+label+': '+st.err+' transcript='+st.tx);}
-    if(await p.evaluate(fn,arg))return st;
-    if(Date.now()-t0<timeoutMs)await sleep(8000);console.log('STATE',label,Math.round((Date.now()-t0)/1000)+'s',JSON.stringify(st));
+    const st=await state();
+    if(st.err)throw Error('voice error during '+label+': '+st.err+' state='+JSON.stringify(st));
+    if(fn(st))return st;
+    await sleep(8000);console.log('STATE',label,Math.round((Date.now()-t0)/1000)+'s',JSON.stringify(st));
    }
-   const st=await p.evaluate(()=>({phase:window.shibaVoice?.session?.phase,err:window.shibaVoice?.lastError,samples:window.shibaVoice?.lastAudioSamples,tx:document.querySelector('#voice-transcript')?.textContent})).catch(e=>({evalErr:e.message}));
-   throw Error('TIMEOUT during '+label+' after '+Math.round((Date.now()-t0)/1000)+'s state='+JSON.stringify(st));
+   throw Error('TIMEOUT during '+label+' state='+JSON.stringify(await state()));
   }
-  // turn 1: transcript 'Pet:' (ASR + real brain), then real TTS samples, then playback end
-  await waitState('turn1-reply',()=>document.querySelector('#voice-transcript').textContent.startsWith('Pet:'),300000);
-  console.log('TURN1 reply visible');
-  await waitState('turn1-tts',()=>window.shibaVoice.lastAudioSamples>0,180000);
-  const n1=await p.evaluate(()=>window.shibaVoice.lastAudioSamples);
-  assert.ok(n1>1000,'TTS must return real audio samples; got '+n1);
-  console.log('TURN1 PASS samples',n1,'rate',await p.evaluate(()=>window.shibaVoice.lastAudioSampleRate));
-  await waitState('turn1-playend',()=>window.shibaVoice.lastPlayback&&window.shibaVoice.lastPlayback.ended===true,90000);
-  // turn 2 without restart
-  const pb1=(await p.evaluate(()=>window.shibaVoice.lastPlayback)).started;
-  await waitState('turn2-playstart',t=>window.shibaVoice.lastPlayback&&window.shibaVoice.lastPlayback.started>t,300000,pb1);
-  await waitState('turn2-playend',()=>window.shibaVoice.lastPlayback.ended===true,90000);
-  console.log('TURN2 PASS continuous, no restart');
+  // turn N helpers: new utterance -> 'You:' flip, reply -> 'Pet:' flip, complete -> back to listening with playback ended and real samples
+  const sawYou=st=>st.tx&&st.tx.startsWith('You:');
+  const sawPet=st=>st.tx&&st.tx.startsWith('Pet:');
+  const turnDone=st=>st.phase==='listening'&&st.pb&&st.pb.ended===true&&st.samples>1000;
+  // TURN 1
+  await waitFor('turn1-pet',sawPet,300000);
+  const t1=await waitFor('turn1-done',turnDone,180000);
+  console.log('TURN1 PASS samples',t1.samples,'reply:',t1.tx.slice(0,120));
+  // TURN 2 (continuous conversation, no restart)
+  await waitFor('turn2-you',sawYou,300000);
+  await waitFor('turn2-pet',sawPet,180000);
+  const t2=await waitFor('turn2-done',turnDone,180000);
+  console.log('TURN2 PASS continuous, no restart. samples',t2.samples);
   await p.screenshot({path:'/tmp/shiba-packaged-voice.png'});
-  // turn 3: barge-in cuts playback early and returns to listening
-  const pb2=(await p.evaluate(()=>window.shibaVoice.lastPlayback)).started;
-  await waitState('turn3-playstart',t=>window.shibaVoice.lastPlayback&&window.shibaVoice.lastPlayback.started>t,300000,pb2);
-  await waitState('turn3-playing',()=>window.shibaVoice.lastPlayback.started&&!window.shibaVoice.lastPlayback.ended,90000);
+  // TURN 3: barge-in during speaking cuts the current chunk early and returns to listening
+  await waitFor('turn3-you',sawYou,300000);
+  await waitFor('turn3-pet',sawPet,180000);
+  await waitFor('turn3-speaking',st=>st.phase==='speaking'&&st.pb&&!st.pb.ended,120000);
   await sleep(800);
-  const started=await p.evaluate(()=>window.shibaVoice.lastPlayback.started);
+  const pb3=await p.evaluate(()=>({started:window.shibaVoice.lastPlayback.started,ms:Math.round(1000*window.shibaVoice.lastPlayback.samples/window.shibaVoice.lastAudioSampleRate)}));
   await p.evaluate(()=>window.shibaVoice.session.speechStart());
-  await waitState('barge-cut',()=>window.shibaVoice.lastPlayback.ended===true,30000);
-  const playedMs=Date.now()-started,fullMs=await p.evaluate(()=>Math.round(1000*window.shibaVoice.lastPlayback.samples/window.shibaVoice.lastAudioSampleRate));
-  assert.equal(await p.evaluate(()=>window.shibaVoice.session.phase),'listening','barge-in must return to listening');
-  assert.ok(playedMs<fullMs*0.6,'barge-in must cut playback early: played '+playedMs+'ms of '+fullMs+'ms');
-  console.log('BARGE-IN PASS playedMs='+playedMs+' of '+fullMs);
+  await waitFor('barge-cut',st=>st.phase==='listening'&&st.pb&&st.pb.ended===true,30000);
+  const playedMs=Date.now()-pb3.started;
+  assert.ok(playedMs<pb3.ms*0.6,'barge-in must cut playback early: played '+playedMs+'ms of '+pb3.ms+'ms');
+  console.log('BARGE-IN PASS playedMs='+playedMs+' of '+pb3.ms);
   await p.locator('#voice-stop').click();
-  await waitState('stop-off',()=>window.shibaVoice.session.phase==='off',30000);
+  await waitFor('stop-off',st=>st.phase==='off',30000);
   assert.equal(await p.evaluate(()=>window.shibaVoice.session.active),false);
-  console.log('PACKAGED FULL-CHAIN PASS: launch, turn1, continuous turn2, barge-in, stop-off. Real Ollama brain, real voice models, packaged binary.');
+  console.log('PACKAGED FULL-CHAIN PASS: launch, turn1, continuous turn2, barge-in, stop-off. Real Ollama brain, real voice models, packaged binary, chunked TTS playback.');
  }finally{await app.close();}process.exit(0);
 })().catch(e=>{console.error(e);process.exit(1)});
