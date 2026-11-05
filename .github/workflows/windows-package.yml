@@ -29,6 +29,12 @@ jobs:
           Start-Process -FilePath ollama -ArgumentList 'serve' -WindowStyle Hidden
           $t=0; while($t -lt 90){ try { $r = Invoke-RestMethod -Uri http://127.0.0.1:11434/api/tags -TimeoutSec 3; break } catch { Start-Sleep 3; $t+=3 } }
           ollama pull qwen3:0.6b
+      - name: Pre-warm Ollama brain (model load + latency check)
+        shell: pwsh
+        run: |
+          $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
+          $t=Measure-Command { ollama run qwen3:0.6b "Say hello in one short sentence." }
+          Write-Host "ollama first-run seconds: $($t.TotalSeconds)"
       - name: Build Windows package (portable + unpacked)
         run: npm run build:win
         env:
@@ -38,12 +44,19 @@ jobs:
         env:
           PACKAGED_EXE: ${{ github.workspace }}\dist\win-unpacked\Shiba Desktop.exe
           SHIBA_MODELS: D:/shiba-voice-lab
+      - name: Collect screenshots and timing into workspace
+        if: always()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force pkg-shots | Out-Null
+          Copy-Item D:/tmp/shiba-packaged-voice.png pkg-shots/ -ErrorAction SilentlyContinue
+          Copy-Item C:/tmp/shiba-packaged-voice.png pkg-shots/ -ErrorAction SilentlyContinue
+          Copy-Item D:/tmp/voice-timing.log pkg-shots/ -ErrorAction SilentlyContinue
+          Get-ChildItem pkg-shots
       - name: Upload packaged-run screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: windows-packaged-screenshots
-          path: |
-            D:/tmp/shiba-packaged-voice.png
-            C:/tmp/shiba-packaged-voice.png
+          path: pkg-shots/*
           if-no-files-found: warn
