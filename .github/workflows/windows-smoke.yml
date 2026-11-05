@@ -25,16 +25,18 @@ jobs:
         run: node vi-routines.cjs
       - name: Windows art/animation smoke
         run: node vi-art-regression.cjs
+      - name: Collect screenshots into workspace
+        if: always()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force smoke-shots | Out-Null
+          Copy-Item D:/tmp/pet-*.png,D:/tmp/shiba-*.png smoke-shots/ -ErrorAction SilentlyContinue
+          Copy-Item C:/tmp/pet-*.png,C:/tmp/shiba-*.png smoke-shots/ -ErrorAction SilentlyContinue
+          Get-ChildItem smoke-shots
       - name: Upload Windows screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: windows-smoke-screenshots
-          path: |
-            D:/tmp/pet-*.png
-            D:/tmp/shiba-routines-drawer.png
-            D:/tmp/shiba-ground-panel.png
-            C:/tmp/pet-*.png
-            C:/tmp/shiba-routines-drawer.png
-            C:/tmp/shiba-ground-panel.png
+          path: smoke-shots/*.png
           if-no-files-found: warn
