@@ -43,7 +43,11 @@ const manifest={segments:[],startedAt:new Date().toISOString()};
   }
   const sawPet=st=>st.tx&&st.tx.startsWith('Pet:');
   const turnDone=st=>st.phase==='listening'&&st.pb&&st.pb.ended===true&&st.samples>1000;
-  async function openDrawer(name){await p.locator('.handle').dispatchEvent('mouseenter');await p.locator('[data-drawer="'+name+'"]').first().click();await sleep(800);}
+  async function openDrawer(name){
+   await p.locator('.handle').dispatchEvent('mouseenter');
+   if(name==='voice-call'){await p.locator('[data-drawer="tools"]').first().click();await sleep(800);}
+   await p.locator('[data-drawer="'+name+'"]').first().click();await sleep(800);
+  }
 
   // SEGMENT 1: streaming typed chat (deterministic grounded question - no model needed)
   await openDrawer('brain');

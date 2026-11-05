@@ -46,6 +46,9 @@ jobs:
         env:
           SHIBA_MODELS: D:/shiba-voice-lab
           DEMO_TANGLISH: ${{ inputs.tanglish }}
+      - name: Install ffmpeg
+        if: always()
+        run: choco install ffmpeg -y --no-progress
       - name: Encode demo video from captured frames
         if: always()
         shell: pwsh
