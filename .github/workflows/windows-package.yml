@@ -39,6 +39,8 @@ jobs:
         run: npm run build:win
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Generate gapped mic fixture (clean turn boundaries)
+        run: node tools/gen-gapped-fixture.cjs
       - name: Prepare temp dirs
         shell: pwsh
         run: New-Item -ItemType Directory -Force D:/tmp | Out-Null
