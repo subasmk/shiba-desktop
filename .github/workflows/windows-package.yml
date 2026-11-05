@@ -1,0 +1,49 @@
+name: Windows packaged full-chain validation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  packaged:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Download real voice models
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force D:/shiba-voice-lab | Out-Null
+          curl.exe -sL -o D:/whisper.tar.bz2 https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2
+          curl.exe -sL -o D:/kokoro.tar.bz2 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-int8-multi-lang-v1_0.tar.bz2
+          tar -xf D:/whisper.tar.bz2 -C D:/shiba-voice-lab
+          tar -xf D:/kokoro.tar.bz2 -C D:/shiba-voice-lab
+      - name: Install Ollama and pull qwen3:0.6b brain
+        shell: pwsh
+        run: |
+          choco install ollama -y --no-progress
+          $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
+          Start-Process -FilePath ollama -ArgumentList 'serve' -WindowStyle Hidden
+          $t=0; while($t -lt 90){ try { $r = Invoke-RestMethod -Uri http://127.0.0.1:11434/api/tags -TimeoutSec 3; break } catch { Start-Sleep 3; $t+=3 } }
+          ollama pull qwen3:0.6b
+      - name: Build Windows package (portable + unpacked)
+        run: npm run build:win
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Packaged exe full voice chain with real brain
+        run: node vi-packaged.cjs
+        env:
+          PACKAGED_EXE: ${{ github.workspace }}\dist\win-unpacked\Shiba Desktop.exe
+          SHIBA_MODELS: D:/shiba-voice-lab
+      - name: Upload packaged-run screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-packaged-screenshots
+          path: |
+            D:/tmp/shiba-packaged-voice.png
+            C:/tmp/shiba-packaged-voice.png
+          if-no-files-found: warn
