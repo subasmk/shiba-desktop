@@ -111,6 +111,25 @@ class ProactiveEngine {
     }
     return null;
   }
+  // External one-off offers (the RSS scout's news offer) go through the
+  // same gates as rules - enabled, quiet hours, daily cap, global gap -
+  // so enabling the scout cannot make the pet chattier than the user
+  // allowed here. canAdmitExternal is the pure check; admitExternal also
+  // commits, counting the offer against the cap like any comment.
+  canAdmitExternal(now = Date.now(), state = this.state) {
+    if (!this.enabled) return false;
+    if (inQuietHours(now, this.quietStart, this.quietEnd)) return false;
+    const day = dayKeyOf(now);
+    const dayCount = state.day === day ? state.dayCount : 0;
+    if (dayCount >= this.dailyCap) return false;
+    if (state.lastAnyAt && now - state.lastAnyAt < this.minGapMs) return false;
+    return true;
+  }
+  admitExternal(ruleId, now = Date.now()) {
+    if (!this.canAdmitExternal(now)) return false;
+    this.commit({ ruleId }, now);
+    return true;
+  }
   // Record that a decision was actually delivered (bubble shown/spoken).
   commit(decision, now = Date.now()) {
     if (!decision) return;
