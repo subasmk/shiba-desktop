@@ -7,4 +7,4 @@
 .wake-live{position:absolute;left:2px;top:3px;font-size:10px;color:#ffcc7a;text-shadow:0 1px 3px black;animation:wakePulse 1.6s ease-in-out infinite}
 
 /* Last-mile pack: animation-pack GIF overlay on the pet (anim-events.cjs). */
-.pet-gif{position:absolute;left:20px;bottom:15px;width:80px;height:88px;object-fit:contain;object-position:bottom;pointer-events:none;user-select:none}
+.pet-gif{position:absolute;left:20px;bottom:15px;width:80px;height:88px;object-fit:contain;object-position:bottom;pointer-events:none;user-select:none;opacity:0;transition:opacity .18s ease}.pet-gif.on{opacity:1}

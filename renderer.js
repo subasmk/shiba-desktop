@@ -6,20 +6,25 @@ async function save(data){await api.call('save-settings',data);Object.assign(sta
 function close(){window.shibaVoice?.session.stop();api.send('panel',false);}
 if(mode==='pet'){
  root.innerHTML='<div class="pet-stage"><span class="reaction"></span><span class="wake-live hidden" title="Wake word listening">🎙</span><canvas class="pet-image" width="160" height="160" aria-label="Shiba desktop pet"></canvas><img class="pet-gif hidden" alt=""></div>';
- const atlas=new Image();atlas.src='1-sprites-clean.png';let sprites={},seq=[],idx=0,nextAt=0,anim='idle',finished=false;const behavior=new PetBehavior();behavior.quiet(performance.now());
+ const atlas=new Image();atlas.src='1-sprites-clean.png';let sprites={},seq=[],idx=0,nextAt=0,anim='idle',finished=false,blend=null,lastDrawn=null;const behavior=new PetBehavior();behavior.quiet(performance.now());
  const finite=new Set(['landing','getup','fall','wave','click','bow','gesture','rage','sleep','scan','sit','swing','portal','leap','peek','climb','emote','cursor','touch-head','touch-body','touch-paws']);const chain={landing:'getup',fall:'getup'};
  fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;play('idle');});
- function play(name){anim=name;seq=sprites[name]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;}
+ function play(name){if(name!==anim&&lastDrawn)blend={sx:lastDrawn.x,sy:lastDrawn.y,until:performance.now()+90};anim=name;seq=sprites[name]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;}
  function tick(t){
   if(seq.length&&t>=nextAt){
    if(finished){const next=chain[anim];play(next||'idle');if(!next)behavior.quiet(t);}
-   const frame=seq[idx];const canvas=$('.pet-image');canvas.dataset.frame=frame.file;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,160,160);if(atlas.complete&&atlas.naturalWidth)ctx.drawImage(atlas,frame.x,frame.y,160,160,0,0,160,160);
+   const frame=seq[idx];const canvas=$('.pet-image');canvas.dataset.frame=frame.file;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,160,160);
+   if(atlas.complete&&atlas.naturalWidth){
+    let alpha=1;
+    if(blend&&t<blend.until){const p=1-(blend.until-t)/90;ctx.globalAlpha=Math.max(0,1-p);ctx.drawImage(atlas,blend.sx,blend.sy,160,160,0,0,160,160);alpha=Math.min(1,p);}else blend=null;
+    ctx.globalAlpha=alpha;ctx.drawImage(atlas,frame.x,frame.y,160,160,0,0,160,160);ctx.globalAlpha=1;lastDrawn={x:frame.x,y:frame.y};
+   }
    nextAt=t+frame.ms;idx++;if(idx>=seq.length){if(finite.has(anim))finished=true;else idx=0;}
   }
   const action=behavior.due(t,anim);if(action)play(action);if(window.AnimEvents&&anim==='idle'&&!sleepFired&&AnimEvents.isLongIdle(lastInteract,t)){sleepFired=true;const ev=AnimEvents.forEvent('long-idle');play(ev.sprite);showGif(ev);}requestAnimationFrame(tick);
  }requestAnimationFrame(tick);
  let gifTimer,lastInteract=performance.now(),sleepFired=false,tapTimes=[];
- function showGif(ev){if(!ev||!ev.gif)return;const img=document.querySelector('.pet-gif');if(!img)return;img.src=ev.gif;img.classList.remove('hidden');clearTimeout(gifTimer);gifTimer=setTimeout(()=>{img.classList.add('hidden');img.removeAttribute('src');},ev.ms||2000);}
+ function showGif(ev){if(!ev||!ev.gif)return;const img=document.querySelector('.pet-gif');if(!img)return;img.src=ev.gif;img.classList.remove('hidden');requestAnimationFrame(()=>img.classList.add('on'));clearTimeout(gifTimer);gifTimer=setTimeout(()=>{img.classList.remove('on');setTimeout(()=>{img.classList.add('hidden');img.removeAttribute('src');},240);},ev.ms||2000);}
  api.on('pet-gif',showGif);
  api.on('pet-state',name=>{behavior.quiet(performance.now());play(name);});api.on('pet-say',line=>{const e=document.querySelector('.reaction');if(e){e.textContent=line;setTimeout(()=>{if(e.textContent===line)e.textContent='';},6000);}});
  let offerShown=false,offerTimer;api.on('pet-offer',d=>{const e=document.querySelector('.reaction');if(!e||!d||typeof d.text!=='string')return;offerShown=true;e.textContent=d.text+' (opens '+d.host+' - nothing else runs)';e.classList.add('offer');clearTimeout(offerTimer);offerTimer=setTimeout(()=>{offerShown=false;e.classList.remove('offer');if(e.textContent.startsWith(d.text))e.textContent='';},120000);});

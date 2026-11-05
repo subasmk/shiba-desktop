@@ -55,9 +55,11 @@
       this.perchKey = null; this.perchRect = null; this.perchUntil = 0;
       this.chaseEnds = 0;
       this.lastNow = 0;
+      this.carry = 0;             // fractional pixel carry so 60 Hz ticks stay smooth
+      this.moveStart = 0;         // when the current walk began (easing ramp)
     }
     schedule(now) { this.nextMoveAt = now + 10000 + this.random() * 15000; }
-    reset(now) { this.state = 'idle'; this.targetX = null; this.perchKey = null; this.perchRect = null; this.schedule(now); }
+    reset(now) { this.state = 'idle'; this.targetX = null; this.perchKey = null; this.perchRect = null; this.carry = 0; this.schedule(now); }
     moveKind(distance) {
       const d = Math.abs(distance || 0);
       if (d >= this.flyPx) return 'leap';
@@ -134,8 +136,11 @@
           const target = Math.max(area.x, Math.min(area.x + area.width - PET_W, Math.round(c.x - PET_W / 2)));
           const dx = target - x;
           if (Math.abs(dx) <= 6) return { move: null, animation: 'cursor' };
-          const stepPx = Math.max(1, Math.round(170 * dt / 1000));
-          const nx = x + Math.sign(dx) * Math.min(Math.abs(dx), stepPx);
+          const flc = 185 * dt / 1000 + this.carry;
+          let stepPx = Math.max(1, Math.round(flc));
+          if (stepPx >= Math.abs(dx)) { stepPx = Math.abs(dx); this.carry = 0; }
+          else this.carry = flc - stepPx;
+          const nx = x + Math.sign(dx) * stepPx;
           return { move: { x: nx, y: groundY }, animation: 'cursor' };
         }
         case 'vanish': {
@@ -144,14 +149,22 @@
           const dir = this.targetX >= x ? 1 : -1;
           const spawn = Math.max(area.x, Math.min(area.x + area.width - PET_W, this.targetX - dir * 220));
           this.moveAnim = this.moveKind((this.targetX ?? x) - (this.fromX ?? x));
-          this.state = 'walk'; this.stageEnds = 0;
+          this.state = 'walk'; this.stageEnds = 0; this.moveStart = now; this.walkFrom = Math.round(Math.max(area.x, Math.min(area.x + area.width - PET_W, this.targetX - dir * 220))); this.carry = 0;
           return { move: { x: Math.round(spawn), y: groundY }, animation: 'portal' };
         }
         case 'walk': {
           const dx = this.targetX - x;
           if (Math.abs(dx) <= 3) { this.state = 'idle'; this.schedule(now); return { move: { x: this.targetX, y: groundY }, animation: 'idle' }; }
-          const stepPx = Math.max(1, Math.round(70 * dt / 1000));
-          const nx = x + Math.sign(dx) * Math.min(Math.abs(dx), stepPx);
+          // Eased velocity: ramp up over ~300ms, ease out over the last ~100px,
+          // and carry fractional pixels so 60 Hz window moves stay fluid.
+          const accel = Math.min(1, (now - (this.moveStart || now)) / 300);
+          const decel = Math.min(1, (Math.abs(dx) + 8) / 100);
+          const f = Math.max(0.35, Math.min(accel || 0.35, decel));
+          const fl = 95 * f * dt / 1000 + this.carry;
+          let stepPx = Math.max(1, Math.round(fl));
+          if (stepPx >= Math.abs(dx)) { stepPx = Math.abs(dx); this.carry = 0; }
+          else this.carry = fl - stepPx;
+          const nx = x + Math.sign(dx) * stepPx;
           return { move: { x: nx, y: groundY }, animation: this.moveAnim };
         }
         default: this.reset(now); return { move: null, animation: null };
