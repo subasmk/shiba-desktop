@@ -1,0 +1,23 @@
+name: Windows quit-path probe
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Probe plain launch + close
+        run: node vi-quit-probe.cjs
+        env:
+          PROBE_VARIANT: plain
+      - name: Probe drawers + close
+        run: node vi-quit-probe.cjs
+        env:
+          PROBE_VARIANT: drawer
