@@ -1,43 +1,40 @@
-// Bounded quit-path probe v4: launch from source, instrument the main process
-// BEFORE quitting (CDP dies once playwright close() starts, so v2 could never
-// introspect). Quit via app.quit() over evaluate, watch which lifecycle events
-// fire, dump active handles if it stalls, then test forced app.exit(0).
+// Bounded quit-path probe v5: decide WHERE the wedge lives.
+// variant=early:  quit 600ms after firstWindow - does an early quit work?
+// variant=late:   quit after 8s - same as v4 (expected hang).
+// variant=watch:  never quit; ping main + each renderer for 30s - does the
+//                 event loop wedge WITHOUT any quit request? (time-based wedge)
+// On hang after quit, also ping each renderer page directly: if the renderer
+// never answers, window close is stuck waiting on a blocked renderer.
 const {_electron:electron}=require('playwright');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{
+ const variant=process.env.PROBE_VARIANT||'watch';
  const app=await electron.launch({args:['--no-sandbox','.'],env:{...process.env,SHIBA_MODELS:process.env.SHIBA_MODELS||'/tmp/shiba-voice-lab'}});
  const t0=Date.now();
- await app.firstWindow();await sleep(3000);
- console.log('PROBE launched',Date.now()-t0,'ms');
- await app.evaluate(({app:ea,BrowserWindow})=>{
-  globalThis.__dbg=[];
-  const mark=s=>{globalThis.__dbg.push(s+':'+Date.now());console.log('DBG',s);};
-  ea.on('before-quit',()=>mark('before-quit'));
-  ea.on('will-quit',()=>mark('will-quit'));
-  ea.on('window-all-closed',()=>mark('window-all-closed'));
-  ea.on('quit',()=>mark('quit'));
-  BrowserWindow.getAllWindows().forEach(w=>{w.on('close',()=>mark('win-close-'+w.id));w.on('closed',()=>mark('win-closed-'+w.id));});
-  globalThis.__winCount=BrowserWindow.getAllWindows().length;
- });
- console.log('PROBE instrumented, windows:',await app.evaluate(()=>globalThis.__winCount));
- await app.evaluate(({app:ea})=>{ea.quit();});
- console.log('PROBE app.quit() called');
- let alive=true;
- for(let i=0;i<15;i++){await sleep(2000);const p=app.process();if(!p||p.exitCode!==null||p.killed){alive=false;break;}}
- if(!alive){console.log('PROBE-PASS quit exited in',Date.now()-t0,'ms');process.exit(0);}
- console.log('PROBE-HANG process still alive 30s after app.quit()');
- const info=await Promise.race([app.evaluate(({BrowserWindow})=>({
-  dbg:globalThis.__dbg,
-  windows:BrowserWindow.getAllWindows().map(w=>({id:w.id,destroyed:w.isDestroyed(),visible:w.isVisible(),url:w.webContents.getURL()})),
-  handles:process._getActiveHandles().map(h=>h.constructor.name),
-  requests:process._getActiveRequests().length
- })),sleep(15000).then(()=>null)]);
- console.log('PROBE-HANDLES',JSON.stringify(info));
- if(info){
-  await Promise.race([app.evaluate(({app:ea})=>{ea.exit(0);}),sleep(10000)]).catch(()=>{});
-  await sleep(3000);
-  const p=app.process();
-  console.log('PROBE-FORCE-EXIT alive after app.exit(0):',!!(p&&p.exitCode===null&&!p.killed));
+ await app.firstWindow();
+ if(variant==='watch'){
+  for(let i=0;i<6;i++){
+   await sleep(5000);
+   const main=await Promise.race([app.evaluate(()=>1).then(()=> 'ok'),sleep(4000).then(()=>'WEDGED')]);
+   const pages=app.windows();
+   const rend=[];
+   for(const w of pages){rend.push(await Promise.race([w.evaluate(()=>1).then(()=>'ok'),sleep(4000).then(()=>'WEDGED')]));}
+   console.log('PROBE-PING t='+((Date.now()-t0)/1000|0)+'s main='+main+' renderers='+JSON.stringify(rend));
+  }
+  console.log('PROBE-WATCH-DONE');
+  process.exit(0);
  }
+ const waitMs=variant==='early'?600:8000;
+ await sleep(waitMs);
+ console.log('PROBE quitting at',Date.now()-t0,'ms variant',variant);
+ await app.evaluate(({app:ea})=>{ea.quit();}).catch(e=>console.log('PROBE quit evaluate failed:',e.message));
+ let alive=true;
+ for(let i=0;i<10;i++){await sleep(2000);const p=app.process();if(!p||p.exitCode!==null||p.killed){alive=false;break;}}
+ if(!alive){console.log('PROBE-PASS quit exited, variant',variant);process.exit(0);}
+ console.log('PROBE-HANG alive 20s after quit, variant',variant);
+ const main=await Promise.race([app.evaluate(()=>1).then(()=> 'ok'),sleep(5000).then(()=>'WEDGED')]);
+ const rend=[];
+ for(const w of app.windows()){rend.push(await Promise.race([w.evaluate(()=>1).then(()=>'ok'),sleep(5000).then(()=>'WEDGED')]));}
+ console.log('PROBE-POSTQUIT main='+main+' renderers='+JSON.stringify(rend));
  process.exit(2);
 })().catch(e=>{console.error('PROBE-ERROR',e.message);process.exit(1);});

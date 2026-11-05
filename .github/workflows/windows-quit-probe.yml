@@ -13,11 +13,15 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci
-      - name: Probe plain launch + close
+      - name: Probe watch (no quit, 30s health pings)
         run: node vi-quit-probe.cjs
         env:
-          PROBE_VARIANT: plain
-      - name: Probe drawers + close
+          PROBE_VARIANT: watch
+      - name: Probe early quit (600ms)
         run: node vi-quit-probe.cjs
         env:
-          PROBE_VARIANT: drawer
+          PROBE_VARIANT: early
+      - name: Probe late quit (8s)
+        run: node vi-quit-probe.cjs
+        env:
+          PROBE_VARIANT: late
