@@ -51,3 +51,31 @@ test('app hopping and daily cap are enforced', () => {
   a.equal(e.tick(dwell, at(14, 2)).ruleId, 'long-dwell');
   a.equal(e.decide(dwell, at(14, 10)), null); // cap of 2 reached for the day
 });
+
+const sceneSig = (over = {}) => sig({
+  context: { app: 'chrome', title: 'GTA 6 trailer - YouTube', activity: 'video', dwellMs: 30000, recentChanges: 1, since: at(14) - 60000, scene: 'User is watching a GTA 6 trailer on YouTube', sceneChangedAt: at(14) - 30000 },
+  ...over,
+});
+test('scene-change rule fires once for a new app + new scene, then never repeats it', () => {
+  const e = new ProactiveEngine({ enabled: true });
+  const d = e.tick(sceneSig(), at(14));
+  a.ok(d); a.equal(d.ruleId, 'scene-change'); a.match(d.line, /GTA 6 trailer/);
+  a.equal(e.tick(sceneSig(), at(14, 5)), null); // same app+scene: onceKey pins it
+});
+test('scene-change stays silent without a fresh scene change or a recent app change', () => {
+  const e = new ProactiveEngine({ enabled: true });
+  const stale = sceneSig(); stale.context.sceneChangedAt = at(14) - 10 * 60000;
+  a.equal(e.tick(stale, at(14)), null);
+  const oldApp = sceneSig(); oldApp.context.since = at(14) - 30 * 60000;
+  a.equal(e.tick(oldApp, at(14)), null);
+  const noScene = sceneSig(); noScene.context.scene = null;
+  a.equal(e.tick(noScene, at(14)), null);
+});
+test('scene-change respects quiet hours and the master toggle', () => {
+  const off = new ProactiveEngine({ enabled: false });
+  a.equal(off.tick(sceneSig(), at(14)), null);
+  const e = new ProactiveEngine({ enabled: true });
+  const night = sceneSig(); night.context.since = at(1) - 60000; night.context.sceneChangedAt = at(1) - 30000;
+  const d = e.tick(night, at(1));
+  a.ok(d === null || d.ruleId !== 'scene-change'); // quiet hours: scene rule silent (late-night may still speak)
+});

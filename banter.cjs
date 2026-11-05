@@ -15,6 +15,17 @@ function allowedTerms(snapshot) {
   for (const a of APP_LEXICON) if (app.includes(a)) terms.add(a);
   const act = snapshot.activity;
   if (act && ACTIVITY_LEXICON[act]) for (const w of ACTIVITY_LEXICON[act]) terms.add(w);
+  // Vision scene (last-mile item 2): the scene line is itself a passed-in
+  // fact, so lexicon words that appear IN the scene are allowed facts too
+  // (e.g. scene "watching a YouTube trailer" licenses the word youtube
+  // even when the foreground app is just "chrome"). Activity words found
+  // in the scene are licensed the same way. Nothing beyond the scene text
+  // becomes allowed - the filter still rejects invented apps/activities.
+  const scene = String(snapshot.scene || '').toLowerCase();
+  if (scene) {
+    for (const a of APP_LEXICON) if (scene.includes(a)) terms.add(a);
+    for (const words of Object.values(ACTIVITY_LEXICON)) for (const w of words) if (new RegExp('\\b' + w + '\\b').test(scene)) terms.add(w);
+  }
   return terms;
 }
 function allowedNumbers(snapshot) {
@@ -22,7 +33,26 @@ function allowedNumbers(snapshot) {
   if (Number.isFinite(snapshot.hour)) nums.add(snapshot.hour);
   if (Number.isFinite(snapshot.dwellMs)) nums.add(Math.round(snapshot.dwellMs / 60000));
   if (snapshot.counts) for (const v of Object.values(snapshot.counts)) if (Number.isSafeInteger(v)) nums.add(v);
+  // Numbers stated in the vision scene are facts too ("GTA 6 trailer").
+  const scene = String(snapshot.scene || '');
+  for (const m of scene.matchAll(/\d+/g)) nums.add(parseInt(m[0], 10));
   return nums;
+}
+
+// Scene wording -> activity synonyms: a vision line rarely uses the
+// lexicon's exact words ("watching a trailer" never says "video").
+const SCENE_SYNONYMS = { trailer: 'video', watching: 'video', episode: 'video', gameplay: 'game', debugging: 'coding' };
+
+// Activity words licensed by the scene text alone (used by groundingCheck
+// so a scene about "watching a video" does not trip the activity filter
+// when the classifier called the same moment "browsing").
+function sceneActivities(snapshot) {
+  const scene = String(snapshot.scene || '').toLowerCase();
+  const out = new Set();
+  if (!scene) return out;
+  for (const [act, words] of Object.entries(ACTIVITY_LEXICON)) for (const w of words) if (new RegExp('\\b' + w + '\\b').test(scene)) out.add(act);
+  for (const [w, act] of Object.entries(SCENE_SYNONYMS)) if (new RegExp('\\b' + w + '\\b').test(scene)) out.add(act);
+  return out;
 }
 
 // Returns true when the line stays inside the snapshot's facts.
@@ -33,10 +63,11 @@ function groundingCheck(line, snapshot) {
   if (/https?:|www\.|@\w/.test(text)) return false;
   const low = text.toLowerCase();
   const allowed = allowedTerms(snapshot || {});
+  const sceneActs = sceneActivities(snapshot || {});
   for (const a of APP_LEXICON) if (low.includes(a) && !allowed.has(a)) return false;
   for (const [act, words] of Object.entries(ACTIVITY_LEXICON)) {
-    if (snapshot.activity === act) continue;
-    for (const w of words) if (new RegExp('\\b' + w + '\\b').test(low)) return false;
+    if (snapshot.activity === act || sceneActs.has(act)) continue;
+    for (const w of words) if (new RegExp('\\b' + w + '\\b').test(low) && !allowed.has(w)) return false;
   }
   const nums = allowedNumbers(snapshot || {});
   for (const m of low.matchAll(/\d+/g)) if (!nums.has(parseInt(m[0], 10))) return false;
@@ -72,4 +103,4 @@ async function generateBanter({ snapshot, personality = 'cheeky', brainFn, templ
   } catch { return fallback(); }
 }
 
-module.exports = { buildBanterPrompt, groundingCheck, generateBanter, allowedTerms };
+module.exports = { buildBanterPrompt, groundingCheck, generateBanter, allowedTerms, allowedNumbers, sceneActivities };

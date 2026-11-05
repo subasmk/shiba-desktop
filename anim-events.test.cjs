@@ -1,0 +1,41 @@
+const { test } = require('node:test'), a = require('node:assert/strict');
+const fs = require('node:fs'), path = require('node:path');
+const AE = require('./anim-events.cjs');
+
+test('every required event resolves to a GIF and a sprite', () => {
+  for (const name of ['celebrate', 'wake-trigger', 'listening-start', 'power-run', 'timer-ignored', 'roam-fly', 'perch-climb', 'roam-fast', 'tap-combo', 'drag-drop', 'proactive-comment', 'chat-reaction', 'long-idle', 'idle', 'portal', 'vanish', 'cursor-chase', 'scene-change'])
+    a.ok(AE.forEvent(name), 'missing event ' + name);
+  a.equal(AE.forEvent('nope'), null);
+});
+test('every event GIF asset exists at the repo root', () => {
+  for (const name of AE.eventNames()) {
+    const e = AE.forEvent(name);
+    a.ok(fs.existsSync(path.join(__dirname, e.gif)), e.gif + ' missing');
+  }
+  a.equal(AE.allAssetsExist(__dirname), true);
+  a.equal(AE.allAssetsExist(path.join(__dirname, 'no-such-dir')), false);
+});
+test('every mapped sprite exists in the app atlas manifest', () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
+  for (const name of AE.eventNames()) {
+    const s = AE.forEvent(name).sprite;
+    a.ok(Array.isArray(manifest[s]), 'sprite ' + s + ' not in manifest (event ' + name + ')');
+  }
+});
+test('tap combo trigger: 3 taps inside the window, not spread out', () => {
+  a.equal(AE.isTapCombo([1000, 1500, 2000], 2100), true);
+  a.equal(AE.isTapCombo([1000, 1500, 9000], 9100), false);
+  a.equal(AE.isTapCombo([1000, 1500], 1600), false);
+  a.equal(AE.isTapCombo(null, 1600), false);
+});
+test('roam move kind from distance', () => {
+  a.equal(AE.roamMoveKind(900), 'roam-fly');
+  a.equal(AE.roamMoveKind(400), 'roam-fast');
+  a.equal(AE.roamMoveKind(100), null);
+  a.equal(AE.roamMoveKind(-900), 'roam-fly');
+});
+test('long idle trigger', () => {
+  a.equal(AE.isLongIdle(0, 10 * 60000), false);
+  a.equal(AE.isLongIdle(1000, 1000 + 5 * 60000), true);
+  a.equal(AE.isLongIdle(1000, 1000 + 60000), false);
+});

@@ -112,7 +112,15 @@ class ChatterboxSidecar {
 // kokoroSynthesize(text) is the existing voice worker call, injected by main.
 // Returns the worker/sidecar {samples, sampleRate}, or {system:true, text}
 // for the system engine (the renderer speaks it via speechSynthesis).
-function createVoiceEngine({ getSettings, kokoroSynthesize, sidecarFactory } = {}) {
+//
+// Tamil branch (last-mile item 1): when settings.voiceLang is 'ta' or
+// 'tanglish' AND the engine is the default kokoro path, replies go to the
+// injected tamilSynthesize instead. An explicit system/chatterbox choice
+// always wins over the language setting. If Tamil synthesis fails (model
+// not prepared, worker error), we fall back to Kokoro for this reply and
+// call onTamilFallback(err) so main can surface an honest notice - the
+// fallback is never silent and the audio is never faked.
+function createVoiceEngine({ getSettings, kokoroSynthesize, sidecarFactory, tamilSynthesize, onTamilFallback } = {}) {
   let sidecar = null;
   const makeSidecar = sidecarFactory || ((s) => new ChatterboxSidecar({ command: s.chatterboxCommand, args: s.chatterboxArgs }));
   return {
@@ -123,6 +131,14 @@ function createVoiceEngine({ getSettings, kokoroSynthesize, sidecarFactory } = {
       if (engine === 'chatterbox') {
         if (!sidecar) sidecar = makeSidecar(settings);
         return sidecar.speak(text);
+      }
+      const lang = settings.voiceLang;
+      if ((lang === 'ta' || lang === 'tanglish') && typeof tamilSynthesize === 'function') {
+        try { return await tamilSynthesize(text); }
+        catch (e) {
+          if (typeof onTamilFallback === 'function') { try { onTamilFallback(e); } catch { /* notice must never break speech */ } }
+          return kokoroSynthesize(text);
+        }
       }
       return kokoroSynthesize(text);
     },

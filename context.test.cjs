@@ -42,3 +42,43 @@ test('vision describe uses the local endpoint and refuses empty work', async () 
   a.equal(seenBody.model, 'moondream');
   a.deepEqual(seenBody.images, ['AAAA']);
 });
+
+const { buildCursorScript, getCursorPos, saneRect, normalizeScene } = require('./context.cjs');
+test('foreground script now reads the window rect; cursor script reads GetCursorPos', () => {
+  const s = buildForegroundScript();
+  a.match(s, /GetWindowRect/); a.match(s, /rect/);
+  a.match(buildCursorScript(), /GetCursorPos/);
+});
+test('saneRect accepts real windows, rejects degenerate/minimized ones', () => {
+  a.deepEqual(saneRect({ left: 10, top: 20, right: 810, bottom: 620 }), { left: 10, top: 20, right: 810, bottom: 620 });
+  a.equal(saneRect({ left: 0, top: 0, right: 10, bottom: 10 }), null);
+  a.equal(saneRect(null), null);
+  a.equal(saneRect({ left: 'x', top: 0, right: 900, bottom: 600 }), null);
+});
+test('getCursorPos is an honest null off Windows', async () => {
+  a.equal(await getCursorPos(() => { throw Error('must not be called'); }, 'linux'), null);
+});
+test('monitor tracks rect freshness and scene-change time without scene repeats', async () => {
+  let now = 1000000;
+  const m = new ContextMonitor({ now: () => now, source: async () => ({ app: 'chrome', title: 'Trailer - YouTube', rect: { left: 0, top: 0, right: 900, bottom: 700 } }) });
+  const s1 = await m.poll();
+  a.deepEqual(s1.rect, { left: 0, top: 0, right: 900, bottom: 700 });
+  m.setScene('User is watching a game trailer on YouTube', now);
+  a.equal(m.snapshot(now).sceneChangedAt, now);
+  now += 30000;
+  m.setScene('user watching a game trailer on youtube!', now); // rephrase: NOT a change
+  a.equal(m.snapshot(now).sceneChangedAt, 1000000);
+  now += 30000;
+  m.setScene('User is editing a spreadsheet', now); // real change
+  a.equal(m.snapshot(now).sceneChangedAt, now);
+  a.equal(normalizeScene('  Hello,   WORLD! '), 'hello world');
+});
+test('foreground poll carries the rect through and updates it on moves', async () => {
+  let rect = { left: 0, top: 0, right: 900, bottom: 700 };
+  const m = new ContextMonitor({ now: () => 5000, source: async () => ({ app: 'Code', title: 'x.cjs', rect }) });
+  await m.poll();
+  rect = { left: 300, top: 0, right: 1200, bottom: 700 };
+  const s = await m.poll();
+  a.equal(s.rect.left, 300); // moved, same window: rect fresh, no fake app change
+  a.equal(s.dwellMs, 0); // since unchanged (same app+title, clock frozen at 5000)
+});

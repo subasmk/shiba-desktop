@@ -29,3 +29,18 @@ test('generateBanter: brain line used only when grounded, else template fallback
   const slow = () => new Promise((r) => setTimeout(() => r('50 mins code-la bro.'), 5000));
   a.deepEqual(await generateBanter({ snapshot: snap, brainFn: slow, templateLine: 'TEMPLATE', timeoutMs: 50 }), { line: 'TEMPLATE', source: 'template' });
 });
+
+const sceneSnap = { app: 'chrome', activity: 'browsing', dwellMs: 5 * 60000, hour: 20, scene: 'User is watching a GTA 6 trailer on YouTube', counts: {} };
+test('grounding accepts lines that reference the vision scene fact', () => {
+  a.equal(groundingCheck('GTA 6 trailer paathiya bro? YouTube full hype!', sceneSnap), true);
+  a.equal(groundingCheck('Video paarthen bro, trailer scene vera level.', sceneSnap), true);
+});
+test('grounding still rejects content invented beyond the scene', () => {
+  a.equal(groundingCheck('Discord-la friends oda game aaditu iruka bro.', sceneSnap), false); // app not in scene/snapshot
+  a.equal(groundingCheck('GTA 9 trailer paathiya bro?', sceneSnap), false); // number 9 not in any fact
+  a.equal(groundingCheck('Spotify-la paatu kekura bro.', sceneSnap), false); // music not in scene
+});
+test('banter prompt includes the scene as a fact', () => {
+  const msgs = buildBanterPrompt(sceneSnap, 'cheeky');
+  a.match(msgs[1].content, /On screen: User is watching a GTA 6 trailer/);
+});

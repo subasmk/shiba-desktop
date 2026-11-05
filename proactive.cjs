@@ -6,7 +6,7 @@
 // state is a plain object, so everything is testable with a fake clock.
 //
 // Signals shape (all optional; missing pieces simply disable their rules):
-//   { context: {app,title,activity,dwellMs,recentChanges} | null,
+//   { context: {app,title,activity,dwellMs,recentChanges,scene,sceneChangedAt} | null,
 //     idleMs: number, timer: {running, startedAt, finishedAt},
 //     counts: {pet-history counts}, dayKey: 'YYYY-MM-DD' }
 //
@@ -78,6 +78,28 @@ const RULES = [
     test(s) {
       const c = s.context; if (!c || (c.recentChanges || 0) < 6) return null;
       return { line: 'Apps-ku naduvula roller coaster pora, bro. Onnu pick panni settle aagu.', banterOk: true };
+    },
+  },
+  {
+    // Vision -> comments (last-mile item 2): Dexter's "saw the trailer"
+    // moment. Fires ONLY when a NEW app came to the front AND the vision
+    // scene text changed, both recently - so it reacts to the change
+    // itself, once (onceKey pins app+scene), and never repeats the same
+    // scene. The scene in the snapshot exists only when vision is ON and
+    // the description is fresh; the line quotes the scene fact verbatim,
+    // and banter may rephrase within that same fact.
+    id: 'scene-change', cooldownMs: 25 * MIN,
+    onceKey: (s) => {
+      const c = s.context;
+      return c && c.scene ? 'scene:' + (c.app || '') + ':' + String(c.scene).slice(0, 80) : null;
+    },
+    test(s, now) {
+      const c = s.context; if (!c || !c.scene) return null;
+      if (!Number.isFinite(c.sceneChangedAt) || now - c.sceneChangedAt > 2 * MIN) return null;
+      if (!Number.isFinite(c.since) || now - c.since > 3 * MIN) return null;
+      const scene = String(c.scene).trim().slice(0, 110);
+      if (!scene) return null;
+      return { line: 'Paathiya bro? Screen-la ippo: ' + scene, banterOk: true };
     },
   },
 ];

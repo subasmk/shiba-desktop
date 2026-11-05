@@ -66,3 +66,35 @@ test('sidecar: spawn failure and server error are honest failures', async () => 
   const failing = new ChatterboxSidecar({ command: 'fake', spawnFn: () => fakeChild(() => ({ ok: false, error: 'model exploded' })), readFileFn: () => wav16([0]) });
   await assert.rejects(() => failing.speak('hi'), /model exploded/);
 });
+
+test('dispatch: voiceLang ta/tanglish routes to the Tamil branch on the kokoro path', async () => {
+  let kokoroUsed = false;
+  const eng = createVoiceEngine({
+    getSettings: () => ({ voiceEngine: 'kokoro', voiceLang: 'tanglish' }),
+    kokoroSynthesize: async () => { kokoroUsed = true; return { samples: [0], sampleRate: 24000 }; },
+    tamilSynthesize: async (t) => ({ samples: [0.5], sampleRate: 22050, got: t }),
+  });
+  const r = await eng.synthesize('Seri bro');
+  assert.equal(r.sampleRate, 22050); assert.equal(r.got, 'Seri bro'); assert.equal(kokoroUsed, false);
+});
+test('dispatch: Tamil failure falls back to Kokoro and fires the notice callback', async () => {
+  let noticed = null;
+  const eng = createVoiceEngine({
+    getSettings: () => ({ voiceLang: 'ta' }),
+    kokoroSynthesize: async () => ({ samples: [0], sampleRate: 24000 }),
+    tamilSynthesize: async () => { throw Error('Tamil voice is not set up.'); },
+    onTamilFallback: (e) => { noticed = e.message; },
+  });
+  const r = await eng.synthesize('Vanakkam');
+  assert.equal(r.sampleRate, 24000); assert.match(noticed, /not set up/);
+});
+test('dispatch: explicit system/chatterbox engine wins over voiceLang', async () => {
+  let tamilUsed = false;
+  const eng = createVoiceEngine({
+    getSettings: () => ({ voiceEngine: 'system', voiceLang: 'ta' }),
+    kokoroSynthesize: async () => ({ samples: [0], sampleRate: 24000 }),
+    tamilSynthesize: async () => { tamilUsed = true; return { samples: [0], sampleRate: 22050 }; },
+  });
+  const r = await eng.synthesize('hi');
+  assert.equal(r.system, true); assert.equal(tamilUsed, false);
+});

@@ -30,12 +30,46 @@ function classifyActivity(app, title) {
 }
 
 // --- Windows foreground source --------------------------------------------
-// Fixed script: foreground window title + owning process name, JSON out.
+// Fixed script: foreground window title + owning process name + window
+// rect (GetWindowRect), JSON out. The rect feeds the roam perch behaviour
+// (last-mile item 5); it is data only - nothing here moves any window.
 function buildForegroundScript() {
   return "[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();" +
-    "Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;using System.Text;public class FG{[DllImport(\"user32.dll\")]public static extern IntPtr GetForegroundWindow();[DllImport(\"user32.dll\")]public static extern int GetWindowText(IntPtr h,StringBuilder s,int n);[DllImport(\"user32.dll\")]public static extern uint GetWindowThreadProcessId(IntPtr h,out uint pid);}' -ErrorAction SilentlyContinue;" +
+    "Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;using System.Text;public class FG{[DllImport(\"user32.dll\")]public static extern IntPtr GetForegroundWindow();[DllImport(\"user32.dll\")]public static extern int GetWindowText(IntPtr h,StringBuilder s,int n);[DllImport(\"user32.dll\")]public static extern uint GetWindowThreadProcessId(IntPtr h,out uint pid);[StructLayout(LayoutKind.Sequential)]public struct RECT{public int Left;public int Top;public int Right;public int Bottom;}[DllImport(\"user32.dll\")]public static extern bool GetWindowRect(IntPtr h,out RECT r);}' -ErrorAction SilentlyContinue;" +
     "$h=[FG]::GetForegroundWindow();$sb=New-Object System.Text.StringBuilder 512;[void][FG]::GetWindowText($h,$sb,512);$pid2=0;[void][FG]::GetWindowThreadProcessId($h,[ref]$pid2);$p=Get-Process -Id $pid2 -ErrorAction SilentlyContinue;" +
-    "[pscustomobject]@{title=$sb.ToString();process=if($p){$p.ProcessName}else{''}} | ConvertTo-Json -Compress";
+    "$rc=New-Object FG+RECT;$hasRect=[FG]::GetWindowRect($h,[ref]$rc);" +
+    "[pscustomobject]@{title=$sb.ToString();process=if($p){$p.ProcessName}else{''};rect=if($hasRect){[pscustomobject]@{left=$rc.Left;top=$rc.Top;right=$rc.Right;bottom=$rc.Bottom}}else{$null}} | ConvertTo-Json -Compress";
+}
+
+// Fixed script: current cursor position (for roam cursor play). Data only.
+function buildCursorScript() {
+  return "[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();" +
+    "Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;public class CP{[StructLayout(LayoutKind.Sequential)]public struct POINT{public int X;public int Y;}[DllImport(\"user32.dll\")]public static extern bool GetCursorPos(out POINT p);}' -ErrorAction SilentlyContinue;" +
+    "$pt=New-Object CP+POINT;$ok=[CP]::GetCursorPos([ref]$pt);" +
+    "[pscustomobject]@{x=if($ok){$pt.X}else{$null};y=if($ok){$pt.Y}else{$null}} | ConvertTo-Json -Compress";
+}
+
+// Resolve the cursor position once. Non-Windows: null (cursor play and
+// perch simply stay unavailable there, honestly).
+function getCursorPos(execFileFn = execFile, platform = process.platform) {
+  return new Promise((resolve) => {
+    if (platform !== 'win32') return resolve(null);
+    execFileFn('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', buildCursorScript()],
+      { windowsHide: true, timeout: 8000, maxBuffer: 64 * 1024, encoding: 'utf8' }, (e, out) => {
+        if (e || !out) return resolve(null);
+        try {
+          const row = JSON.parse(String(out).replace(/^﻿/, '').trim());
+          if (!Number.isFinite(row.x) || !Number.isFinite(row.y)) return resolve(null);
+          resolve({ x: row.x, y: row.y });
+        } catch { resolve(null); }
+      });
+  });
+}
+
+function saneRect(r) {
+  if (!r || !Number.isFinite(r.left) || !Number.isFinite(r.top) || !Number.isFinite(r.right) || !Number.isFinite(r.bottom)) return null;
+  if (r.right - r.left < 80 || r.bottom - r.top < 40) return null; // minimized / degenerate
+  return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
 }
 
 // Resolve the foreground window once. execFileFn is injectable for tests.
@@ -49,19 +83,46 @@ function getForeground(execFileFn = execFile, platform = process.platform) {
         try {
           const row = JSON.parse(String(out).replace(/^﻿/, '').trim());
           if (typeof row.title !== 'string' || typeof row.process !== 'string') return resolve(null);
-          resolve({ app: row.process.slice(0, 120), title: row.title.slice(0, 300) });
+          const out2 = { app: row.process.slice(0, 120), title: row.title.slice(0, 300) };
+          const rect = saneRect(row.rect);
+          if (rect) out2.rect = rect; // only present when a real rect was read
+          resolve(out2);
         } catch { resolve(null); }
       });
   });
+}
+
+// Normalize a scene line for change detection: wording wobble from the
+// vision model ("user is watching a game trailer" vs "user watching a
+// game trailer!") must not count as a new scene. Change = the word SETS
+// differ substantially (Jaccard similarity below SCENE_CHANGE_THRESHOLD),
+// not exact-string inequality.
+const SCENE_CHANGE_THRESHOLD = 0.6;
+function normalizeScene(text) {
+  return String(text || '').toLowerCase().replace(/[^a-z0-9\u0B80-\u0BFF]+/g, ' ').trim().replace(/\s+/g, ' ');
+}
+function sceneSimilarity(a, b) {
+  const wa = new Set(normalizeScene(a).split(' ').filter(Boolean));
+  const wb = new Set(normalizeScene(b).split(' ').filter(Boolean));
+  if (!wa.size && !wb.size) return 1;
+  if (!wa.size || !wb.size) return 0;
+  let inter = 0;
+  for (const w of wa) if (wb.has(w)) inter++;
+  return inter / (wa.size + wb.size - inter);
+}
+function sceneChanged(prevText, nextText) {
+  if (!prevText) return !!nextText;
+  return sceneSimilarity(prevText, nextText) < SCENE_CHANGE_THRESHOLD;
 }
 
 // --- monitor ---------------------------------------------------------------
 class ContextMonitor {
   constructor({ intervalMs = 5000, source = null, now = () => Date.now() } = {}) {
     this.intervalMs = intervalMs; this.source = source; this.now = now;
-    this.current = null; // {app,title,activity,since}
+    this.current = null; // {app,title,activity,since,rect}
     this.changes = [];   // timestamps of recent changes (for app-hopping)
-    this.scene = null;   // last vision description {text, at} - memory only
+    this.scene = null;   // last vision description {text, at, norm} - memory only
+    this.sceneChangedAt = null;
     this.timer = null; this.listeners = new Set();
   }
   onChange(fn) { this.listeners.add(fn); return () => this.listeners.delete(fn); }
@@ -73,23 +134,38 @@ class ContextMonitor {
     const activity = classifyActivity(fg.app, fg.title);
     if (!this.current || this.current.app !== fg.app || this.current.title !== fg.title) {
       const prev = this.current;
-      this.current = { app: fg.app, title: fg.title, activity, since: at };
+      this.current = { app: fg.app, title: fg.title, activity, since: at, rect: saneRect(fg.rect) };
       this.changes.push(at);
       this.changes = this.changes.filter((t) => at - t < 10 * 60000);
       for (const fn of this.listeners) { try { fn(this.snapshot(at), prev); } catch { /* listener errors stay local */ } }
+    } else if (fg.rect) {
+      // Same window, possibly moved/resized: keep the rect fresh for the
+      // perch behaviour without counting it as an app change.
+      this.current.rect = saneRect(fg.rect);
     }
     return this.snapshot(at);
   }
   snapshot(at = this.now()) {
     if (!this.current) return null;
+    const sceneFresh = this.scene && at - this.scene.at < 5 * 60000;
     return {
       app: this.current.app, title: this.current.title, activity: this.current.activity,
       since: this.current.since, dwellMs: Math.max(0, at - this.current.since),
       recentChanges: this.changes.filter((t) => at - t < 10 * 60000).length,
-      scene: this.scene && at - this.scene.at < 5 * 60000 ? this.scene.text : null,
+      rect: this.current.rect || null,
+      scene: sceneFresh ? this.scene.text : null,
+      // When the scene TEXT last changed (vision rephrasings of the same
+      // scene do not count - see setScene). Drives the proactive
+      // scene-change rule: comment on a change once, never on repeats.
+      sceneChangedAt: sceneFresh ? this.sceneChangedAt : null,
     };
   }
-  setScene(text, at = this.now()) { if (text) this.scene = { text: String(text).slice(0, 300), at }; }
+  setScene(text, at = this.now()) {
+    if (!text) return;
+    const clean = String(text).slice(0, 300);
+    if (!this.scene || sceneChanged(this.scene.text, clean)) this.sceneChangedAt = at;
+    this.scene = { text: clean, at };
+  }
   start() { if (this.timer) return; this.timer = setInterval(() => { this.poll().catch(() => {}); }, this.intervalMs); if (this.timer.unref) this.timer.unref(); }
   stop() { if (this.timer) clearInterval(this.timer); this.timer = null; }
 }
@@ -111,4 +187,4 @@ async function describeScene({ image, model = 'moondream', fetchFn = fetch, time
   return line;
 }
 
-module.exports = { classifyActivity, buildForegroundScript, getForeground, ContextMonitor, describeScene };
+module.exports = { classifyActivity, buildForegroundScript, buildCursorScript, getForeground, getCursorPos, saneRect, normalizeScene, sceneSimilarity, sceneChanged, SCENE_CHANGE_THRESHOLD, ContextMonitor, describeScene };
