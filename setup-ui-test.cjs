@@ -1,0 +1,22 @@
+const {_electron:electron}=require('playwright'),assert=require('node:assert/strict');
+(async()=>{
+ const app=await electron.launch({args:['--no-sandbox','.'],env:{...process.env,SHIBA_MODELS:'/tmp/shiba-voice-lab'}});
+ try{await app.firstWindow();await new Promise(r=>setTimeout(r,800));const p=(await app.windows()).find(w=>w.url().includes('mode=panel'));
+ p.on('pageerror',e=>console.log('PAGEERROR',e.message));
+ await p.locator('.handle').dispatchEvent('mouseenter');
+ await p.locator('.tile.tools').click();
+ await p.locator('#drawer [data-drawer="brain"]').click();
+ await new Promise(r=>setTimeout(r,400));
+ await p.screenshot({path:'/downloads/shiba-brain-layout-fix.png'});
+ const overflow=await p.evaluate(()=>{const d=document.querySelector('#drawer');let bad=[];for(const el of d.querySelectorAll('*')){const r=el.getBoundingClientRect(),dr=d.getBoundingClientRect();if(r.right>dr.right+2)bad.push(el.tagName+'.'+el.className+':'+Math.round(r.right)+'>'+Math.round(dr.right));}return bad.slice(0,5);});
+ console.log('BRAIN-OVERFLOW',JSON.stringify(overflow));
+ await p.locator('.tile.tools').click();
+ await p.locator('#drawer [data-drawer="setup"]').click();
+ await p.waitForFunction(()=>document.querySelector('#setup-status').textContent.includes('RAM'),null,{timeout:15000});
+ await p.locator('#setup-go').click();
+ await p.waitForFunction(()=>document.querySelector('#setup-status').textContent.includes('Setup complete'),null,{timeout:120000});
+ console.log('SETUP-STATUS',await p.locator('#setup-status').textContent());
+ await p.screenshot({path:'/downloads/shiba-setup-run.png'});
+ console.log('SETUP-UI-PASS');
+ }finally{await app.close();}process.exit(0);
+})().catch(e=>{console.error(e);process.exit(1)});

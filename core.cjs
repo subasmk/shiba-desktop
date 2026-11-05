@@ -5,3 +5,4 @@ function freeModel(value){if(value!=='openrouter/free'&&!/^[a-zA-Z0-9_./-]+:free
 function clamp(n,a,b){return Math.max(a,Math.min(b,n));}
 function petPosition(x,y,area){return {x:Math.round(clamp(x,area.x,area.x+area.width-120)),y:Math.round(clamp(y,area.y,area.y+area.height-130))};}
 module.exports={safeWeb,localUrl,freeModel,clamp,petPosition};
+

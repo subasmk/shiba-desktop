@@ -1,0 +1,17 @@
+const {_electron:electron}=require('playwright'),http=require('node:http'),assert=require('node:assert/strict'),path=require('node:path');
+(async()=>{let requests=0;const server=http.createServer((req,res)=>{let b='';req.on('data',s=>b+=s);req.on('end',()=>{requests++;res.setHeader('Content-Type','application/json');res.end(JSON.stringify({message:{content:'Fresh reconstruction run 171510. Local voice pipeline verified again.'}}));});});await new Promise(r=>server.listen(11434,'127.0.0.1',r));
+ const app=await electron.launch({args:['--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--js-flags=--max-old-space-size=256','--disable-gpu','--disable-dev-shm-usage','--js-flags=--max-old-space-size=256','--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--use-file-for-fake-audio-capture='+path.join(process.cwd(),'mic-fixture-short.wav'),'.'],env:{...process.env,SHIBA_MODELS:'/tmp/shiba-voice-lab'}});
+ try{await app.firstWindow();await new Promise(r=>setTimeout(r,800));const p=(await app.windows()).find(w=>w.url().includes('mode=panel'));p.on('console',m=>console.log('BROWSER',m.text()));p.on('pageerror',e=>console.log('PAGEERROR',e.message));await p.locator('.handle').dispatchEvent('mouseenter');await p.locator('.tools').click();await p.locator('[data-drawer="voice-call"]').click();await p.locator('#voice-start').click();await p.waitForFunction(()=>document.querySelector('#voice-transcript').textContent.startsWith('Pet:'),null,{timeout:100000,polling:500});await p.waitForFunction(()=>window.shibaVoice.lastAudioSamples>0||window.shibaVoice.lastError,null,{timeout:100000,polling:500});const lastN=await p.evaluate(()=>window.shibaVoice.lastAudioSamples||0);const lastErr=await p.evaluate(()=>window.shibaVoice.lastError||null);assert.ok(lastN>1000,'TTS must return real audio samples; got '+lastN+' err='+lastErr);assert.equal(lastErr,null);console.log('REAL-TTS-SAMPLES',lastN,'rate',await p.evaluate(()=>window.shibaVoice.lastAudioSampleRate));await p.waitForFunction(()=>window.shibaVoice.lastPlayback&&window.shibaVoice.lastPlayback.started&&!window.shibaVoice.lastPlayback.ended,null,{timeout:60000,polling:250});
+ await new Promise(r=>setTimeout(r,800));
+ const t0=Date.now();const started=await p.evaluate(()=>window.shibaVoice.lastPlayback.started);
+ await p.evaluate(()=>window.shibaVoice.session.speechStart());
+ await p.waitForFunction(()=>window.shibaVoice.lastPlayback.ended===true,null,{timeout:15000,polling:250});
+ const playedMs=Date.now()-started;const fullMs=await p.evaluate(()=>Math.round(1000*window.shibaVoice.lastPlayback.samples/24000));
+ const during=await p.evaluate(()=>({phase:window.shibaVoice.session.phase}));
+ assert.equal(during.phase,'listening','barge-in must return to listening, got '+during.phase);
+ assert.ok(playedMs<fullMs*0.6,'barge-in must cut playback early: played '+playedMs+'ms of '+fullMs+'ms');
+ console.log('BARGE-IN-DURING-SPEECH-OK playedMs='+playedMs+' fullMs='+fullMs+' phase='+during.phase);
+ await p.locator('#voice-stop').click();await p.waitForFunction(()=>window.shibaVoice.session.phase==='off',null,{timeout:15000,polling:250});
+ console.log('STOP-DURING-LISTENING-OK');
+}finally{await app.close();server.close();}process.exit(0);
+})().catch(e=>{console.error(e);process.exit(1)});

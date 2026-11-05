@@ -1,0 +1,26 @@
+// Mic is acquired only by explicit Start. PCM never leaves loopback/local processes.
+(()=>{if(new URLSearchParams(location.search).get('mode')!=='panel')return;
+let stream,context,processor,source,playing,muteGain,frames=[],speaking=false,lastLoud=0,speechAt=0,preRoll=[],displayTimer;
+const show=t=>{const e=document.querySelector('#voice-state');if(e)e.textContent=t;};
+const append=t=>{const e=document.querySelector('#voice-transcript');if(e)e.textContent=t;};
+function resample(input,rate){if(rate===16000)return input;const ratio=rate/16000,out=new Float32Array(Math.floor(input.length/ratio));for(let i=0;i<out.length;i++){const a=Math.floor(i*ratio),b=Math.min(input.length,Math.floor((i+1)*ratio));let sum=0;for(let j=a;j<b;j++)sum+=input[j];out[i]=sum/Math.max(1,b-a);}return out;}
+function cancelAudio(){const busy=playing||['transcribing','thinking','synthesizing','speaking'].includes(session.phase);if(playing){try{playing.stop();}catch{}playing=null;}if(busy)window.petAPI.send('voice-cancel');}
+const session=new VoiceSession({
+ startMic:async()=>{await window.petAPI.call('voice-ready');stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});context=new AudioContext();await context.resume();source=context.createMediaStreamSource(stream);await context.audioWorklet.addModule('pcm-capture.js');processor=new AudioWorkletNode(context,'shiba-pcm');muteGain=context.createGain();muteGain.gain.value=0;source.connect(processor);processor.connect(muteGain);muteGain.connect(context.destination);
+ let batch=[];processor.port.onmessage=e=>{if(!session.active)return;batch.push(...e.data);if(batch.length<2048)return;const input=Float32Array.from(batch);batch=[];const chunk=resample(input,context.sampleRate),now=performance.now();let energy=0;for(const s of chunk)energy+=s*s;const loud=Math.sqrt(energy/chunk.length)>.025;
+  if(loud){lastLoud=now;if(!speaking){speaking=true;speechAt=now;frames=preRoll.slice();session.speechStart();}frames.push(chunk);}else if(speaking)frames.push(chunk);
+  else{preRoll.push(chunk);while(preRoll.reduce((n,x)=>n+x.length,0)>4800)preRoll.shift();}
+  if(speaking&&(now-lastLoud>650||now-speechAt>28000)){speaking=false;const chunks=frames;frames=[];preRoll=[];if(now-speechAt<220)return;const samples=new Float32Array(chunks.reduce((n,x)=>n+x.length,0));let at=0;for(const c of chunks){samples.set(c,at);at+=c.length;}session.utterance(Array.from(samples));}
+ };
+ },
+ stopMic:async()=>{processor?.disconnect();source?.disconnect();muteGain?.disconnect();if(processor)processor.port.onmessage=null;stream?.getTracks().forEach(t=>t.stop());stream=null;processor=null;source=null;frames=[];speaking=false;preRoll=[];if(context){await context.close();context=null;}show('Microphone off');},
+ cancelAudio,
+ transcribe:async(samples)=>{const r=await window.petAPI.call('voice-transcribe',samples);append('You: '+r.text);return r.text;},
+ reply:async(text)=>window.petAPI.call('chat',{text,mode:'local'}),
+ synthesize:async(text)=>{append('Pet: '+text);const a=await window.petAPI.call('voice-synthesize',text);window.shibaVoice.lastAudioSamples=a.samples.length;window.shibaVoice.lastAudioSampleRate=a.sampleRate;return a;},
+ play:(audio)=>new Promise((resolve,reject)=>{if(!context)return reject(Error('Microphone session ended.'));const buffer=context.createBuffer(1,audio.samples.length,audio.sampleRate);buffer.copyToChannel(Float32Array.from(audio.samples),0);playing=context.createBufferSource();playing.buffer=buffer;playing.connect(context.destination);window.shibaVoice.lastPlayback={started:Date.now(),samples:audio.samples.length,ended:false};playing.onended=()=>{playing=null;window.shibaVoice.lastPlayback.ended=true;resolve();};playing.start();}),
+ onError:e=>{window.shibaVoice.lastError=e.message;show(e.message);}
+});
+window.shibaVoice={session,attach(){clearInterval(displayTimer);document.querySelector('#voice-start').onclick=async()=>{show('Preparing local voice...');try{await session.start();show('Listening');}catch(e){show(e.message);}};document.querySelector('#voice-stop').onclick=()=>session.stop();displayTimer=setInterval(()=>{if(session.active)show(session.phase+' (mic on)');},200);}};
+window.addEventListener('beforeunload',()=>session.stop());
+})();

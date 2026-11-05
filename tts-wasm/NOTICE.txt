@@ -1,0 +1,2 @@
+sherpa-onnx wasm TTS runtime, from https://github.com/k2-fsa/sherpa-onnx (Apache-2.0).
+Source bundle: sherpa-onnx-wasm-simd-2.0.1-vits-piper-en_US-libritts_r-medium.tar.bz2 (release v2.0.1); only the runtime files are vendored, the piper model data pack is replaced by an empty .data and Kokoro weights are downloaded by first-run setup.

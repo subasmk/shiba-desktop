@@ -1,0 +1,14 @@
+Corresponding sources for bundled components (GPL and provenance):
+- espeak-ng (GPL v3, statically linked inside piper-phonemize wasm):
+  https://github.com/espeak-ng/espeak-ng
+- piper-phonemize (wasm build ships in the sherpa-onnx release bundle):
+  https://github.com/rhasspy/piper-phonemize
+- sherpa-onnx v2.0.1 (wasm + native): https://github.com/k2-fsa/sherpa-onnx
+- Kokoro-82M weights (Apache-2.0): https://huggingface.co/hexgrad/Kokoro-82M
+  int8 quantization: k2-fsa sherpa-onnx tts-models release
+- whisper-tiny (MIT): https://github.com/openai/whisper
+  sherpa int8 export: k2-fsa sherpa-onnx release assets
+- onnxruntime (MIT): https://github.com/microsoft/onnxruntime
+- Tamil spike voice ta_IN-ValluvarNeural-medium (self-declared Apache-2.0,
+  no LICENSE file, provenance unverified - personal prototype use only):
+  https://huggingface.co/Jeyaram-K/piper-tamil-voices

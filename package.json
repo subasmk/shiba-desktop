@@ -1,13 +1,13 @@
 {
   "name": "shiba-desktop",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Standalone small desktop companion",
   "main": "main.cjs",
   "scripts": {
     "start": "electron .",
-    "test": "node --test core.test.cjs",
-    "check": "node --check main.cjs && node --check preload.cjs && node --check core.cjs && node --check renderer.js",
+    "test": "node --test core.test.cjs apps.test.cjs pet-history.test.cjs voice-session.test.cjs voice-backend.test.cjs routines.test.cjs",
+    "check": "node --check main.cjs && node --check preload.cjs && node --check core.cjs && node --check renderer.js && node --check voice-ui.js && node --check voice-session.cjs && node --check voice-backend.cjs && node --check voice-worker.cjs && node --check setup.cjs && node --check apps.cjs && node --check pet-history.cjs",
     "build:win": "electron-builder --win portable --x64"
   },
   "devDependencies": {
@@ -24,14 +24,57 @@
       "*.css",
       "*.js",
       "*.json",
-      "*.png"
+      "*.png",
+      "tts-wasm/**",
+      "!voice-models/**",
+      "!tools/**",
+      "*.md",
+      "licenses/**",
+      "!*.test.cjs",
+      "!*-test.cjs",
+      "!vi-*.cjs",
+      "!t2-*.cjs",
+      "!t5-*.cjs",
+      "!packaged-voice-test.cjs",
+      "!ta-*.js",
+      "!mic-fixture*.wav"
     ],
     "win": {
-      "target": "portable"
+      "target": "portable",
+      "files": [
+        "!node_modules/sherpa-onnx-linux-*/**",
+        "!node_modules/sherpa-onnx-darwin-*/**",
+        "!node_modules/sherpa-onnx-win-arm64/**",
+        "!node_modules/sherpa-onnx-win-ia32/**",
+        "!voice-models/**",
+        "!tools/**",
+        "!*.test.cjs",
+        "!*-test.cjs",
+        "!vi-*.cjs",
+        "!t2-*.cjs",
+        "!t5-*.cjs",
+        "!packaged-voice-test.cjs",
+        "!ta-*.js",
+        "!mic-fixture*.wav"
+      ]
     },
     "directories": {
       "output": "dist"
     },
-    "compression": "store"
+    "compression": "store",
+    "asarUnpack": [
+      "node_modules/sherpa-onnx-node/**",
+      "voice-worker.cjs",
+      "tts-wasm/**"
+    ],
+    "linux": {
+      "files": [
+        "!node_modules/sherpa-onnx-win-*/**",
+        "!node_modules/sherpa-onnx-darwin-*/**"
+      ]
+    }
+  },
+  "dependencies": {
+    "sherpa-onnx-node": "^2.0.1"
   }
 }

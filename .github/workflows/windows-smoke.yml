@@ -1,0 +1,23 @@
+name: Windows smoke validation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - name: Windows app launch + deterministic grounding smoke
+        run: node vi-ground.cjs
+      - name: Windows routines drawer smoke
+        run: node vi-routines.cjs
+      - name: Windows art/animation smoke
+        run: node vi-art-regression.cjs

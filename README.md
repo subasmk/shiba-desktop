@@ -1,33 +1,61 @@
 # Shiba Desktop
 
-A small standalone desktop pet with a compact dark launcher. Separate from VIKTOR, Hermes, Telegram and OmniRoute. No streaming controls and no microphone recording.
+A private desktop pet for Windows. Everything runs on your laptop: no account,
+no telemetry, no paid service required.
 
-## Included
+## What it does
 
-- Top-edge ears, hover-reveal launcher, header drag-out and one desktop pet.
-- Supplied drag, impact/tumble/landing, four-frame idle and action art. Six extra hand-authored dust-effect frames, not newly drawn body in-betweens.
-- Searchable local actions, persistent quick note, focus timer and personality selection.
-- ChatGPT browser shortcut. n8n accepts only a local address and checks that it responds before opening. It does not install n8n or create workflows.
-- Local Ollama chat, default `qwen3:1.7b`, 2K context, brief replies. It never installs/pulls models automatically or controls the computer.
-- Optional OpenRouter free-only chat. Explicit per-message cloud consent. No paid fallback, auto-recharge, tools or spending. Key encrypted with OS secure storage where available. No secrets stored in this repo.
-- Optional read-aloud using installed system voices. Microphone remains off. Voice quality and availability vary by system.
+- Lives on your desktop; drag it, tap it, dock it. Remembers only pet action
+  counts (taps, drags, timers, chats) on this laptop - never your files,
+  browsing, messages, or app usage.
+- Chat from the panel. Local brain: Ollama (installed and picked automatically
+  at first run based on your free RAM, verified with a real probe chat).
+  Optional cloud: your own OpenRouter key, free models only, per-send consent
+  checkbox. If a request fails you get an honest error, never a silent mock.
+- Voice call (optional): press Start once, then talk naturally - continuous
+  turns, interrupt it mid-sentence and it stops and listens. Stop turns the
+  microphone fully off. Mic is never on without Start. Speech-to-text
+  (Whisper tiny) and text-to-speech (Kokoro) run 100% locally.
+- Friendly roasts: short Tanglish teases come from fixed templates driven by
+  real pet action counts only. The AI never invents your activity.
+- App launching: ask it to open an installed app; launching uses a fixed
+  local Start-menu path, the AI never runs commands.
+- n8n shortcut: open your own local n8n (address must be localhost/127.0.0.1;
+  external addresses are refused). This app does not install n8n or run
+  workflows for you.
+- Focus timer and notes, stored only on this laptop. Clear pet action memory
+  any time from the Personality drawer.
 
-## Controls
+## First run
 
-Hover the ears to reveal controls. Drag the header head onto the desktop. Click the pet for a reaction, never to open the dashboard. Right-click the pet or press Escape while it has focus to dock. Escape closes the launcher. Hover and docking are provisional implementation defaults because the reference did not establish those gestures.
+Setup runs inside the app: downloads Ollama if needed, picks the largest brain
+your free RAM can run (with a real verification chat), and downloads the local
+voice models (Whisper tiny + Kokoro). No card, no account, no command line.
 
-## Run
+## Optional Tamil voice spike (experimental, not part of the default voice)
 
-Node.js 20 or newer: `npm ci`, then `npm start`. No administrator permission required. Windows portable build: `npm run build:win`. This app does not add startup tasks, terminate processes or change other assistants.
+`node tools/tamil-voice-setup.cjs <dir>` downloads ta_IN-ValluvarNeural-medium
+(pinned sha256), prepares tokens and metadata, and the spike harness proves
+local Tamil speech via piper-phonemize + sherpa wasm. Limits: Tamil SCRIPT
+only; Tanglish (Latin letters) is not converted - the bundled local brains
+failed transliteration in testing, and no offline free verified route is
+bundled yet. Voice provenance is unverified (self-declared license); personal
+prototype use only.
 
-## Verification and limits
+## For developers
 
-Syntax checks, pure security/helper tests, mocked renderer tests and a real Linux Electron smoke flow are included. See TESTING.md. Windows runner interaction, native24px drawing/hit clipping and portable packaging passed. Actual laptop performance, cloud inference, local model inference and installed system voices remain unverified. n8n/ChatGPT shortcut availability does not mean integrated automation. Laptop-hosted services need the laptop awake. The sprite art has sparse poses; dust/easing cannot replace missing hand-drawn body transitions.
+- `npm test` - unit suites (brain/session/history/apps).
+- `npm run check` - syntax gate.
+- E2E harnesses (not shipped in the package): voice-integration.cjs (full mic
+  fixture -> ASR -> brain -> TTS -> playback), vi-interrupt.cjs (barge-in),
+  vi-2turn.cjs (repeated turns), vi-realbrain.cjs (live Ollama in chain),
+  packaged-voice-test.cjs (packaged binary voice smoke), t6-n8n.cjs (live n8n).
+- Notices and license texts: NOTICES.md and licenses/.
 
-## Sources
+## Honest limits
 
-User-supplied Shiba sheets, cleaned locally. No new online art generation. Do not redistribute supplied art without verifying its rights.
-
-Free access references: https://help.openai.com/en/articles/9275245-chatgpt-free-tier-faq ; https://help.openai.com/en/articles/9039756-managing-billing-for-chatgpt-and-the-api-platform ; https://docs.n8n.io/deploy/host-n8n/community-edition-features ; https://openrouter.ai/docs/guides/routing/model-variants/free . Free services have limits and may change. n8n external nodes may still be paid.
-
-Windows preview: use the private repository Releases page. The portable is unsigned and requires no administrator rights. Source uses Electron45.2.1; dependency audit has15 moderate build-chain findings and no high findings. See TESTING.md for the actual checks and remaining limitations.
+- Voice reply latency: TTS generation takes a few seconds on modest CPUs; it
+  is a conversation, not a phone call.
+- Echo handling depends on your mic/speakers; use headphones for best results.
+- Cloud replies require your own key and send that message off-device with
+  your consent each time.

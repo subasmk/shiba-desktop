@@ -1,0 +1,3 @@
+const {test}=require('node:test'),a=require('node:assert/strict'),{PetHistory}=require('./pet-history.cjs');
+test('history accepts only pet-defined event counters, never private bodies',()=>{const h=new PetHistory({'secret':5,'drag':4});a.equal(h.record('email-read'),false);a.equal(h.record('C:/private.txt'),false);a.deepEqual(h.summary(),[{event:'drag',count:4}]);});
+test('roast refers to real actions and respects cooldown and clear',()=>{const h=new PetHistory();a.equal(h.roast(100000),null);for(let i=0;i<4;i++)h.record('touch-head');a.match(h.roast(100000),/thalai/);a.equal(h.roast(100001),null);h.clear();a.deepEqual(h.summary(),[]);a.equal(h.roast(200000),null);});
