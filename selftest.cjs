@@ -39,8 +39,8 @@ function checkVoiceModels(f) {
 function checkTamil(f) {
   const lang = f.voiceLang || 'en';
   if (lang !== 'ta' && lang !== 'tanglish') return { status: 'pass', detail: 'Tamil voice is not selected (voice language: English).' };
-  if (!f.tamilModelReady) return { status: 'warn', detail: 'Tamil/Tanglish voice is selected but the Tamil model is not prepared - replies will fall back to the English voice with a notice.', fix: 'From the repo: node tools/tamil-voice-setup.cjs "' + (f.tamilModelDir || '<models folder>/tamil-voice') + '" (one-time, ~65 MB model + phonemizer, experimental).' };
-  if (f.tamilPhonemizerReady === false) return { status: 'warn', detail: 'Tamil model is prepared but the phonemizer files are missing (older setup run) - replies will fall back to the English voice with a notice.', fix: 'Re-run: node tools/tamil-voice-setup.cjs "' + (f.tamilModelDir || '<models folder>/tamil-voice') + '" - it now also fetches the piper-phonemize files.' };
+  if (!f.tamilModelReady) return { status: 'warn', detail: 'Tamil/Tanglish voice is selected but the Tamil model is not prepared - replies will fall back to the English voice with a notice.', fix: 'Open the Voice session drawer and re-pick Tamil/Tanglish - the app downloads the model itself (one-time, ~150 MB, checksum-verified).' };
+  if (f.tamilPhonemizerReady === false) return { status: 'warn', detail: 'Tamil model is prepared but the phonemizer files are missing (older setup run) - replies will fall back to the English voice with a notice.', fix: 'Open the Voice session drawer and re-pick Tamil/Tanglish - the app downloads the phonemizer itself.' };
   return { status: 'pass', detail: 'Tamil voice model (Valluvar) and phonemizer are prepared and ready.' };
 }
 function checkVision(f) {

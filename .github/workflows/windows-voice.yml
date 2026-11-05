@@ -25,3 +25,7 @@ jobs:
         run: node --test voice-backend.test.cjs
         env:
           SHIBA_MODELS: D:/shiba-voice-lab
+      - name: Tamil voice runtime (pinned Valluvar model + piper-phonemize, real synthesis on Windows)
+        run: node --test tamil-runtime.test.cjs
+        env:
+          SHIBA_MODELS: D:/shiba-voice-lab

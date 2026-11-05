@@ -38,7 +38,7 @@ test('groq only matters when selected; key presence only, no live call', () => {
 test('tamil selected without a prepared model warns with the setup fix', () => {
   const r = runSelfTest({ ...good, voiceLang: 'tanglish', tamilModelReady: false, tamilModelDir: 'D:/models/tamil-voice' });
   const c = byId(r, 'tamil-model');
-  a.equal(c.status, 'warn'); a.match(c.fix, /tamil-voice-setup\.cjs/);
+  a.equal(c.status, 'warn'); a.match(c.fix, /Voice session drawer/);
   const r2 = runSelfTest({ ...good, voiceLang: 'ta', tamilModelReady: true, tamilPhonemizerReady: true });
   a.equal(byId(r2, 'tamil-model').status, 'pass');
 });
