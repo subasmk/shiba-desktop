@@ -53,3 +53,19 @@ test('non-streaming io keeps the original whole-reply path', async () => {
   a.deepEqual(calls, ['synthesize', 'play']);
   await s.stop();
 });
+test('streaming: a failing chunk surfaces onError and the session returns to listening', async () => {
+  const calls = [];
+  const io = {
+    startMic: async () => {}, stopMic: async () => {}, cancelAudio: () => {},
+    transcribe: async () => 'hello', reply: async () => 'One. Two. Three.',
+    synthesizeStream: async function* (text) { yield 'audio:One.'; throw Error('TTS generation failed'); },
+    play: async (a2) => calls.push('play:' + a2),
+    onError: (e) => calls.push('error:' + e.message),
+  };
+  const s = new VoiceSession(io);
+  await s.start();
+  await s.utterance([0]);
+  a.deepEqual(calls, ['play:audio:One.', 'error:TTS generation failed']);
+  a.equal(s.phase, 'listening');
+  await s.stop();
+});
