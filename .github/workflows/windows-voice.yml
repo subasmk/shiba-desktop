@@ -1,0 +1,27 @@
+name: Windows voice runtime validation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  voice:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Download real voice models (whisper-tiny + kokoro-int8)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force D:/shiba-voice-lab | Out-Null
+          curl.exe -sL -o D:/whisper.tar.bz2 https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2
+          curl.exe -sL -o D:/kokoro.tar.bz2 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-int8-multi-lang-v1_0.tar.bz2
+          tar -xf D:/whisper.tar.bz2 -C D:/shiba-voice-lab
+          tar -xf D:/kokoro.tar.bz2 -C D:/shiba-voice-lab
+      - name: Voice backend with real models (native ASR binding + WASM TTS on Windows)
+        run: node --test voice-backend.test.cjs
+        env:
+          SHIBA_MODELS: D:/shiba-voice-lab
