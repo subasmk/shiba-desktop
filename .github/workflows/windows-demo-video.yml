@@ -40,7 +40,7 @@ jobs:
           $t=Measure-Command { ollama run qwen3:0.6b "Say hello in one short sentence." }
           Write-Host "ollama first-run seconds: $($t.TotalSeconds)"
       - name: Generate demo mic fixture (shorter gaps for watchable footage)
-        run: node tools/gen-gapped-fixture.cjs --gaps 120,120,60 --out mic-fixture-demo.wav
+        run: node tools/gen-gapped-fixture.cjs --gaps 45,45,20 --out mic-fixture-demo.wav
       - name: Run demo capture (source runtime, real voice chain)
         run: node vi-demo.cjs
         env:

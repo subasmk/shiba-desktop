@@ -15,8 +15,12 @@ const manifest={segments:[],startedAt:new Date().toISOString()};
  const app=await electron.launch({args:['--no-sandbox','--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--use-file-for-fake-audio-capture='+path.join(process.cwd(),fixture),'.'],env:{...process.env,VOICE_TIMING:path.join(process.cwd(),'voice-timing.log')}});
  const proc=app.process();if(proc.stdout)proc.stdout.on('data',d=>process.stdout.write('[main-out] '+d));if(proc.stderr)proc.stderr.on('data',d=>process.stdout.write('[main-err] '+d));
  let recording=true,n=0,recErr=null;
+ console.log('DEMO launched, waiting for first window');
+ const DEADLINE=Date.now()+22*60*1000;
  try{
-  await app.firstWindow();await sleep(2500);
+  const fw=await Promise.race([app.firstWindow().then(w=>w),sleep(90000).then(()=>null)]);
+  if(!fw){console.error('DEMO-FAIL firstWindow timeout after 90s. windows:',app.windows().map(w=>w.url()));process.exit(1);}
+  console.log('DEMO first window up');await sleep(2500);
   const windows=await app.windows();
   const p=windows.find(w=>w.url().includes('mode=panel'));
   const pet=windows.find(w=>w.url().includes('mode=pet'));
@@ -53,29 +57,30 @@ const manifest={segments:[],startedAt:new Date().toISOString()};
   // SEGMENT 2: real voice turn (fake mic fixture -> ASR -> Ollama -> TTS -> playback)
   await openDrawer('voice-call');
   await p.locator('#voice-start').click();
-  await waitFor('turn1-pet',sawPet,300000);
-  const t1=await waitFor('turn1-done',turnDone,240000);
+  await waitFor('turn1-pet',sawPet,240000);
+  const t1=await waitFor('turn1-done',turnDone,180000);
   console.log('SEG2 voice turn done. transcript:',t1.tx.slice(0,160));
   manifest.segments.push({name:'voice-turn',transcript:t1.tx.slice(0,300),samples:t1.samples});
 
   // SEGMENT 3 (optional): Tanglish voice - in-app auto download + Tamil-voice turn
-  if(process.env.DEMO_TANGLISH==='1'){
+  if(process.env.DEMO_TANGLISH==='1'&&Date.now()<DEADLINE-9*60*1000){
    await p.locator('#voice-stop').click();await sleep(1000);
    await p.locator('#voice-lang').selectOption('tanglish');
    // auto download starts; wait for ready (one-time ~150 MB on the runner)
-   await p.waitForFunction(()=>/ready/i.test(document.querySelector('#status')?.textContent||''),{timeout:420000});
+   await p.waitForFunction(()=>/ready/i.test(document.querySelector('#status')?.textContent||''),{timeout:300000});
    console.log('SEG3 tamil voice ready in-app');
    await p.locator('#voice-start').click();
-   await waitFor('turn2-pet',sawPet,300000);
-   const t2=await waitFor('turn2-done',turnDone,240000);
+   await waitFor('turn2-pet',sawPet,240000);
+   const t2=await waitFor('turn2-done',turnDone,180000);
    console.log('SEG3 tanglish turn done. transcript:',t2.tx.slice(0,160));
    manifest.segments.push({name:'tanglish-voice-turn',transcript:t2.tx.slice(0,300),samples:t2.samples});
    await p.locator('#voice-stop').click();
   }else{
-   await p.locator('#voice-stop').click();
+   if(process.env.DEMO_TANGLISH==='1')console.log('SEG3 skipped: past time budget');
+   await p.locator('#voice-stop').click().catch(()=>{});
   }
   manifest.frameCount=n;manifest.recorderError=recErr;
   fs.writeFileSync('demo-manifest.json',JSON.stringify(manifest,null,2));
   console.log('DEMO-PASS frames',n,'segments',manifest.segments.map(s=>s.name).join(','));
- }finally{recording=false;await app.close();}
+ }finally{recording=false;fs.writeFileSync('demo-manifest.json',JSON.stringify(manifest,null,2));await Promise.race([app.close(),sleep(10000).then(()=>{try{app.process().kill();}catch{}})]);}
 })().catch(e=>{console.error('DEMO-FAIL',e.message);process.exit(1);});
