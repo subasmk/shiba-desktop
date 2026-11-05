@@ -31,6 +31,9 @@ jobs:
         with:
           name: windows-smoke-screenshots
           path: |
+            D:/tmp/pet-*.png
+            D:/tmp/shiba-routines-drawer.png
+            D:/tmp/shiba-ground-panel.png
             C:/tmp/pet-*.png
             C:/tmp/shiba-routines-drawer.png
             C:/tmp/shiba-ground-panel.png
