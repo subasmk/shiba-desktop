@@ -37,6 +37,16 @@ function resolveVoiceLang(settings) {
 }
 function usesTamilVoice(settings) { const l = resolveVoiceLang(settings); return l === 'ta' || l === 'tanglish'; }
 
+// One system-prompt sentence steering the reply language to the selected
+// voice language, so a Tanglish/Tamil voice actually gets Tanglish/Tamil
+// text to speak instead of English read by the Tamil voice.
+function replyLanguageRule(settings) {
+  const l = resolveVoiceLang(settings);
+  if (l === 'tanglish') return 'Reply briefly in natural Tanglish - a casual Tamil and English mix written in Latin letters, the way a Chennai friend texts (for example "Dei, five apps open iruku, seekiram mudi!").';
+  if (l === 'ta') return 'Reply briefly in Tamil, written in Tamil script.';
+  return 'Reply briefly in English.';
+}
+
 // Script detection for one reply text: 'tamil' (Tamil script only),
 // 'latin' (Latin letters only), 'mixed' (both), 'empty' (neither).
 function detectScript(text) {
@@ -126,4 +136,4 @@ async function synthesizeTamil(text, { modelDir, engine } = {}) {
   return { ...audio, text: prepared };
 }
 
-module.exports = { isTamilSelected, prepareTamilText, loadPreparedModel, synthesizeTamil, VOICE_LANGS, resolveVoiceLang, usesTamilVoice, detectScript, prepareForLang, routeReply, createWorkerTamilEngine, PHONEMIZER_FILES, phonemizerReady };
+module.exports = { isTamilSelected, prepareTamilText, loadPreparedModel, synthesizeTamil, VOICE_LANGS, resolveVoiceLang, usesTamilVoice, detectScript, prepareForLang, routeReply, createWorkerTamilEngine, PHONEMIZER_FILES, phonemizerReady, replyLanguageRule };

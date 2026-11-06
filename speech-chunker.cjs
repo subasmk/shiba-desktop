@@ -28,7 +28,11 @@
     const src = String(text ?? '').replace(/\r\n?/g, '\n');
     const raw = [];
     let cur = '';
-    const push = () => { const t = cur.trim(); if (t) raw.push(t); cur = ''; };
+    // A chunk with no letters or digits (bare emoji/punctuation, e.g. a
+  // trailing "🚀") is not speakable on its own: merge it into the previous
+  // chunk so the TTS queue never sees an unvoiceable "sentence".
+  const SPEAKABLE = /[\p{L}\p{N}]/u;
+  const push = () => { const t = cur.trim(); if (t) { if (raw.length && !SPEAKABLE.test(t)) raw[raw.length - 1] += ' ' + t; else raw.push(t); } cur = ''; };
     for (let i = 0; i < src.length; i++) {
       const ch = src[i];
       if (ch === '\n') { cur += ' '; if (cur.trim()) push(); continue; }

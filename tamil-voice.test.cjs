@@ -1,6 +1,6 @@
 const { test } = require('node:test'), a = require('node:assert/strict');
 const fs = require('node:fs'), os = require('node:os'), path = require('node:path');
-const { isTamilSelected, prepareTamilText, loadPreparedModel, synthesizeTamil } = require('./tamil-voice.cjs');
+const { isTamilSelected, prepareTamilText, loadPreparedModel, synthesizeTamil, replyLanguageRule } = require('./tamil-voice.cjs');
 test('Latin Tanglish is transliterated before the Tamil model', () => {
   a.equal(prepareTamilText('Seri bro, timer start pannu.'), 'சரி ப்ரோ, டைமர் ஸ்டார்ட் பண்ணு.');
   a.equal(prepareTamilText(''), '');
@@ -78,4 +78,13 @@ test('phonemizerReady requires all four phonemizer files', () => {
   for (const f of PHONEMIZER_FILES) fs.writeFileSync(path.join(dir, 'piper-phonemize', f), 'x');
   a.equal(phonemizerReady(dir), true);
   a.equal(phonemizerReady(''), false);
+});
+
+test('replyLanguageRule steers the reply language from the selected voice language', () => {
+  a.match(replyLanguageRule({ voiceLang: 'tanglish' }), /Tanglish/);
+  a.match(replyLanguageRule({ voiceLang: 'tanglish' }), /Latin letters/);
+  a.match(replyLanguageRule({ voiceLang: 'ta' }), /Tamil script/);
+  a.match(replyLanguageRule({ voiceLang: 'en' }), /English/);
+  a.match(replyLanguageRule({}), /English/);
+  a.match(replyLanguageRule(null), /English/);
 });

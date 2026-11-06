@@ -31,3 +31,11 @@ test('firstAndRest gives the first sentence for fast first audio', () => {
   a.equal(r.first, 'One.'); a.deepEqual(r.rest, ['Two.', 'Three.']);
   a.equal(firstAndRest('').first, null);
 });
+
+test('a trailing bare-emoji chunk merges into the previous sentence (no unvoiceable chunk)', () => {
+  a.deepEqual(splitSentences('Ah, five apps open. Shall we finish? 🚀'), ['Ah, five apps open.', 'Shall we finish? 🚀']);
+  // a chunk may LEAD with emoji as long as it contains speakable text
+  a.deepEqual(splitSentences('Nice! 🎉🎉 Done.'), ['Nice!', '🎉🎉 Done.']);
+  // no emitted chunk is ever free of letters/digits (the TTS-killer case)
+  for (const c of splitSentences('Ah, five apps open. Shall we finish? 🚀')) a.match(c, /[\p{L}\p{N}]/u);
+});
