@@ -1,0 +1,30 @@
+name: Windows quit-wedge bisect
+on:
+  workflow_dispatch:
+    inputs:
+      config:
+        description: 'control | noloops | noscout | nowake | novoiceengine | nosetshape | all'
+        required: true
+        default: 'control'
+permissions:
+  contents: read
+jobs:
+  bisect:
+    runs-on: windows-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: probe/quit-wedge
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Bisect probe
+        run: node vi-quit-bisect.cjs
+        env:
+          SHIBA_NO_LOOPS: ${{ contains(fromJSON('["noloops","all"]'), inputs.config) && '1' || '' }}
+          SHIBA_NO_SCOUT: ${{ contains(fromJSON('["noscout","all"]'), inputs.config) && '1' || '' }}
+          SHIBA_NO_WAKE: ${{ contains(fromJSON('["nowake","all"]'), inputs.config) && '1' || '' }}
+          SHIBA_NO_VOICEENGINE: ${{ contains(fromJSON('["novoiceengine","all"]'), inputs.config) && '1' || '' }}
+          SHIBA_NO_SETSHAPE: ${{ contains(fromJSON('["nosetshape","all"]'), inputs.config) && '1' || '' }}
