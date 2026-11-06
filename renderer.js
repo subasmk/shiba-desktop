@@ -3,6 +3,8 @@ const $=s=>document.querySelector(s);const icon={chat:'<svg viewBox="0 0 50 36">
 function status(t){const n=$('#status');if(n)n.textContent=t;}
 async function task(fn){try{await fn();}catch(e){status(e.message);}}
 async function save(data){await api.call('save-settings',data);Object.assign(state,data);}
+let tamilSink=null;api.on('tamil-setup-progress',d=>{if(tamilSink)tamilSink(d);});
+ async function ensureTamilVoice(lang){if(lang!=='ta'&&lang!=='tanglish')return;const st=await api.call('tamil-setup-status');if(st&&st.ready){status('Tamil voice is ready.');return;}status('Downloading the Tamil voice - one-time, about 150 MB. The pet uses English until this finishes.');tamilSink=p=>{const pct=p.total?Math.round(100*p.bytes/p.total)+'%':Math.round(p.bytes/1048576)+' MB';status('Downloading Tamil voice: '+p.step+' '+pct);};try{const r=await api.call('tamil-setup-run');if(r&&r.ok)status('Tamil voice ready - the pet will speak '+(lang==='ta'?'Tamil':'Tanglish')+' now.');else status('Tamil voice download is already running.');}catch(e){status('Tamil voice download failed: '+e.message+' Falling back to English for now.');}finally{tamilSink=null;}}
 function close(){window.shibaVoice?.session.stop();api.send('panel',false);}
 if(mode==='pet'){
  root.innerHTML='<div class="pet-stage"><span class="reaction"></span><span class="wake-live hidden" title="Wake word listening">🎙</span><canvas class="pet-image" width="160" height="160" aria-label="Shiba desktop pet"></canvas><img class="pet-gif hidden" alt=""></div>';
@@ -50,8 +52,7 @@ if(mode==='pet'){
  document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
  root.addEventListener('click',e=>{const b=e.target.closest('[data-drawer],[data-tool]');if(!b)return;if(b.dataset.drawer)drawer(b.dataset.drawer);else task(()=>api.call('open-tool',b.dataset.tool));});
  let deltaSink=null;api.on('chat-delta',d=>{if(deltaSink)deltaSink(d);});
- let tamilSink=null;api.on('tamil-setup-progress',d=>{if(tamilSink)tamilSink(d);});
- async function ensureTamilVoice(lang){if(lang!=='ta'&&lang!=='tanglish')return;const st=await api.call('tamil-setup-status');if(st&&st.ready){status('Tamil voice is ready.');return;}status('Downloading the Tamil voice - one-time, about 150 MB. The pet uses English until this finishes.');tamilSink=p=>{const pct=p.total?Math.round(100*p.bytes/p.total)+'%':Math.round(p.bytes/1048576)+' MB';status('Downloading Tamil voice: '+p.step+' '+pct);};try{const r=await api.call('tamil-setup-run');if(r&&r.ok)status('Tamil voice ready - the pet will speak '+(lang==='ta'?'Tamil':'Tanglish')+' now.');else status('Tamil voice download is already running.');}catch(e){status('Tamil voice download failed: '+e.message+' Falling back to English for now.');}finally{tamilSink=null;}}
+
  api.call('get-state').then(x=>{state=x;});
 }
 function drawer(name){if(name!=='voice-call')window.shibaVoice?.session.stop();api.send('drawer-size');currentDrawer=name;const el=$('#drawer');el.classList.remove('hidden');let body='';
