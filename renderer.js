@@ -13,15 +13,16 @@ if(mode==='pet'){
  fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;play('idle');});
  function play(name){if(name!==anim&&lastDrawn)blend={sx:lastDrawn.x,sy:lastDrawn.y,until:performance.now()+90};anim=name;seq=sprites[name]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;}
  function tick(t){
-  if(seq.length&&t>=nextAt){
-   if(finished){const next=chain[anim];play(next||'idle');if(!next)behavior.quiet(t);}
-   const frame=seq[idx];const canvas=$('.pet-image');canvas.dataset.frame=frame.file;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,160,160);
-   if(atlas.complete&&atlas.naturalWidth){
+  if(seq.length){
+   if(finished&&t>=nextAt){const next=chain[anim];play(next||'idle');if(!next)behavior.quiet(t);}
+   const frame=seq[idx];const blending=blend&&t<blend.until;
+   if((t>=nextAt||blending)&&atlas.complete&&atlas.naturalWidth){
+    const canvas=$('.pet-image');canvas.dataset.frame=frame.file;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,160,160);
     let alpha=1;
-    if(blend&&t<blend.until){const p=1-(blend.until-t)/90;ctx.globalAlpha=Math.max(0,1-p);ctx.drawImage(atlas,blend.sx,blend.sy,160,160,0,0,160,160);alpha=Math.min(1,p);}else blend=null;
+    if(blending){const p=1-(blend.until-t)/90;ctx.globalAlpha=Math.max(0,1-p);ctx.drawImage(atlas,blend.sx,blend.sy,160,160,0,0,160,160);alpha=Math.min(1,p);}else blend=null;
     ctx.globalAlpha=alpha;ctx.drawImage(atlas,frame.x,frame.y,160,160,0,0,160,160);ctx.globalAlpha=1;lastDrawn={x:frame.x,y:frame.y};
    }
-   nextAt=t+frame.ms;idx++;if(idx>=seq.length){if(finite.has(anim))finished=true;else idx=0;}
+   if(t>=nextAt){nextAt=t+frame.ms;idx++;if(idx>=seq.length){if(finite.has(anim))finished=true;else idx=0;}}
   }
   const action=behavior.due(t,anim);if(action)play(action);if(window.AnimEvents&&anim==='idle'&&!sleepFired&&AnimEvents.isLongIdle(lastInteract,t)){sleepFired=true;const ev=AnimEvents.forEvent('long-idle');play(ev.sprite);showGif(ev);}requestAnimationFrame(tick);
  }requestAnimationFrame(tick);
