@@ -84,9 +84,16 @@ async function dumpVoiceAudio(p,file){
    // auto download starts; wait for ready (one-time ~150 MB on the runner)
    await p.waitForFunction(()=>/ready/i.test(document.querySelector('#status')?.textContent||''),{timeout:300000});
    console.log('SEG3 tamil voice ready in-app');
+   const seg2tx=t1.tx;
    await p.locator('#voice-start').click();
-   await waitFor('turn2-pet',sawPet,240000);
-   const t2=await waitFor('turn2-done',turnDone,180000);
+   const seg3T0=Date.now();
+   // Guard against matching SEG2's stale transcript/playback: the Tanglish
+   // turn must produce a NEW transcript and a playback that STARTED after
+   // this segment's voice-start click.
+   const sawPet2=st=>st.tx&&st.tx.startsWith('Pet:')&&st.tx!==seg2tx;
+   const turnDone2=st=>st.tx!==seg2tx&&st.phase==='listening'&&st.pb&&st.pb.started>=seg3T0-5000&&st.pb.ended===true&&st.samples>1000;
+   await waitFor('turn2-pet',sawPet2,240000);
+   const t2=await waitFor('turn2-done',turnDone2,180000);
    console.log('SEG3 tanglish turn done. transcript:',t2.tx.slice(0,160));
    const seg3n=await dumpVoiceAudio(p,'seg3-voice.wav');manifest.segments.push({name:'tanglish-voice-turn',transcript:t2.tx.slice(0,300),samples:t2.samples,audioFile:seg3n?'seg3-voice.wav':null,audioSamples:seg3n||0,audioNote:'seg3-voice.wav is the exact audio bytes the app synthesized in this run (source audio), not a live playback recording.'});
    await p.locator('#voice-stop').click();
