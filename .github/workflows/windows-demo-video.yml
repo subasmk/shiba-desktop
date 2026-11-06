@@ -64,4 +64,6 @@ jobs:
             demo.mp4
             demo-manifest.json
             voice-timing.log
+            seg2-voice.wav
+            seg3-voice.wav
           if-no-files-found: warn

@@ -9,6 +9,17 @@
 const {_electron:electron}=require('playwright'),path=require('node:path'),fs=require('node:fs');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const manifest={segments:[],startedAt:new Date().toISOString()};
+function writeWav(file,chunks){
+ const sr=chunks[0].sampleRate;const flat=[];for(const c of chunks)for(const s of c.samples)flat.push(s);
+ const b=Buffer.alloc(44+flat.length*2);b.write('RIFF',0);b.writeUInt32LE(36+flat.length*2,4);b.write('WAVEfmt ',8);b.writeUInt32LE(16,16);b.writeUInt16LE(1,20);b.writeUInt16LE(1,22);b.writeUInt32LE(sr,24);b.writeUInt32LE(sr*2,28);b.writeUInt16LE(2,32);b.writeUInt16LE(16,34);b.write('data',36);b.writeUInt32LE(flat.length*2,40);
+ for(let i=0;i<flat.length;i++){const s=Math.max(-1,Math.min(1,flat[i]));b.writeInt16LE(Math.round(s*32767),44+i*2);}
+ fs.writeFileSync(file,b);return flat.length;
+}
+async function dumpVoiceAudio(p,file){
+ const chunks=await p.evaluate(()=>window.shibaVoice&&window.shibaVoice.lastAudioChunks?window.shibaVoice.lastAudioChunks:[]).catch(()=>[]);
+ if(!chunks.length)return 0;
+ return writeWav(file,chunks);
+}
 (async()=>{
  fs.mkdirSync('frames/pet',{recursive:true});fs.mkdirSync('frames/panel',{recursive:true});
  const fixture=process.env.DEMO_FIXTURE||'mic-fixture-demo.wav';
@@ -64,7 +75,7 @@ const manifest={segments:[],startedAt:new Date().toISOString()};
   await waitFor('turn1-pet',sawPet,240000);
   const t1=await waitFor('turn1-done',turnDone,180000);
   console.log('SEG2 voice turn done. transcript:',t1.tx.slice(0,160));
-  manifest.segments.push({name:'voice-turn',transcript:t1.tx.slice(0,300),samples:t1.samples});
+  const seg2n=await dumpVoiceAudio(p,'seg2-voice.wav');manifest.segments.push({name:'voice-turn',transcript:t1.tx.slice(0,300),samples:t1.samples,audioFile:seg2n?'seg2-voice.wav':null,audioSamples:seg2n||0,audioNote:'seg2-voice.wav is the exact audio bytes the app synthesized in this run (source audio), not a live playback recording.'});
 
   // SEGMENT 3 (optional): Tanglish voice - in-app auto download + Tamil-voice turn
   if(process.env.DEMO_TANGLISH==='1'&&Date.now()<DEADLINE-9*60*1000){
@@ -77,7 +88,7 @@ const manifest={segments:[],startedAt:new Date().toISOString()};
    await waitFor('turn2-pet',sawPet,240000);
    const t2=await waitFor('turn2-done',turnDone,180000);
    console.log('SEG3 tanglish turn done. transcript:',t2.tx.slice(0,160));
-   manifest.segments.push({name:'tanglish-voice-turn',transcript:t2.tx.slice(0,300),samples:t2.samples});
+   const seg3n=await dumpVoiceAudio(p,'seg3-voice.wav');manifest.segments.push({name:'tanglish-voice-turn',transcript:t2.tx.slice(0,300),samples:t2.samples,audioFile:seg3n?'seg3-voice.wav':null,audioSamples:seg3n||0,audioNote:'seg3-voice.wav is the exact audio bytes the app synthesized in this run (source audio), not a live playback recording.'});
    await p.locator('#voice-stop').click();
   }else{
    if(process.env.DEMO_TANGLISH==='1')console.log('SEG3 skipped: past time budget');
