@@ -40,9 +40,15 @@ function usesTamilVoice(settings) { const l = resolveVoiceLang(settings); return
 // One system-prompt sentence steering the reply language to the selected
 // voice language, so a Tanglish/Tamil voice actually gets Tanglish/Tamil
 // text to speak instead of English read by the Tamil voice.
+// Whether the local brain should run with thinking enabled for this voice
+// language. qwen3-class small models degenerate to repetition on non-English
+// replies with think:false (verified locally: repetition loops), while
+// think:true produces relevant Tanglish/Tamil answers.
+function brainThink(settings) { return resolveVoiceLang(settings) !== 'en'; }
+
 function replyLanguageRule(settings) {
   const l = resolveVoiceLang(settings);
-  if (l === 'tanglish') return 'Reply briefly in natural Tanglish - a casual Tamil and English mix written in Latin letters, the way a Chennai friend texts (for example "Dei, five apps open iruku, seekiram mudi!").';
+  if (l === 'tanglish') return 'Reply briefly in natural Tanglish - a casual Tamil and English mix written in Latin letters, the way a Chennai friend texts. Answer the actual question; vary your wording, never reuse stock phrases.';
   if (l === 'ta') return 'Reply briefly in Tamil, written in Tamil script.';
   return 'Reply briefly in English.';
 }
@@ -136,4 +142,4 @@ async function synthesizeTamil(text, { modelDir, engine } = {}) {
   return { ...audio, text: prepared };
 }
 
-module.exports = { isTamilSelected, prepareTamilText, loadPreparedModel, synthesizeTamil, VOICE_LANGS, resolveVoiceLang, usesTamilVoice, detectScript, prepareForLang, routeReply, createWorkerTamilEngine, PHONEMIZER_FILES, phonemizerReady, replyLanguageRule };
+module.exports = { isTamilSelected, prepareTamilText, loadPreparedModel, synthesizeTamil, VOICE_LANGS, resolveVoiceLang, usesTamilVoice, detectScript, prepareForLang, routeReply, createWorkerTamilEngine, PHONEMIZER_FILES, phonemizerReady, replyLanguageRule, brainThink };

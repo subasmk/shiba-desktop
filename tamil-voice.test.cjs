@@ -1,6 +1,6 @@
 const { test } = require('node:test'), a = require('node:assert/strict');
 const fs = require('node:fs'), os = require('node:os'), path = require('node:path');
-const { isTamilSelected, prepareTamilText, loadPreparedModel, synthesizeTamil, replyLanguageRule } = require('./tamil-voice.cjs');
+const { isTamilSelected, prepareTamilText, loadPreparedModel, synthesizeTamil, replyLanguageRule, brainThink } = require('./tamil-voice.cjs');
 test('Latin Tanglish is transliterated before the Tamil model', () => {
   a.equal(prepareTamilText('Seri bro, timer start pannu.'), 'சரி ப்ரோ, டைமர் ஸ்டார்ட் பண்ணு.');
   a.equal(prepareTamilText(''), '');
@@ -87,4 +87,18 @@ test('replyLanguageRule steers the reply language from the selected voice langua
   a.match(replyLanguageRule({ voiceLang: 'en' }), /English/);
   a.match(replyLanguageRule({}), /English/);
   a.match(replyLanguageRule(null), /English/);
+});
+
+test('replyLanguageRule gives instructions, not a parrotable example sentence', () => {
+  const r = replyLanguageRule({ voiceLang: 'tanglish' });
+  a.match(r, /Tanglish/);
+  a.ok(!/Dei,/.test(r), 'must not contain a concrete example reply the model can parrot');
+  a.match(r, /Answer the actual question/);
+});
+
+test('brainThink enables thinking only for non-English voice languages', () => {
+  a.equal(brainThink({ voiceLang: 'tanglish' }), true);
+  a.equal(brainThink({ voiceLang: 'ta' }), true);
+  a.equal(brainThink({ voiceLang: 'en' }), false);
+  a.equal(brainThink({}), false);
 });
