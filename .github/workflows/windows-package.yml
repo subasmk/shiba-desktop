@@ -47,7 +47,7 @@ jobs:
       - name: Packaged exe full voice chain with real brain
         run: node vi-packaged.cjs
         env:
-          PACKAGED_EXE: ${{ github.workspace }}\dist\win-unpacked\Shiba Desktop.exe
+          PACKAGED_EXE: ${{ github.workspace }}\dist\win-unpacked\Rex.exe
           SHIBA_MODELS: D:/shiba-voice-lab
       - name: Collect screenshots and timing into workspace
         if: always()
@@ -65,3 +65,11 @@ jobs:
           name: windows-packaged-screenshots
           path: pkg-shots/*
           if-no-files-found: warn
+      - name: Upload portable exe
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rex-windows-portable
+          path: dist/*.exe
+          if-no-files-found: error
+          retention-days: 14

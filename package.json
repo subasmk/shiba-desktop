@@ -18,7 +18,7 @@
   },
   "build": {
     "appId": "local.shiba.desktop",
-    "productName": "Shiba Desktop",
+    "productName": "Rex",
     "files": [
       "*.cjs",
       "*.html",

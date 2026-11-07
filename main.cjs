@@ -3,6 +3,9 @@ const fs=require('node:fs');const path=require('node:path');const {localUrl,free
 const {readApps,launchApp,selectApps,parseLaunch,launchByName}=require('./apps.cjs');const {PetHistory,parseHistoryQuery,statusAnswer}=require('./pet-history.cjs');const routinesLib=require('./routines.cjs');let history;const {VoiceBackend}=require('./voice-backend.cjs');const setupLib=require('./setup.cjs');const voiceBackend=new VoiceBackend(process.env.SHIBA_MODELS||path.join(__dirname,'voice-models'));
 const {ContextMonitor,describeScene,getCursorPos}=require('./context.cjs');const animEvents=require('./anim-events.cjs');const selftestLib=require('./selftest.cjs');const {ProactiveEngine}=require('./proactive.cjs');const pcControl=require('./pc-control.cjs');const {PetMemory,summarizeSession}=require('./pet-memory.cjs');const {generateBanter}=require('./banter.cjs');const {RoamController}=require('./roam.cjs');const tamilVoice=require('./tamil-voice.cjs');const tamilSetup=require('./tamil-setup.cjs');
 const {Scout,validateOfferUrl}=require('./scout.cjs');const powerTools=require('./power-tools.cjs');const webTools=require('./web-tools.cjs');const {groqChat}=require('./groq.cjs');const {createVoiceEngine}=require('./voice-clone.cjs');
+// Pin the data folder to the stable package identifier: the visible name (Rex)
+// may change, but settings, voice models and history must never move with it.
+app.setPath('userData', path.join(app.getPath('appData'), 'shiba-desktop'));
 let memory=null,contextMonitor=null,proactiveEngine=null,voiceActive=false;
 let scout=null,pendingPower=null,groqKey='',wakeMuted=false,wakeHotkeyRegistered=false;
 const tamilModelDir=path.join(voiceBackend.models,'tamil-voice');
