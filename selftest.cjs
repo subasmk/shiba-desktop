@@ -56,7 +56,7 @@ function checkVision(f) {
 function checkMic(f) {
   switch (f.mic) {
     case 'ok': return { status: 'pass', detail: 'A microphone is available to the app.' };
-    case 'denied': return { status: 'fail', detail: 'Microphone permission is denied.', fix: 'Windows Settings > Privacy > Microphone: allow desktop apps, then restart Shiba.' };
+    case 'denied': return { status: 'fail', detail: 'Microphone permission is denied.', fix: 'Windows Settings > Privacy > Microphone: allow desktop apps, then restart Rex.' };
     case 'no-device': return { status: 'fail', detail: 'No microphone device was found.', fix: 'Plug in or enable a microphone, then re-run diagnostics.' };
     default: return { status: 'warn', detail: 'Microphone could not be checked from here.', fix: 'Open the Voice session drawer and press Start once - if the mic works there, this is fine.' };
   }
@@ -107,7 +107,7 @@ function runSelfTest(facts = {}, { now = () => Date.now() } = {}) {
 // One-line-per-check human summary (settings panel + saved report).
 function formatReport(report) {
   const icon = { pass: 'PASS', warn: 'WARN', fail: 'FAIL' };
-  const lines = ['Shiba diagnostics - ' + report.at, 'Result: ' + report.summary.pass + ' pass, ' + report.summary.warn + ' warnings, ' + report.summary.fail + ' failures.'];
+  const lines = ['Rex diagnostics - ' + report.at, 'Result: ' + report.summary.pass + ' pass, ' + report.summary.warn + ' warnings, ' + report.summary.fail + ' failures.'];
   for (const c of report.checks) {
     lines.push('[' + icon[c.status] + '] ' + c.label + ': ' + c.detail);
     if (c.fix && c.status !== 'pass') lines.push('       Fix: ' + c.fix);

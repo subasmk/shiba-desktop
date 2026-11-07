@@ -1,4 +1,6 @@
-# Shiba Desktop
+# Rex Desktop
+
+(The pet is named Rex. The repository and package identifiers keep the original shiba-desktop name so existing installs and data paths are untouched.)
 
 A private desktop pet for Windows. Everything runs on your laptop: no account,
 no telemetry, no paid service required.

@@ -1,4 +1,4 @@
-// Wake word: "Hey Shiba" hands-free start for the voice call.
+// Wake word: "Hey Rex" hands-free start for the voice call.
 // Ported design from Viktor's voice watcher (viktor_voice.py): there is no
 // separate wake model - the app's own local Whisper transcription spots the
 // phrase in short energy-gated windows, exactly like Viktor's faster-whisper
@@ -20,9 +20,9 @@
 //
 // Viktor's watcher anchored the phrase at the start of the transcript
 // (after an optional greeting) and tolerated ASR mis-hears of the name
-// (viktor|victor|vector). Same here: shiba|sheba|siba|sheeba.
+// (viktor|victor|vector). Same here for Rex: rex|wrecks|wrex.
 
-const WAKE_RE = /^(?:hey|hi|ok|okay|a|hey there)?[\s,.!?]*?(shiba|sheba|siba|sheeba)\b[\s,.!?]*(.*)$/i;
+const WAKE_RE = /^(?:hey|hi|ok|okay|a|hey there)?[\s,.!?]*?(rex|wrecks|wrex)\b[\s,.!?]*(.*)$/i;
 
 function normalizeTranscript(text) {
   return String(text || '').replace(/\s+/g, ' ').trim();
@@ -30,7 +30,7 @@ function normalizeTranscript(text) {
 
 // Match a transcript against the wake phrase. Returns null, or
 // {command} where command is the rest of the utterance after the phrase
-// ("Hey Shiba, what time is it" -> "what time is it") or null when the
+// ("Hey Rex, what time is it" -> "what time is it") or null when the
 // utterance was only the phrase (two-step flow: the call starts and the
 // user simply keeps talking, same as Viktor).
 function matchWakePhrase(text) {

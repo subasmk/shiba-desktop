@@ -15,7 +15,7 @@
   // event -> {gif, sprite, ms}  (ms = how long the GIF overlay stays up)
   const EVENTS = {
     'celebrate':        { gif: 'celebrate_jump.gif', sprite: 'leap',    ms: 2600 }, // focus timer completed
-    'wake-trigger':     { gif: 'summon.gif',         sprite: 'portal',  ms: 2200 }, // "Hey Shiba" heard
+    'wake-trigger':     { gif: 'summon.gif',         sprite: 'portal',  ms: 2200 }, // "Hey Rex" heard
     'listening-start':  { gif: 'charging.gif',       sprite: 'scan',    ms: 1800 }, // voice call starts listening
     'power-run':        { gif: 'hacking.gif',        sprite: 'scan',    ms: 2400 }, // power-mode command running (scan = the laptop-working sprite; gesture could not convey work)
     'timer-ignored':    { gif: 'rage_mode.gif',      sprite: 'rage',    ms: 2400 }, // break nudge ignored repeatedly

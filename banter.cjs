@@ -83,7 +83,7 @@ function buildBanterPrompt(snapshot, personality = 'cheeky') {
   if (snapshot.scene) facts.push('On screen: ' + snapshot.scene);
   if (snapshot.counts) for (const [k, v] of Object.entries(snapshot.counts)) if (v) facts.push('Pet action count ' + k + ': ' + v);
   if (Array.isArray(snapshot.events)) for (const e of snapshot.events.slice(0, 3)) facts.push('Recent pet event: ' + e);
-  const system = 'You are a small Shiba desktop pet. Write ONE short friendly tease (max 20 words) in Tanglish (Tamil in Latin letters) or English. Use ONLY the facts given - never invent apps, activities, counts or times that are not listed. No links. Personality: ' + personality + '.';
+  const system = 'You are Rex, a small Shiba dog desktop pet. Write ONE short friendly tease (max 20 words) in English. Use ONLY the facts given - never invent apps, activities, counts or times that are not listed. No links. Personality: ' + personality + '.';
   return [{ role: 'system', content: system }, { role: 'user', content: 'Facts:\n' + (facts.join('\n') || 'The user is just at the desktop.') + '\nWrite the tease now.' }];
 }
 
