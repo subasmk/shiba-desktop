@@ -21,12 +21,16 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   await p.locator('[data-drawer="voice-call"]').click();await p.locator('#voice-start').click();
   async function state(){return p.evaluate(()=>({phase:window.shibaVoice?.session?.phase,err:window.shibaVoice?.lastError||null,samples:window.shibaVoice?.lastAudioSamples||0,tx:document.querySelector('#voice-transcript')?.textContent||'',pb:window.shibaVoice?.lastPlayback?{started:window.shibaVoice.lastPlayback.started,ended:window.shibaVoice.lastPlayback.ended,ms:Math.round(1000*window.shibaVoice.lastPlayback.samples/(window.shibaVoice.lastAudioSampleRate||16000))}:null})).catch(e=>({evalErr:e.message}));}
   async function waitFor(label,fn,timeoutMs){
-   const t0=Date.now();
+   // Poll every 1s but log every 8s: the transcript flips You: -> Pet: inside one
+   // brain reply, and an 8s poll missed that window entirely (run 42327497932:
+   // turn2 completed between two polls and the wait timed out watching a stale Pet:).
+   const t0=Date.now();let lastLog=-8000;
    while(Date.now()-t0<timeoutMs){
     const st=await state();
     if(st.err)throw Error('voice error during '+label+': '+st.err+' state='+JSON.stringify(st));
     if(fn(st))return st;
-    await sleep(8000);console.log('STATE',label,Math.round((Date.now()-t0)/1000)+'s',JSON.stringify(st));
+    await sleep(1000);
+    if(Date.now()-t0-lastLog>=8000){lastLog=Date.now()-t0;console.log('STATE',label,Math.round((Date.now()-t0)/1000)+'s',JSON.stringify(st));}
    }
    throw Error('TIMEOUT during '+label+' state='+JSON.stringify(await state()));
   }
