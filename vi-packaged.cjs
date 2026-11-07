@@ -19,7 +19,12 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   await p.evaluate(()=>window.petAPI.call('save-settings',{ollamaModel:'qwen3:0.6b'}));
   await p.locator('.handle').dispatchEvent('mouseenter');await p.locator('.tools').click();
   await p.locator('[data-drawer="voice-call"]').click();await p.locator('#voice-start').click();
-  async function state(){return p.evaluate(()=>({phase:window.shibaVoice?.session?.phase,err:window.shibaVoice?.lastError||null,samples:window.shibaVoice?.lastAudioSamples||0,tx:document.querySelector('#voice-transcript')?.textContent||'',pb:window.shibaVoice?.lastPlayback?{started:window.shibaVoice.lastPlayback.started,ended:window.shibaVoice.lastPlayback.ended,ms:Math.round(1000*window.shibaVoice.lastPlayback.samples/(window.shibaVoice.lastAudioSampleRate||16000))}:null})).catch(e=>({evalErr:e.message}));}
+  // Turn detection via in-page transcript history: a fast local brain can
+  // answer in under one poll interval, so sampling #voice-transcript for the
+  // transient "You:" state is racy (run 42336226826: turn 3 completed fully
+  // yet turn3-you timed out). Record every transcript change in-page instead.
+  await p.evaluate(()=>{window.__txLog=[];const el=document.querySelector('#voice-transcript');if(el)new MutationObserver(()=>{const t=el.textContent||'';if(window.__txLog[window.__txLog.length-1]!==t)window.__txLog.push(t);}).observe(el,{childList:true,characterData:true,subtree:true});});
+  async function state(){return p.evaluate(()=>{const log=window.__txLog||[];return {phase:window.shibaVoice?.session?.phase,err:window.shibaVoice?.lastError||null,samples:window.shibaVoice?.lastAudioSamples||0,tx:document.querySelector('#voice-transcript')?.textContent||'',you:log.filter(t=>t.startsWith('You:')).length,pet:log.filter(t=>t.startsWith('Pet:')).length,pb:window.shibaVoice?.lastPlayback?{started:window.shibaVoice.lastPlayback.started,ended:window.shibaVoice.lastPlayback.ended,ms:Math.round(1000*window.shibaVoice.lastPlayback.samples/(window.shibaVoice.lastAudioSampleRate||16000))}:null};}).catch(e=>({evalErr:e.message}));}
   async function waitFor(label,fn,timeoutMs){
    // Poll every 1s but log every 8s: the transcript flips You: -> Pet: inside one
    // brain reply, and an 8s poll missed that window entirely (run 42327497932:
@@ -34,23 +39,23 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
    }
    throw Error('TIMEOUT during '+label+' state='+JSON.stringify(await state()));
   }
-  // turn N helpers: new utterance -> 'You:' flip, reply -> 'Pet:' flip, complete -> back to listening with playback ended and real samples
-  const sawYou=st=>st.tx&&st.tx.startsWith('You:');
-  const sawPet=st=>st.tx&&st.tx.startsWith('Pet:');
+  // turn N helpers: Nth utterance/reply seen in the in-page history, complete -> back to listening with playback ended and real samples
+  const sawYou=n=>st=>(st.you||0)>=n;
+  const sawPet=n=>st=>(st.pet||0)>=n;
   const turnDone=st=>st.phase==='listening'&&st.pb&&st.pb.ended===true&&st.samples>1000;
   // TURN 1
-  await waitFor('turn1-pet',sawPet,300000);
+  await waitFor('turn1-pet',sawPet(1),300000);
   const t1=await waitFor('turn1-done',turnDone,180000);
   console.log('TURN1 PASS samples',t1.samples,'reply:',t1.tx.slice(0,120));
   // TURN 2 (continuous conversation, no restart)
-  await waitFor('turn2-you',sawYou,300000);
-  await waitFor('turn2-pet',sawPet,180000);
+  await waitFor('turn2-you',sawYou(2),300000);
+  await waitFor('turn2-pet',sawPet(2),180000);
   const t2=await waitFor('turn2-done',turnDone,180000);
   console.log('TURN2 PASS continuous, no restart. samples',t2.samples);
   await p.screenshot({path:'/tmp/shiba-packaged-voice.png'});
   // TURN 3: barge-in during speaking cuts the current chunk early and returns to listening
-  await waitFor('turn3-you',sawYou,300000);
-  await waitFor('turn3-pet',sawPet,180000);
+  await waitFor('turn3-you',sawYou(3),300000);
+  await waitFor('turn3-pet',sawPet(3),180000);
   await waitFor('turn3-speaking',st=>st.phase==='speaking'&&st.pb&&!st.pb.ended,120000);
   await sleep(800);
   const pb3=await p.evaluate(()=>({started:window.shibaVoice.lastPlayback.started,ms:Math.round(1000*window.shibaVoice.lastPlayback.samples/window.shibaVoice.lastAudioSampleRate)}));

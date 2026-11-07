@@ -24,6 +24,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   if(!d)throw Error('dashboard window did not open from panel button');
   await d.waitForSelector('.side h1',{timeout:15000});
   await d.waitForSelector('#d-setup-sum',{timeout:15000});
+  await d.waitForFunction(()=>document.querySelector('#d-setup-sum').textContent.includes('RAM'),null,{timeout:20000});
   const st=await d.evaluate(()=>petAPI.call('get-state'));
   if(!st||typeof st!=='object'||!('userName' in st))throw Error('dashboard get-state missing userName');
   const sum=await d.evaluate(()=>document.querySelector('#d-setup-sum').textContent);
