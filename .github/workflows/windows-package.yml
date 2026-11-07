@@ -69,6 +69,10 @@ jobs:
           Get-Process Rex -ErrorAction SilentlyContinue | Stop-Process -Force
           if(-not $ok){ Write-Error "PORTABLE LAUNCH FAILED: panel-shown milestone not reached in 240s"; exit 1 }
           Write-Host "PORTABLE-LAUNCH-PASS in ${t}s"
+      - name: App download routes reachable (setup fetch stack on real Windows)
+        run: node vi-setup-check.cjs
+        env:
+          PACKAGED_EXE: ${{ github.workspace }}\dist\win-unpacked\Rex.exe
       - name: Generate gapped mic fixture (clean turn boundaries)
         run: node tools/gen-gapped-fixture.cjs
       - name: Prepare temp dirs

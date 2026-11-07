@@ -29,7 +29,7 @@ async function downloadAndExtract(url,dir,onProgress,signal){
  if(process.platform!=='win32'&&process.platform!=='linux')throw Error('Voice setup supports Windows and Linux only.');
  fs.mkdirSync(dir,{recursive:true});
  const tmp=path.join(dir,'download-'+Date.now()+'.tar.bz2');
- const r=await fetch(url,{signal:sig(signal,30*60000)});
+ let r;try{r=await dlFetch(url,{signal:sig(signal,30*60000)});}catch(e){throw netErr(e,'Voice model');}
  if(!r.ok)throw Error('Voice model download failed ('+r.status+').');
  const total=Number(r.headers.get('content-length'))||0;let got=0;
  const out=fs.createWriteStream(tmp);const reader=r.body.getReader();
@@ -59,10 +59,21 @@ async function pullWithFallback(preferred,onProgress,signal){
  throw Error('No local brain model could run here. '+(lastErr?lastErr.message:''));
 }
 const OLLAMA_SETUP_URL='https://ollama.com/download/OllamaSetup.exe';
+// ollama.com/download 307-redirects to the official GitHub release asset; if
+// the first route fails on a restricted network, the same file is retried
+// from the other. Downloads use Electron's net.fetch (Chromium stack: system
+// proxy + Chromium DNS) when available, matching what the user's browser can
+// reach; plain Node fetch is the fallback (unit tests, non-Electron runs).
+const OLLAMA_SETUP_URL_FALLBACK='https://github.com/ollama/ollama/releases/latest/download/OllamaSetup.exe';
+function dlFetch(url,opts){try{const {net}=require('electron');if(net&&typeof net.fetch==='function')return net.fetch(url,opts);}catch{}return fetch(url,opts);}
+function netErr(e,what){const c=e&&e.cause;const code=c&&(c.code||c.message)||e&&e.message||e;return Error(what+' failed to download ('+code+'). Check the internet connection and try again.');}
 async function downloadOllamaInstaller(destDir,onProgress,signal){
  if(process.platform!=='win32')throw Error('Automatic Ollama setup is only built for Windows. Install Ollama, then run setup again.');
- const r=await fetch(OLLAMA_SETUP_URL,{redirect:'follow',signal:sig(signal,20*60000)});
- if(!r.ok)throw Error('Could not download the Ollama installer ('+r.status+').');
+ let r=null;let lastErr=null;
+ for(const u of [OLLAMA_SETUP_URL,OLLAMA_SETUP_URL_FALLBACK]){
+  try{r=await dlFetch(u,{redirect:'follow',signal:sig(signal,20*60000)});if(r&&r.ok)break;lastErr=Error('HTTP '+(r&&r.status));r=null;}catch(e){lastErr=e;}
+ }
+ if(!r)throw netErr(lastErr,'The Ollama installer');
  const total=Number(r.headers.get('content-length'))||0;let got=0;
  const dest=require('node:path').join(destDir,'OllamaSetup.exe');
  const out=fs.createWriteStream(dest);const reader=r.body.getReader();
@@ -79,6 +90,6 @@ let runController=null;
 function beginRun(){runController=new AbortController();return runController.signal;}
 function cancelRun(){if(runController)runController.abort();}
 function sig(signal,ms){const t=AbortSignal.timeout(ms);return signal?(AbortSignal.any?AbortSignal.any([signal,t]):t):t;}
-async function headSize(url){try{const r=await fetch(url,{method:'HEAD',redirect:'follow',signal:AbortSignal.timeout(8000)});const n=Number(r.headers.get('content-length'));return Number.isFinite(n)&&n>0?n:null;}catch{return null;}}
+async function headSize(url){try{const r=await dlFetch(url,{method:'HEAD',redirect:'follow',signal:AbortSignal.timeout(8000)});const n=Number(r.headers.get('content-length'));return Number.isFinite(n)&&n>0?n:null;}catch{return null;}}
 async function downloadSizes(){const [whisper,kokoro,ollama]=await Promise.all([headSize(WHISPER_URL),headSize(KOKORO_URL),process.platform==='win32'?headSize(OLLAMA_SETUP_URL):Promise.resolve(null)]);return {whisperBytes:whisper,kokoroBytes:kokoro,ollamaInstallerBytes:ollama,brainBytesApprox:{'qwen3:1.7b':1400000000,'qwen3:0.6b':520000000}};}
-module.exports={hardware,beginRun,cancelRun,downloadSizes,ollamaStatus,pullModel,pullWithFallback,voiceModelsStatus,ensureVoiceModels,pickModel,downloadOllamaInstaller,waitForOllama,OLLAMA_SETUP_URL};
+module.exports={dlFetch,hardware,beginRun,cancelRun,downloadSizes,ollamaStatus,pullModel,pullWithFallback,voiceModelsStatus,ensureVoiceModels,pickModel,downloadOllamaInstaller,waitForOllama,OLLAMA_SETUP_URL};

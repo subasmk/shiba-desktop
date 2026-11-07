@@ -60,6 +60,7 @@ app.whenReady().then(()=>{savePath=path.join(app.getPath('userData'),'settings.j
  ipcMain.handle('run-routine',async(_,name)=>{const r=await routinesLib.runRoutine(settings,name);for(const _ of r.launched||[])history.record('app-open');save();return r;});
  ipcMain.on('pet-event',(_,event)=>{if(event==='timer-start'){timerState.running=true;timerState.startedAt=Date.now();}if(event==='timer-finish'){timerState.running=false;timerState.finishedAt=Date.now();}if(history.record(event)){save();const line=history.roast();if(line){pet?.webContents.send('pet-say',line);panel?.webContents.send('pet-say',line);}}});
  function setupProgress(stage,pct){try{panel?.webContents.send('setup-progress',{stage,pct:pct??null});}catch{}}
+ ipcMain.handle('setup-download-check',()=>setupLib.downloadSizes());
  ipcMain.handle('setup-status',async()=>{const sizes=await setupLib.downloadSizes().catch(()=>null);return {hardware:await setupLib.hardware(),ollama:await setupLib.ollamaStatus(),voice:setupLib.voiceModelsStatus(voiceBackend.models),model:settings.ollamaModel||null,sizes};});
  ipcMain.handle('setup-cancel',async()=>{setupLib.cancelRun();setupProgress('Cancelling setup');return {cancelled:true};});
  ipcMain.handle('setup-run',async()=>{
