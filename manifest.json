@@ -1,596 +1,622 @@
 {
- "idle": [
-  {
-   "file": "sit1.png",
-   "ms": 2400,
-   "x": 0,
-   "y": 0
-  },
-  {
-   "file": "sit1b.png",
-   "ms": 320,
-   "x": 160,
-   "y": 0
-  }
- ],
- "drag": [
-  {
-   "file": "leap6.png",
-   "ms": 600,
-   "x": 800,
-   "y": 0
-  }
- ],
- "landing": [
-  {
-   "file": "fall1.png",
-   "ms": 120,
-   "x": 960,
-   "y": 0
-  },
-  {
-   "file": "fall2.png",
-   "ms": 220,
-   "x": 1120,
-   "y": 0
-  }
- ],
- "getup": [
-  {
-   "file": "fall3.png",
-   "ms": 180,
-   "x": 0,
-   "y": 160
-  },
-  {
-   "file": "fall4.png",
-   "ms": 240,
-   "x": 160,
-   "y": 160
-  }
- ],
- "fall": [
-  {
-   "file": "fall1.png",
-   "ms": 160,
-   "x": 960,
-   "y": 0
-  },
-  {
-   "file": "fall2.png",
-   "ms": 320,
-   "x": 1120,
-   "y": 0
-  }
- ],
- "wave": [
-  {
-   "file": "emote4.png",
-   "ms": 220,
-   "x": 800,
-   "y": 160
-  },
-  {
-   "file": "emote2.png",
-   "ms": 220,
-   "x": 480,
-   "y": 160
-  },
-  {
-   "file": "emote4.png",
-   "ms": 220,
-   "x": 800,
-   "y": 160
-  },
-  {
-   "file": "sit1.png",
-   "ms": 220,
-   "x": 0,
-   "y": 0
-  }
- ],
- "bow": [
-  {
-   "file": "gesture1.png",
-   "ms": 260,
-   "x": 1120,
-   "y": 160
-  },
-  {
-   "file": "gesture2.png",
-   "ms": 280,
-   "x": 0,
-   "y": 320
-  },
-  {
-   "file": "gesture1.png",
-   "ms": 220,
-   "x": 1120,
-   "y": 160
-  }
- ],
- "gesture": [
-  {
-   "file": "gesture1.png",
-   "ms": 260,
-   "x": 1120,
-   "y": 160
-  },
-  {
-   "file": "gesture2.png",
-   "ms": 280,
-   "x": 0,
-   "y": 320
-  },
-  {
-   "file": "gesture1.png",
-   "ms": 220,
-   "x": 1120,
-   "y": 160
-  }
- ],
- "sleep": [
-  {
-   "file": "sit3.png",
-   "ms": 1600,
-   "x": 480,
-   "y": 0
-  },
-  {
-   "file": "sit3b.png",
-   "ms": 420,
-   "x": 640,
-   "y": 0
-  }
- ],
- "scan": [
-  {
-   "file": "scan1.png",
-   "ms": 190,
-   "x": 160,
-   "y": 320
-  },
-  {
-   "file": "scan2.png",
-   "ms": 190,
-   "x": 320,
-   "y": 320
-  },
-  {
-   "file": "scan3.png",
-   "ms": 190,
-   "x": 480,
-   "y": 320
-  },
-  {
-   "file": "scan4.png",
-   "ms": 190,
-   "x": 640,
-   "y": 320
-  },
-  {
-   "file": "scan5.png",
-   "ms": 190,
-   "x": 800,
-   "y": 320
-  },
-  {
-   "file": "scan6.png",
-   "ms": 190,
-   "x": 960,
-   "y": 320
-  },
-  {
-   "file": "scan7.png",
-   "ms": 190,
-   "x": 1120,
-   "y": 320
-  },
-  {
-   "file": "scan8.png",
-   "ms": 190,
-   "x": 0,
-   "y": 480
-  }
- ],
- "rage": [
-  {
-   "file": "rage1.png",
-   "ms": 260,
-   "x": 160,
-   "y": 480
-  },
-  {
-   "file": "rage2.png",
-   "ms": 260,
-   "x": 320,
-   "y": 480
-  },
-  {
-   "file": "rage3.png",
-   "ms": 260,
-   "x": 480,
-   "y": 480
-  },
-  {
-   "file": "rage2.png",
-   "ms": 260,
-   "x": 320,
-   "y": 480
-  }
- ],
- "swing": [
-  {
-   "file": "swing1.png",
-   "ms": 160,
-   "x": 640,
-   "y": 480
-  },
-  {
-   "file": "swing2.png",
-   "ms": 160,
-   "x": 800,
-   "y": 480
-  },
-  {
-   "file": "swing3.png",
-   "ms": 160,
-   "x": 960,
-   "y": 480
-  },
-  {
-   "file": "swing4.png",
-   "ms": 160,
-   "x": 1120,
-   "y": 480
-  },
-  {
-   "file": "swing5.png",
-   "ms": 160,
-   "x": 0,
-   "y": 640
-  },
-  {
-   "file": "swing6.png",
-   "ms": 160,
-   "x": 160,
-   "y": 640
-  },
-  {
-   "file": "swing7.png",
-   "ms": 160,
-   "x": 320,
-   "y": 640
-  },
-  {
-   "file": "swing8.png",
-   "ms": 160,
-   "x": 480,
-   "y": 640
-  }
- ],
- "portal": [
-  {
-   "file": "portal1.png",
-   "ms": 160,
-   "x": 640,
-   "y": 640
-  },
-  {
-   "file": "portal2.png",
-   "ms": 160,
-   "x": 800,
-   "y": 640
-  },
-  {
-   "file": "portal3.png",
-   "ms": 160,
-   "x": 960,
-   "y": 640
-  },
-  {
-   "file": "portal4.png",
-   "ms": 160,
-   "x": 1120,
-   "y": 640
-  },
-  {
-   "file": "portal5.png",
-   "ms": 160,
-   "x": 0,
-   "y": 800
-  },
-  {
-   "file": "portal6.png",
-   "ms": 160,
-   "x": 160,
-   "y": 800
-  },
-  {
-   "file": "portal7.png",
-   "ms": 160,
-   "x": 320,
-   "y": 800
-  },
-  {
-   "file": "portal8.png",
-   "ms": 160,
-   "x": 480,
-   "y": 800
-  }
- ],
- "leap": [
-  {
-   "file": "leap1.png",
-   "ms": 150,
-   "x": 640,
-   "y": 800
-  },
-  {
-   "file": "leap2.png",
-   "ms": 150,
-   "x": 800,
-   "y": 800
-  },
-  {
-   "file": "leap3.png",
-   "ms": 150,
-   "x": 960,
-   "y": 800
-  },
-  {
-   "file": "leap4.png",
-   "ms": 150,
-   "x": 1120,
-   "y": 800
-  },
-  {
-   "file": "leap5.png",
-   "ms": 150,
-   "x": 0,
-   "y": 960
-  },
-  {
-   "file": "leap6.png",
-   "ms": 150,
-   "x": 800,
-   "y": 0
-  },
-  {
-   "file": "leap7.png",
-   "ms": 150,
-   "x": 160,
-   "y": 960
-  },
-  {
-   "file": "leap8.png",
-   "ms": 150,
-   "x": 320,
-   "y": 960
-  }
- ],
- "walk": [
-  {
-   "file": "leap2.png",
-   "ms": 140,
-   "x": 800,
-   "y": 800
-  },
-  {
-   "file": "leap4.png",
-   "ms": 140,
-   "x": 1120,
-   "y": 800
-  },
-  {
-   "file": "leap5.png",
-   "ms": 140,
-   "x": 0,
-   "y": 960
-  },
-  {
-   "file": "leap6.png",
-   "ms": 140,
-   "x": 800,
-   "y": 0
-  }
- ],
- "peek": [
-  {
-   "file": "peek1.png",
-   "ms": 280,
-   "x": 480,
-   "y": 960
-  },
-  {
-   "file": "peek2.png",
-   "ms": 280,
-   "x": 640,
-   "y": 960
-  },
-  {
-   "file": "peek3.png",
-   "ms": 280,
-   "x": 800,
-   "y": 960
-  },
-  {
-   "file": "peek4.png",
-   "ms": 280,
-   "x": 960,
-   "y": 960
-  }
- ],
- "climb": [
-  {
-   "file": "climb1.png",
-   "ms": 240,
-   "x": 1120,
-   "y": 960
-  },
-  {
-   "file": "climb2.png",
-   "ms": 240,
-   "x": 0,
-   "y": 1120
-  },
-  {
-   "file": "climb3.png",
-   "ms": 240,
-   "x": 160,
-   "y": 1120
-  },
-  {
-   "file": "climb4.png",
-   "ms": 240,
-   "x": 320,
-   "y": 1120
-  }
- ],
- "sit": [
-  {
-   "file": "sit1.png",
-   "ms": 1400,
-   "x": 0,
-   "y": 0
-  },
-  {
-   "file": "sit2.png",
-   "ms": 1400,
-   "x": 320,
-   "y": 0
-  }
- ],
- "cursor": [
-  {
-   "file": "cur1.png",
-   "ms": 190,
-   "x": 480,
-   "y": 1120
-  },
-  {
-   "file": "cur2.png",
-   "ms": 190,
-   "x": 640,
-   "y": 1120
-  },
-  {
-   "file": "cur3.png",
-   "ms": 190,
-   "x": 800,
-   "y": 1120
-  },
-  {
-   "file": "cur4.png",
-   "ms": 190,
-   "x": 960,
-   "y": 1120
-  },
-  {
-   "file": "cur5.png",
-   "ms": 190,
-   "x": 1120,
-   "y": 1120
-  }
- ],
- "emote": [
-  {
-   "file": "emote1.png",
-   "ms": 210,
-   "x": 320,
-   "y": 160
-  },
-  {
-   "file": "emote2.png",
-   "ms": 210,
-   "x": 480,
-   "y": 160
-  },
-  {
-   "file": "emote3.png",
-   "ms": 210,
-   "x": 640,
-   "y": 160
-  },
-  {
-   "file": "emote4.png",
-   "ms": 210,
-   "x": 800,
-   "y": 160
-  },
-  {
-   "file": "emote5.png",
-   "ms": 210,
-   "x": 960,
-   "y": 160
-  }
- ],
- "click": [
-  {
-   "file": "emote1.png",
-   "ms": 200,
-   "x": 320,
-   "y": 160
-  },
-  {
-   "file": "sit1.png",
-   "ms": 200,
-   "x": 0,
-   "y": 0
-  }
- ],
- "touch-head": [
-  {
-   "file": "emote5.png",
-   "ms": 300,
-   "x": 960,
-   "y": 160
-  },
-  {
-   "file": "sit1.png",
-   "ms": 240,
-   "x": 0,
-   "y": 0
-  }
- ],
- "touch-body": [
-  {
-   "file": "rage2.png",
-   "ms": 190,
-   "x": 320,
-   "y": 480
-  },
-  {
-   "file": "emote1.png",
-   "ms": 210,
-   "x": 320,
-   "y": 160
-  },
-  {
-   "file": "sit1.png",
-   "ms": 190,
-   "x": 0,
-   "y": 0
-  }
- ],
- "touch-paws": [
-  {
-   "file": "fall3.png",
-   "ms": 190,
-   "x": 0,
-   "y": 160
-  },
-  {
-   "file": "gesture1.png",
-   "ms": 210,
-   "x": 1120,
-   "y": 160
-  },
-  {
-   "file": "sit1.png",
-   "ms": 190,
-   "x": 0,
-   "y": 0
-  }
- ]
+  "idle": [
+    {
+      "file": "sit1.png",
+      "ms": 2400,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "file": "sit1b.png",
+      "ms": 320,
+      "x": 160,
+      "y": 0
+    }
+  ],
+  "drag": [
+    {
+      "file": "leap6.png",
+      "ms": 600,
+      "x": 800,
+      "y": 0
+    }
+  ],
+  "landing": [
+    {
+      "file": "fall1.png",
+      "ms": 120,
+      "x": 960,
+      "y": 0
+    },
+    {
+      "file": "fall2.png",
+      "ms": 220,
+      "x": 1120,
+      "y": 0
+    }
+  ],
+  "getup": [
+    {
+      "file": "fall3.png",
+      "ms": 180,
+      "x": 0,
+      "y": 160
+    },
+    {
+      "file": "fall4.png",
+      "ms": 240,
+      "x": 160,
+      "y": 160
+    }
+  ],
+  "fall": [
+    {
+      "file": "fall1.png",
+      "ms": 160,
+      "x": 960,
+      "y": 0
+    },
+    {
+      "file": "fall2.png",
+      "ms": 320,
+      "x": 1120,
+      "y": 0
+    }
+  ],
+  "wave": [
+    {
+      "file": "emote4.png",
+      "ms": 220,
+      "x": 800,
+      "y": 160
+    },
+    {
+      "file": "emote2.png",
+      "ms": 220,
+      "x": 480,
+      "y": 160
+    },
+    {
+      "file": "emote4.png",
+      "ms": 220,
+      "x": 800,
+      "y": 160
+    },
+    {
+      "file": "sit1.png",
+      "ms": 220,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "bow": [
+    {
+      "file": "gesture1.png",
+      "ms": 260,
+      "x": 1120,
+      "y": 160
+    },
+    {
+      "file": "gesture2.png",
+      "ms": 280,
+      "x": 0,
+      "y": 320
+    },
+    {
+      "file": "gesture1.png",
+      "ms": 220,
+      "x": 1120,
+      "y": 160
+    }
+  ],
+  "gesture": [
+    {
+      "file": "gesture1.png",
+      "ms": 260,
+      "x": 1120,
+      "y": 160
+    },
+    {
+      "file": "gesture2.png",
+      "ms": 280,
+      "x": 0,
+      "y": 320
+    },
+    {
+      "file": "gesture1.png",
+      "ms": 220,
+      "x": 1120,
+      "y": 160
+    }
+  ],
+  "sleep": [
+    {
+      "file": "sit3.png",
+      "ms": 1600,
+      "x": 480,
+      "y": 0
+    },
+    {
+      "file": "sit3b.png",
+      "ms": 420,
+      "x": 640,
+      "y": 0
+    }
+  ],
+  "scan": [
+    {
+      "file": "scan1.png",
+      "ms": 190,
+      "x": 160,
+      "y": 320
+    },
+    {
+      "file": "scan2.png",
+      "ms": 190,
+      "x": 320,
+      "y": 320
+    },
+    {
+      "file": "scan3.png",
+      "ms": 190,
+      "x": 480,
+      "y": 320
+    },
+    {
+      "file": "scan4.png",
+      "ms": 190,
+      "x": 640,
+      "y": 320
+    },
+    {
+      "file": "scan5.png",
+      "ms": 190,
+      "x": 800,
+      "y": 320
+    },
+    {
+      "file": "scan6.png",
+      "ms": 190,
+      "x": 960,
+      "y": 320
+    },
+    {
+      "file": "scan7.png",
+      "ms": 190,
+      "x": 1120,
+      "y": 320
+    },
+    {
+      "file": "scan8.png",
+      "ms": 190,
+      "x": 0,
+      "y": 480
+    }
+  ],
+  "rage": [
+    {
+      "file": "rage1.png",
+      "ms": 260,
+      "x": 160,
+      "y": 480
+    },
+    {
+      "file": "rage2.png",
+      "ms": 260,
+      "x": 320,
+      "y": 480
+    },
+    {
+      "file": "rage3.png",
+      "ms": 260,
+      "x": 480,
+      "y": 480
+    },
+    {
+      "file": "rage2.png",
+      "ms": 260,
+      "x": 320,
+      "y": 480
+    }
+  ],
+  "swing": [
+    {
+      "file": "swing1.png",
+      "ms": 160,
+      "x": 640,
+      "y": 480
+    },
+    {
+      "file": "swing2.png",
+      "ms": 160,
+      "x": 800,
+      "y": 480
+    },
+    {
+      "file": "swing3.png",
+      "ms": 160,
+      "x": 960,
+      "y": 480
+    },
+    {
+      "file": "swing4.png",
+      "ms": 160,
+      "x": 1120,
+      "y": 480
+    },
+    {
+      "file": "swing5.png",
+      "ms": 160,
+      "x": 0,
+      "y": 640
+    },
+    {
+      "file": "swing6.png",
+      "ms": 160,
+      "x": 160,
+      "y": 640
+    },
+    {
+      "file": "swing7.png",
+      "ms": 160,
+      "x": 320,
+      "y": 640
+    },
+    {
+      "file": "swing8.png",
+      "ms": 160,
+      "x": 480,
+      "y": 640
+    }
+  ],
+  "portal": [
+    {
+      "file": "portal1.png",
+      "ms": 160,
+      "x": 640,
+      "y": 640
+    },
+    {
+      "file": "portal2.png",
+      "ms": 160,
+      "x": 800,
+      "y": 640
+    },
+    {
+      "file": "portal3.png",
+      "ms": 160,
+      "x": 960,
+      "y": 640
+    },
+    {
+      "file": "portal4.png",
+      "ms": 160,
+      "x": 1120,
+      "y": 640
+    },
+    {
+      "file": "portal5.png",
+      "ms": 160,
+      "x": 0,
+      "y": 800
+    },
+    {
+      "file": "portal6.png",
+      "ms": 160,
+      "x": 160,
+      "y": 800
+    },
+    {
+      "file": "portal7.png",
+      "ms": 160,
+      "x": 320,
+      "y": 800
+    },
+    {
+      "file": "portal8.png",
+      "ms": 160,
+      "x": 480,
+      "y": 800
+    }
+  ],
+  "leap": [
+    {
+      "file": "leap1.png",
+      "ms": 150,
+      "x": 640,
+      "y": 800
+    },
+    {
+      "file": "leap2.png",
+      "ms": 150,
+      "x": 800,
+      "y": 800
+    },
+    {
+      "file": "leap3.png",
+      "ms": 150,
+      "x": 960,
+      "y": 800
+    },
+    {
+      "file": "leap4.png",
+      "ms": 150,
+      "x": 1120,
+      "y": 800
+    },
+    {
+      "file": "leap5.png",
+      "ms": 150,
+      "x": 0,
+      "y": 960
+    },
+    {
+      "file": "leap6.png",
+      "ms": 150,
+      "x": 800,
+      "y": 0
+    },
+    {
+      "file": "leap7.png",
+      "ms": 150,
+      "x": 160,
+      "y": 960
+    },
+    {
+      "file": "leap8.png",
+      "ms": 150,
+      "x": 320,
+      "y": 960
+    }
+  ],
+  "walk": [
+    {
+      "file": "leap2.png",
+      "ms": 140,
+      "x": 800,
+      "y": 800
+    },
+    {
+      "file": "leap4.png",
+      "ms": 140,
+      "x": 1120,
+      "y": 800
+    },
+    {
+      "file": "leap5.png",
+      "ms": 140,
+      "x": 0,
+      "y": 960
+    },
+    {
+      "file": "leap6.png",
+      "ms": 140,
+      "x": 800,
+      "y": 0
+    }
+  ],
+  "peek": [
+    {
+      "file": "peek1.png",
+      "ms": 280,
+      "x": 480,
+      "y": 960
+    },
+    {
+      "file": "peek2.png",
+      "ms": 280,
+      "x": 640,
+      "y": 960
+    },
+    {
+      "file": "peek3.png",
+      "ms": 280,
+      "x": 800,
+      "y": 960
+    },
+    {
+      "file": "peek4.png",
+      "ms": 280,
+      "x": 960,
+      "y": 960
+    }
+  ],
+  "climb": [
+    {
+      "file": "climb1.png",
+      "ms": 240,
+      "x": 1120,
+      "y": 960
+    },
+    {
+      "file": "climb2.png",
+      "ms": 240,
+      "x": 0,
+      "y": 1120
+    },
+    {
+      "file": "climb3.png",
+      "ms": 240,
+      "x": 160,
+      "y": 1120
+    },
+    {
+      "file": "climb4.png",
+      "ms": 240,
+      "x": 320,
+      "y": 1120
+    }
+  ],
+  "sit": [
+    {
+      "file": "sit1.png",
+      "ms": 1400,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "file": "sit2.png",
+      "ms": 1400,
+      "x": 320,
+      "y": 0
+    }
+  ],
+  "cursor": [
+    {
+      "file": "cur1.png",
+      "ms": 190,
+      "x": 480,
+      "y": 1120
+    },
+    {
+      "file": "cur2.png",
+      "ms": 190,
+      "x": 640,
+      "y": 1120
+    },
+    {
+      "file": "cur3.png",
+      "ms": 190,
+      "x": 800,
+      "y": 1120
+    },
+    {
+      "file": "cur4.png",
+      "ms": 190,
+      "x": 960,
+      "y": 1120
+    },
+    {
+      "file": "cur5.png",
+      "ms": 190,
+      "x": 1120,
+      "y": 1120
+    }
+  ],
+  "emote": [
+    {
+      "file": "emote1.png",
+      "ms": 210,
+      "x": 320,
+      "y": 160
+    },
+    {
+      "file": "emote2.png",
+      "ms": 210,
+      "x": 480,
+      "y": 160
+    },
+    {
+      "file": "emote3.png",
+      "ms": 210,
+      "x": 640,
+      "y": 160
+    },
+    {
+      "file": "emote4.png",
+      "ms": 210,
+      "x": 800,
+      "y": 160
+    },
+    {
+      "file": "emote5.png",
+      "ms": 210,
+      "x": 960,
+      "y": 160
+    }
+  ],
+  "click": [
+    {
+      "file": "emote1.png",
+      "ms": 200,
+      "x": 320,
+      "y": 160
+    },
+    {
+      "file": "sit1.png",
+      "ms": 200,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "touch-head": [
+    {
+      "file": "emote5.png",
+      "ms": 300,
+      "x": 960,
+      "y": 160
+    },
+    {
+      "file": "sit1.png",
+      "ms": 240,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "touch-body": [
+    {
+      "file": "rage2.png",
+      "ms": 190,
+      "x": 320,
+      "y": 480
+    },
+    {
+      "file": "emote1.png",
+      "ms": 210,
+      "x": 320,
+      "y": 160
+    },
+    {
+      "file": "sit1.png",
+      "ms": 190,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "touch-paws": [
+    {
+      "file": "fall3.png",
+      "ms": 190,
+      "x": 0,
+      "y": 160
+    },
+    {
+      "file": "gesture1.png",
+      "ms": 210,
+      "x": 1120,
+      "y": 160
+    },
+    {
+      "file": "sit1.png",
+      "ms": 190,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "run": [
+    {
+      "file": "leap2.png",
+      "ms": 90,
+      "x": 800,
+      "y": 800
+    },
+    {
+      "file": "leap4.png",
+      "ms": 90,
+      "x": 1120,
+      "y": 800
+    },
+    {
+      "file": "leap5.png",
+      "ms": 90,
+      "x": 0,
+      "y": 960
+    },
+    {
+      "file": "leap6.png",
+      "ms": 90,
+      "x": 800,
+      "y": 0
+    }
+  ]
 }

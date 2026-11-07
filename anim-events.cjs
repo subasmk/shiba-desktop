@@ -17,10 +17,10 @@
     'celebrate':        { gif: 'celebrate_jump.gif', sprite: 'leap',    ms: 2600 }, // focus timer completed
     'wake-trigger':     { gif: 'summon.gif',         sprite: 'portal',  ms: 2200 }, // "Hey Shiba" heard
     'listening-start':  { gif: 'charging.gif',       sprite: 'scan',    ms: 1800 }, // voice call starts listening
-    'power-run':        { gif: 'hacking.gif',        sprite: 'gesture', ms: 2400 }, // power-mode command running
+    'power-run':        { gif: 'hacking.gif',        sprite: 'scan',    ms: 2400 }, // power-mode command running (scan = the laptop-working sprite; gesture could not convey work)
     'timer-ignored':    { gif: 'rage_mode.gif',      sprite: 'rage',    ms: 2400 }, // break nudge ignored repeatedly
     'roam-fly':         { gif: 'fly.gif',            sprite: 'leap',    ms: 2600 }, // roam: long move
-    'roam-fast':        { gif: 'web_swing.gif',      sprite: 'swing',   ms: 2200 }, // roam: fast move
+    'roam-fast':        { gif: 'web_swing.gif',      sprite: 'run',   ms: 2200 }, // roam: fast move (run = fast walk cycle; swing is the katana attack, wrong meaning for travel)
     'perch-climb':      { gif: 'climb.gif',          sprite: 'climb',   ms: 2000 }, // climbing onto a title bar
     'drag-drop':        { gif: 'fall_getup.gif',     sprite: 'getup',   ms: 1800 }, // dropped after a drag
     'proactive-comment':{ gif: 'gesture_point.gif',  sprite: 'gesture', ms: 2200 }, // pet speaks up / points

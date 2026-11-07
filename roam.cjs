@@ -6,7 +6,7 @@
 //
 // Behaviour: idle at the bottom of the work area -> portal vanish -> portal
 // appear at a new spot -> walk along the bottom to the target -> idle.
-// Long walks fly ('leap'), medium walks web-swing ('swing') - see
+// Long walks fly ('leap'), medium walks run ('run', the walk frames at a faster cadence) - see
 // anim-events.cjs roamMoveKind for the shared thresholds.
 //
 // Last-mile item 5 adds two behaviours, both fed by the context poller:
@@ -63,7 +63,7 @@
     moveKind(distance) {
       const d = Math.abs(distance || 0);
       if (d >= this.flyPx) return 'leap';
-      if (d >= this.fastPx) return 'swing';
+      if (d >= this.fastPx) return 'run';
       return 'walk';
     }
     perchInvalid(input) {

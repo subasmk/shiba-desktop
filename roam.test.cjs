@@ -87,7 +87,7 @@ test('cursor chase: runs at the cursor for a few seconds, then settles', () => {
   const end = ctl.step({ now: 14100, x, y: groundY, area, paused: false, cursorPlay: true, cursor: { x: 600, y: 700 } });
   a.equal(ctl.state, 'idle'); a.equal(end.animation, 'idle'); // chase window expired
 });
-test('walk animation kind: long moves leap, medium swing, short walk', () => {
+test('walk animation kind: long moves leap, medium run, short walk', () => {
   const ctl = new RoamController(() => 0);
-  a.equal(ctl.moveKind(900), 'leap'); a.equal(ctl.moveKind(400), 'swing'); a.equal(ctl.moveKind(120), 'walk');
+  a.equal(ctl.moveKind(900), 'leap'); a.equal(ctl.moveKind(400), 'run'); a.equal(ctl.moveKind(120), 'walk');
 });

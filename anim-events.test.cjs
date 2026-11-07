@@ -48,3 +48,42 @@ test('old-pack GIF overlay layer stays retired: sprites carry every event', () =
   a.ok(!renderer.includes('pet-gif'), 'renderer still has the pet-gif element/channel');
   a.ok(!preload.includes("'pet-gif'"), 'preload still exposes the pet-gif channel');
 });
+
+// Behavior equivalence after the GIF overlay retirement: every event must
+// keep a sprite whose visible art carries the event's intended meaning in
+// the new style (verified by eye against the atlas, then pinned here so a
+// later remap cannot silently drain an event's effect).
+test('each event sprite matches its intended visible behavior', () => {
+  const intended = {
+    'celebrate': 'leap',        // focus done: joy jump (8-frame leap arc)
+    'wake-trigger': 'portal',   // summon: golden portal ring appear
+    'listening-start': 'scan',  // listening: dog at laptop scanning the hologram
+    'power-run': 'scan',        // command running: same laptop-working art, not a bare point
+    'timer-ignored': 'rage',    // flames + anger vein
+    'roam-fly': 'leap',         // long travel: big bounding arc
+    'roam-fast': 'run',         // fast travel: fast walk cycle, never the katana attack
+    'perch-climb': 'climb',
+    'drag-drop': 'getup',       // drop lifecycle: landing -> getup -> idle chain
+    'proactive-comment': 'gesture',
+    'scene-change': 'gesture',
+    'chat-reaction': 'emote',
+    'tap-combo': 'swing',       // playful hit: katana swing with slash arcs
+    'long-idle': 'sleep',
+    'idle': 'idle',
+    'portal': 'portal',
+    'vanish': 'portal',
+    'cursor-chase': 'cursor',
+  };
+  for (const [name, sprite] of Object.entries(intended))
+    a.equal(AE.forEvent(name).sprite, sprite, 'event ' + name + ' lost its intended sprite');
+  // Travel must never play the attack animation.
+  a.notEqual(AE.forEvent('roam-fast').sprite, 'swing', 'fast roam shows the katana attack while merely moving');
+  a.notEqual(AE.forEvent('roam-fly').sprite, 'swing', 'long roam shows the katana attack while merely moving');
+});
+test('run animation exists and is a faster walk cycle', () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
+  a.ok(Array.isArray(manifest.run) && manifest.run.length >= 3, 'run missing from manifest');
+  const runMs = manifest.run.reduce((t, f) => t + f.ms, 0);
+  const walkMs = manifest.walk.reduce((t, f) => t + f.ms, 0);
+  a.ok(runMs < walkMs, 'run must play faster than walk to read as hurrying');
+});
