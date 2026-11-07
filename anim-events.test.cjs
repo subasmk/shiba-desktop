@@ -39,3 +39,12 @@ test('long idle trigger', () => {
   a.equal(AE.isLongIdle(1000, 1000 + 5 * 60000), true);
   a.equal(AE.isLongIdle(1000, 1000 + 60000), false);
 });
+test('old-pack GIF overlay layer stays retired: sprites carry every event', () => {
+  const main = fs.readFileSync(path.join(__dirname, 'main.cjs'), 'utf8');
+  const renderer = fs.readFileSync(path.join(__dirname, 'renderer.js'), 'utf8');
+  const preload = fs.readFileSync(path.join(__dirname, 'preload.cjs'), 'utf8');
+  a.ok(!main.includes("send('pet-gif'"), 'main still sends pet-gif overlays');
+  a.ok(!renderer.includes('showGif'), 'renderer still shows pack GIF overlays');
+  a.ok(!renderer.includes('pet-gif'), 'renderer still has the pet-gif element/channel');
+  a.ok(!preload.includes("'pet-gif'"), 'preload still exposes the pet-gif channel');
+});

@@ -7,7 +7,7 @@ let tamilSink=null;api.on('tamil-setup-progress',d=>{if(tamilSink)tamilSink(d);}
  async function ensureTamilVoice(lang){if(lang!=='ta'&&lang!=='tanglish')return;const st=await api.call('tamil-setup-status');if(st&&st.ready){status('Tamil voice is ready.');return;}status('Downloading the Tamil voice - one-time, about 150 MB. The pet uses English until this finishes.');tamilSink=p=>{const pct=p.total?Math.round(100*p.bytes/p.total)+'%':Math.round(p.bytes/1048576)+' MB';status('Downloading Tamil voice: '+p.step+' '+pct);};try{const r=await api.call('tamil-setup-run');if(r&&r.ok)status('Tamil voice ready - the pet will speak '+(lang==='ta'?'Tamil':'Tanglish')+' now.');else status('Tamil voice download is already running.');}catch(e){status('Tamil voice download failed: '+e.message+' Falling back to English for now.');}finally{tamilSink=null;}}
 function close(){window.shibaVoice?.session.stop();api.send('panel',false);}
 if(mode==='pet'){
- root.innerHTML='<div class="pet-stage"><span class="reaction"></span><span class="wake-live hidden" title="Wake word listening">🎙</span><canvas class="pet-image" width="160" height="160" aria-label="Shiba desktop pet"></canvas><img class="pet-gif hidden" alt=""></div>';
+ root.innerHTML='<div class="pet-stage"><span class="reaction"></span><span class="wake-live hidden" title="Wake word listening">🎙</span><canvas class="pet-image" width="160" height="160" aria-label="Shiba desktop pet"></canvas></div>';
  const atlas=new Image();atlas.src='1-sprites-clean.png';let sprites={},seq=[],idx=0,nextAt=0,anim='idle',finished=false,blend=null,lastDrawn=null;const behavior=new PetBehavior();behavior.quiet(performance.now());
  const finite=new Set(['landing','getup','fall','wave','click','bow','gesture','rage','sleep','scan','sit','swing','portal','leap','peek','climb','emote','cursor','touch-head','touch-body','touch-paws']);const chain={landing:'getup',fall:'getup'};
  fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;play('idle');});
@@ -24,11 +24,9 @@ if(mode==='pet'){
    }
    if(t>=nextAt){nextAt=t+frame.ms;idx++;if(idx>=seq.length){if(finite.has(anim))finished=true;else idx=0;}}
   }
-  const action=behavior.due(t,anim);if(action)play(action);if(window.AnimEvents&&anim==='idle'&&!sleepFired&&AnimEvents.isLongIdle(lastInteract,t)){sleepFired=true;const ev=AnimEvents.forEvent('long-idle');play(ev.sprite);showGif(ev);}requestAnimationFrame(tick);
+  const action=behavior.due(t,anim);if(action)play(action);if(window.AnimEvents&&anim==='idle'&&!sleepFired&&AnimEvents.isLongIdle(lastInteract,t)){sleepFired=true;play(AnimEvents.forEvent('long-idle').sprite);}requestAnimationFrame(tick);
  }requestAnimationFrame(tick);
- let gifTimer,lastInteract=performance.now(),sleepFired=false,tapTimes=[];
- function showGif(ev){if(!ev||!ev.gif)return;const img=document.querySelector('.pet-gif');if(!img)return;img.src=ev.gif;img.classList.remove('hidden');requestAnimationFrame(()=>img.classList.add('on'));clearTimeout(gifTimer);gifTimer=setTimeout(()=>{img.classList.remove('on');setTimeout(()=>{img.classList.add('hidden');img.removeAttribute('src');},240);},ev.ms||2000);}
- api.on('pet-gif',showGif);
+ let lastInteract=performance.now(),sleepFired=false,tapTimes=[];
  api.on('pet-state',name=>{behavior.quiet(performance.now());play(name);});api.on('pet-say',line=>{const e=document.querySelector('.reaction');if(e){e.textContent=line;setTimeout(()=>{if(e.textContent===line)e.textContent='';},6000);}});
  let offerShown=false,offerTimer;api.on('pet-offer',d=>{const e=document.querySelector('.reaction');if(!e||!d||typeof d.text!=='string')return;offerShown=true;e.textContent=d.text+' (opens '+d.host+' - nothing else runs)';e.classList.add('offer');clearTimeout(offerTimer);offerTimer=setTimeout(()=>{offerShown=false;e.classList.remove('offer');if(e.textContent.startsWith(d.text))e.textContent='';},120000);});
  document.querySelector('.reaction').addEventListener('pointerdown',e=>{if(!offerShown)return;e.stopPropagation();offerShown=false;clearTimeout(offerTimer);const el=document.querySelector('.reaction');el.classList.remove('offer');el.textContent='Opening...';setTimeout(()=>{if(el.textContent==='Opening...')el.textContent='';},3000);api.send('scout-open');});
