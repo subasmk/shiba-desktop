@@ -56,9 +56,11 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const pb3=await p.evaluate(()=>({started:window.shibaVoice.lastPlayback.started,ms:Math.round(1000*window.shibaVoice.lastPlayback.samples/window.shibaVoice.lastAudioSampleRate)}));
   await p.evaluate(()=>window.shibaVoice.session.speechStart());
   await waitFor('barge-cut',st=>st.phase==='listening'&&st.pb&&st.pb.ended===true,30000);
+  // In-page measurement: poll/evaluate latency made the wall-clock read flaky.
+  const cutMs=await p.evaluate(()=>window.shibaVoice.lastPlayback.ms);
   const playedMs=Date.now()-pb3.started;
-  assert.ok(playedMs<pb3.ms*0.6,'barge-in must cut playback early: played '+playedMs+'ms of '+pb3.ms+'ms');
-  console.log('BARGE-IN PASS playedMs='+playedMs+' of '+pb3.ms);
+  assert.ok(cutMs&&cutMs<pb3.ms*0.6,'barge-in must cut playback early: in-page cut at '+cutMs+'ms (wall '+playedMs+'ms) of '+pb3.ms+'ms');
+  console.log('BARGE-IN PASS cutMs='+cutMs+' (wall '+playedMs+') of '+pb3.ms);
   await p.locator('#voice-stop').click();
   await waitFor('stop-off',st=>st.phase==='off',30000);
   assert.equal(await p.evaluate(()=>window.shibaVoice.session.active),false);
