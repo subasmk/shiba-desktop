@@ -6,6 +6,16 @@ const {Scout,validateOfferUrl}=require('./scout.cjs');const powerTools=require('
 // Pin the data folder to the stable package identifier: the visible name (Rex)
 // may change, but settings, voice models and history must never move with it.
 app.setPath('userData', path.join(app.getPath('appData'), 'shiba-desktop'));
+const os=require('node:os');const {createStartupLog}=require('./startup-log.cjs');
+const slog=createStartupLog(app.getPath('userData'));
+slog.log('process-start',{platform:process.platform,arch:process.arch,electron:process.versions.electron,node:process.versions.node,chrome:process.versions.chrome,osRelease:os.release(),exe:app.getPath('exe'),packaged:app.isPackaged});
+if(!app.requestSingleInstanceLock()){slog.log('second-instance-quit');app.exit(0);}
+process.on('uncaughtException',e=>{slog.log('uncaught-exception',{message:String(e&&e.message||e)});});
+process.on('unhandledRejection',e=>{slog.log('unhandled-rejection',{message:String(e&&e.message||e)});});
+app.on('render-process-gone',(_,wc,d)=>slog.log('render-process-gone',{reason:d&&d.reason,exitCode:d&&d.exitCode}));
+app.on('gpu-process-crashed',(_,killed)=>slog.log('gpu-process-crashed',{killed:!!killed}));
+app.on('child-process-gone',(_,d)=>slog.log('child-process-gone',{type:d&&d.type,reason:d&&d.reason,exitCode:d&&d.exitCode}));
+app.on('second-instance',()=>{slog.log('second-instance');try{if(panel&&!panel.isDestroyed()){panelSize(true);panel.showInactive();}}catch{}});
 let memory=null,contextMonitor=null,proactiveEngine=null,voiceActive=false;
 let scout=null,pendingPower=null,groqKey='',wakeMuted=false,wakeHotkeyRegistered=false;
 const tamilModelDir=path.join(voiceBackend.models,'tamil-voice');
@@ -19,10 +29,14 @@ let panel,pet,drag=false,settings={},savePath;let cloudKey='';
 function save(){if(history)settings.petHistory=history.counts;if(memory)settings.petMemory=memory.snapshot();fs.writeFileSync(savePath,JSON.stringify(settings,null,2),{mode:0o600});}
 function win(w,h){const cap=!!process.env.SHIBA_CAPTURE;const x=new BrowserWindow({width:w,height:h,frame:false,thickFrame:false,transparent:!cap,backgroundColor:cap?'#000000':undefined,resizable:false,alwaysOnTop:true,skipTaskbar:true,show:false,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true}});x.setAlwaysOnTop(true,'floating');x.webContents.setWindowOpenHandler(()=>({action:'deny'}));x.webContents.on('will-navigate',e=>e.preventDefault());return x;}
 function panelSize(open){const area=screen.getPrimaryDisplay().workArea;panel.setBounds({x:Math.round(area.x+(area.width-650)/2),y:area.y,width:650,height:open?260:24});if(process.platform==='win32')panel.setShape(open?[]:[{x:0,y:0,width:650,height:24}]);panel.webContents.send('panel-state',open);}
-app.whenReady().then(()=>{savePath=path.join(app.getPath('userData'),'settings.json');try{settings=JSON.parse(fs.readFileSync(savePath));}catch{};history=new PetHistory(settings.petHistory);memory=new PetMemory(settings.petMemory);contextMonitor=new ContextMonitor({intervalMs:5000});if(settings.contextAware)contextMonitor.start();proactiveEngine=new ProactiveEngine({enabled:!!settings.proactive});if(settings.cloudSecret&&safeStorage.isEncryptionAvailable()){try{cloudKey=safeStorage.decryptString(Buffer.from(settings.cloudSecret,'base64'));}catch{}}
+let loader=null,panelShown=false,loaderStuckTimer=null;
+const loaderPath=path.join(__dirname,'loader.html');
+function openLoader(phase){if(process.env.SHIBA_CAPTURE)return;try{if(loader&&!loader.isDestroyed()){loader.loadFile(loaderPath,{query:{phase,log:slog.path}});return;}loader=new BrowserWindow({width:430,height:190,resizable:false,autoHideMenuBar:true,alwaysOnTop:true,show:true,backgroundColor:'#17171c',title:'Rex',webPreferences:{contextIsolation:true,nodeIntegration:false,sandbox:true}});loader.on('closed',()=>{loader=null;slog.log('loader-closed');if(!panelShown)app.exit(0);});loader.loadFile(loaderPath,{query:{phase,log:slog.path}});loaderStuckTimer=setTimeout(()=>{if(!panelShown){slog.log('loader-stuck-45s');openLoader('stuck');}},45000);loaderStuckTimer.unref();slog.log('loader-open');}catch(e){slog.log('loader-failed',{message:String(e&&e.message||e)});}}
+function closeLoader(){if(loaderStuckTimer){clearTimeout(loaderStuckTimer);loaderStuckTimer=null;}if(loader&&!loader.isDestroyed()){slog.log('loader-done');const l=loader;loader=null;l.destroy();}}
+app.whenReady().then(()=>{savePath=path.join(app.getPath('userData'),'settings.json');const firstRun=!fs.existsSync(savePath);slog.log('app-ready',{firstRun});openLoader('starting');try{settings=JSON.parse(fs.readFileSync(savePath));}catch{};history=new PetHistory(settings.petHistory);memory=new PetMemory(settings.petMemory);contextMonitor=new ContextMonitor({intervalMs:5000});if(settings.contextAware)contextMonitor.start();proactiveEngine=new ProactiveEngine({enabled:!!settings.proactive});if(settings.cloudSecret&&safeStorage.isEncryptionAvailable()){try{cloudKey=safeStorage.decryptString(Buffer.from(settings.cloudSecret,'base64'));}catch{}}
  if(settings.groqSecret&&safeStorage.isEncryptionAvailable()){try{groqKey=safeStorage.decryptString(Buffer.from(settings.groqSecret,'base64'));}catch{}}scout=new Scout({feeds:Array.isArray(settings.scoutFeeds)&&settings.scoutFeeds.length?settings.scoutFeeds:undefined});applyWakeHotkey();
- panel=win(650,24);panel.loadFile(path.join(__dirname,'index.html'),{query:{mode:'panel'}});panel.once('ready-to-show',()=>{panelSize(false);panel.showInactive();});
- pet=win(120,130);pet.loadFile(path.join(__dirname,'index.html'),{query:{mode:'pet'}});
+ panel=win(650,24);panel.loadFile(path.join(__dirname,'index.html'),{query:{mode:'panel'}});panel.once('ready-to-show',()=>{panelSize(false);panel.showInactive();panelShown=true;slog.log('panel-shown');closeLoader();});
+ pet=win(120,130);pet.loadFile(path.join(__dirname,'index.html'),{query:{mode:'pet'}});pet.once('ready-to-show',()=>{slog.log('pet-ready');if(firstRun&&!process.env.SHIBA_CAPTURE){const area=screen.getPrimaryDisplay().workArea;const pos=petPosition(area.x+area.width-180,area.y+area.height-190,area);pet.setPosition(pos.x,pos.y);pet.showInactive();pet.webContents.send('pet-state','wave');panelSize(true);slog.log('first-run-welcome');}});
  session.defaultSession.setPermissionRequestHandler((webContents,permission,callback)=>{callback(webContents===panel.webContents&&permission==='media');});
  ipcMain.handle('voice-ready',()=>voiceBackend.call('ready'));
  ipcMain.handle('voice-transcribe',(_,samples)=>voiceBackend.call('transcribe',{samples}));
@@ -125,6 +139,6 @@ app.whenReady().then(()=>{savePath=path.join(app.getPath('userData'),'settings.j
  setInterval(()=>{if(!settings.roaming||drag||!pet||pet.isDestroyed()||!pet.isVisible()){if(roamCtl.state!=='idle')roamCtl.reset(Date.now());lastRoamAnim='';return;}const [x,y]=pet.getPosition();const area=screen.getDisplayNearestPoint({x,y}).workArea;const snap=settings.contextAware&&contextMonitor?contextMonitor.snapshot():null;const step=roamCtl.step({now:Date.now(),x,y,area,paused:false,perch:settings.perch!==false,fgRect:snap?snap.rect:null,fgKey:snap?snap.app+'|'+snap.title:null,cursorPlay:!!settings.cursorPlay,cursor:lastCursor});if(step.move){const pos=petPosition(step.move.x,step.move.y,area);pet.setPosition(pos.x,pos.y);}if(step.animation&&step.animation!==lastRoamAnim){lastRoamAnim=step.animation;pet.webContents.send('pet-state',step.animation);const evName={leap:'roam-fly',run:'roam-fast',climb:'perch-climb',cursor:'cursor-chase',portal:'portal'}[step.animation];if(evName)petAnim(evName);}},16).unref();
  setInterval(async()=>{if(!settings.scout||!scout||!proactiveEngine)return;if(!proactiveEngine.canAdmitExternal(Date.now()))return;let offer=null;try{offer=await scout.poll(Date.now(),String(settings.notes||''));}catch{}if(!offer)return;if(!proactiveEngine.admitExternal('scout'))return;pet?.webContents.send('pet-offer',{text:offer.text,host:offer.host});panel?.webContents.send('pet-offer',{text:offer.text,host:offer.host});},60000).unref();
 });
-app.on('before-quit',()=>{voiceBackend.cancel();voiceEngine.stopSidecar();try{globalShortcut.unregisterAll();}catch{}});
+app.on('before-quit',()=>{slog.log('before-quit');voiceBackend.cancel();voiceEngine.stopSidecar();try{globalShortcut.unregisterAll();}catch{}});
 app.on('window-all-closed',()=>app.quit());
 

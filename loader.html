@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{margin:0;background:#17171c;color:#eee;font:14px/1.5 system-ui,sans-serif;display:flex;flex-direction:column;justify-content:center;height:100vh;box-sizing:border-box;padding:18px 22px}
+h1{font-size:17px;margin:0 0 8px}
+.dim{color:#9a9aa5;font-size:12px;margin-top:10px}
+.path{user-select:all;color:#8ecbff;font-size:12px;word-break:break-all;margin-top:6px}
+</style></head><body>
+<h1 id="t">Rex is starting...</h1>
+<div id="m">First launch can take a moment. The pet appears at the top edge of your screen.</div>
+<div class="dim" id="d">If this window closes, Rex is running - look for the small strip at the top-center edge.</div>
+<div class="path" id="p"></div>
+<script>
+const q=new URLSearchParams(location.search);
+if(q.get('phase')==='stuck'){
+  document.getElementById('t').textContent='Rex did not finish starting.';
+  document.getElementById('m').textContent='Something on this PC stopped it. This file says how far it got - send it for help:';
+  document.getElementById('d').style.display='none';
+}
+const log=q.get('log');if(log)document.getElementById('p').textContent=log;
+</script></body></html>

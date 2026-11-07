@@ -1,15 +1,15 @@
 {
   "name": "shiba-desktop",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "description": "Standalone small desktop companion",
   "main": "main.cjs",
   "scripts": {
     "start": "electron .",
-    "test": "node --test core.test.cjs apps.test.cjs pet-history.test.cjs voice-session.test.cjs voice-backend.test.cjs routines.test.cjs context.test.cjs proactive.test.cjs transliterate.test.cjs tamil-voice.test.cjs pc-control.test.cjs pet-memory.test.cjs banter.test.cjs roam.test.cjs wakeword.test.cjs voice-clone.test.cjs scout.test.cjs power-tools.test.cjs web-tools.test.cjs groq.test.cjs anim-events.test.cjs speech-chunker.test.cjs selftest.test.cjs voice-stream.test.cjs tamil-setup.test.cjs",
+    "test": "node --test core.test.cjs apps.test.cjs pet-history.test.cjs voice-session.test.cjs voice-backend.test.cjs routines.test.cjs context.test.cjs proactive.test.cjs transliterate.test.cjs tamil-voice.test.cjs pc-control.test.cjs pet-memory.test.cjs banter.test.cjs roam.test.cjs wakeword.test.cjs voice-clone.test.cjs scout.test.cjs power-tools.test.cjs web-tools.test.cjs groq.test.cjs anim-events.test.cjs speech-chunker.test.cjs selftest.test.cjs voice-stream.test.cjs tamil-setup.test.cjs startup-log.test.cjs",
     "check": "node --check main.cjs && node --check preload.cjs && node --check core.cjs && node --check renderer.js && node --check voice-ui.js && node --check voice-session.cjs && node --check voice-backend.cjs && node --check voice-worker.cjs && node --check setup.cjs && node --check apps.cjs && node --check pet-history.cjs && node --check routines.cjs && node --check context.cjs && node --check proactive.cjs && node --check transliterate.cjs && node --check tamil-voice.cjs && node --check pc-control.cjs && node --check pet-memory.cjs && node --check banter.cjs && node --check roam.cjs && node --check wakeword.cjs && node --check voice-clone.cjs && node --check scout.cjs && node --check power-tools.cjs && node --check web-tools.cjs && node --check groq.cjs && node --check anim-events.cjs && node --check speech-chunker.cjs && node --check selftest.cjs && node --check tools/tamil-voice-setup.cjs",
     "build:win": "electron-builder --win portable --x64",
-    "test:ci": "node --test core.test.cjs apps.test.cjs pet-history.test.cjs voice-session.test.cjs routines.test.cjs context.test.cjs proactive.test.cjs transliterate.test.cjs tamil-voice.test.cjs pc-control.test.cjs pet-memory.test.cjs banter.test.cjs roam.test.cjs wakeword.test.cjs voice-clone.test.cjs scout.test.cjs power-tools.test.cjs web-tools.test.cjs groq.test.cjs anim-events.test.cjs speech-chunker.test.cjs selftest.test.cjs voice-stream.test.cjs tamil-setup.test.cjs"
+    "test:ci": "node --test core.test.cjs apps.test.cjs pet-history.test.cjs voice-session.test.cjs routines.test.cjs context.test.cjs proactive.test.cjs transliterate.test.cjs tamil-voice.test.cjs pc-control.test.cjs pet-memory.test.cjs banter.test.cjs roam.test.cjs wakeword.test.cjs voice-clone.test.cjs scout.test.cjs power-tools.test.cjs web-tools.test.cjs groq.test.cjs anim-events.test.cjs speech-chunker.test.cjs selftest.test.cjs voice-stream.test.cjs tamil-setup.test.cjs startup-log.test.cjs"
   },
   "devDependencies": {
     "electron": "45.2.1",
@@ -76,6 +76,9 @@
         "!node_modules/sherpa-onnx-win-*/**",
         "!node_modules/sherpa-onnx-darwin-*/**"
       ]
+    },
+    "portable": {
+      "splashImage": "assets/splash.bmp"
     }
   },
   "dependencies": {

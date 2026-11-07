@@ -39,6 +39,36 @@ jobs:
         run: npm run build:win
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Portable wrapper launch test (real Rex exe: self-extract, start, show)
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem dist/*.exe | Select-Object -First 1
+          Write-Host "Launching portable: $($exe.FullName) ($([math]::Round($exe.Length/1MB)) MB)"
+          Remove-Item "$env:APPDATA/shiba-desktop/startup.log","$env:APPDATA/shiba-desktop/startup-prev.log" -ErrorAction SilentlyContinue
+          Start-Process -FilePath $exe.FullName
+          $ok=$false; $t=0
+          while($t -lt 240){
+            Start-Sleep 5; $t+=5
+            $log="$env:APPDATA/shiba-desktop/startup.log"
+            if(Test-Path $log){
+              $c = Get-Content $log -Raw
+              if($c -match 'panel-shown'){ $ok=$true; break }
+            }
+          }
+          Write-Host "--- startup.log after ${t}s ---"
+          Get-Content "$env:APPDATA/shiba-desktop/startup.log" -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force pkg-shots | Out-Null
+          Copy-Item "$env:APPDATA/shiba-desktop/startup*.log" pkg-shots/ -ErrorAction SilentlyContinue
+          Add-Type -AssemblyName System.Drawing,System.Windows.Forms
+          $b=[System.Windows.Forms.SystemInformation]::VirtualScreen
+          $bmp=New-Object System.Drawing.Bitmap $b.Width,$b.Height
+          $g=[System.Drawing.Graphics]::FromImage($bmp)
+          $g.CopyFromScreen($b.Left,$b.Top,0,0,$bmp.Size)
+          $bmp.Save("pkg-shots/portable-launch.png")
+          Write-Host "screenshot saved; stopping Rex"
+          Get-Process Rex -ErrorAction SilentlyContinue | Stop-Process -Force
+          if(-not $ok){ Write-Error "PORTABLE LAUNCH FAILED: panel-shown milestone not reached in 240s"; exit 1 }
+          Write-Host "PORTABLE-LAUNCH-PASS in ${t}s"
       - name: Generate gapped mic fixture (clean turn boundaries)
         run: node tools/gen-gapped-fixture.cjs
       - name: Prepare temp dirs
@@ -57,6 +87,7 @@ jobs:
           Copy-Item D:/tmp/shiba-packaged-voice.png pkg-shots/ -ErrorAction SilentlyContinue
           Copy-Item C:/tmp/shiba-packaged-voice.png pkg-shots/ -ErrorAction SilentlyContinue
           Copy-Item ./voice-timing.log pkg-shots/ -ErrorAction SilentlyContinue
+          Copy-Item "$env:APPDATA/shiba-desktop/startup*.log" pkg-shots/ -ErrorAction SilentlyContinue
           Get-ChildItem pkg-shots
       - name: Upload packaged-run screenshots
         if: always()
