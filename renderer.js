@@ -9,14 +9,14 @@ function close(){window.shibaVoice?.session.stop();api.send('panel',false);}
 if(mode==='pet'){
  root.innerHTML='<div class="pet-stage"><span class="reaction"></span><span class="wake-live hidden" title="Wake word listening">🎙</span><canvas class="pet-image" width="320" height="320" aria-label="Desktop pet"></canvas></div>';
  const atlas=new Image();atlas.src='1-sprites-clean.png';const atlas2=new Image();atlas2.src='2-sprites-new.png';const atlas3=new Image();atlas3.src='3-sprites-dex.png';const sheets=[atlas,atlas2,atlas3];const SHEET_CELL=[160,160,320];function sheetFor(f){const s=sheets[f&&f.a|0];return s||atlas;}function cellFor(f){return SHEET_CELL[f&&f.a|0]||160;}
- let sprites={},seq=[],idx=0,nextAt=0,anim='idle',resolvedAnim='idle',finished=false,blend=null,lastDrawn=null,mascot='dex',requestedAnim='idle';const behavior=new PetBehavior();behavior.quiet(performance.now());
+ let sprites={},seq=[],idx=0,nextAt=0,anim='idle',resolvedAnim='idle',finished=false,blend=null,lastDrawn=null,mascot='dex',wantedMascot='dex',requestedAnim='idle';const behavior=new PetBehavior();behavior.quiet(performance.now());
  // Optional second mascot (user-approved Nov 16 2026): when mascot is 'dex',
  // a requested state plays its 'dex-' variant when the dex sheet has it and
  // falls back to 'dex-idle' otherwise (the dex sheet covers fewer actions).
  function resolveAnim(name){if(name.startsWith('dex-')&&sprites[name])return name;if(mascot==='dex'){return sprites['dex-'+name]?'dex-'+name:'dex-idle';}return name;}
- function setMascot(m){let next=(m==='dex')?'dex':'rex';if(next==='dex'&&!sprites['dex-idle'])next='rex';const cv=$('.pet-image');if(cv)cv.style.imageRendering=next==='rex'?'':'auto';if(next===mascot)return;mascot=next;play(requestedAnim);}
+ function setMascot(m){wantedMascot=(m==='dex')?'dex':'rex';let next=wantedMascot;if(next==='dex'&&!sprites['dex-idle'])next='rex';const cv=$('.pet-image');if(cv)cv.style.imageRendering=next==='rex'?'':'auto';if(next===mascot)return;mascot=next;play(requestedAnim);}
  const finite=new Set(['landing','getup','fall','wave','click','bow','gesture','rage','sleep','scan','sit','swing','leap','emote','touch-head','touch-body','touch-paws']);const chain={landing:'getup',fall:'getup'};
- fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;play('idle');});
+ fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;setMascot(wantedMascot);play('idle');});
  function play(name){requestedAnim=name;const resolved=resolveAnim(name);if(resolved!==resolvedAnim&&lastDrawn)blend={sx:lastDrawn.x,sy:lastDrawn.y,sa:lastDrawn.a,until:performance.now()+90};anim=name;resolvedAnim=resolved;seq=sprites[resolved]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;} // anim keeps the requested name so finite/chain semantics survive mascot fallbacks
  function tick(t){
   if(seq.length){
