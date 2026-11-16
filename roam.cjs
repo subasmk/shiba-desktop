@@ -85,17 +85,13 @@
       const dt = this.lastNow ? Math.min(200, now - this.lastNow) : 0;
       this.lastNow = now;
       const groundY = area.y + area.height - petH;
+      // User decision: the pet STAYS at the height it was dragged to - no
+      // automatic fall to the bottom. Roaming walks along the placed level.
+      const holdY = Number.isFinite(input.y) ? Math.min(Math.max(input.y, area.y), groundY) : groundY;
       if (paused) { if (this.state !== 'idle') this.reset(now); return { move: null, animation: null }; }
       if (!this.nextMoveAt) this.schedule(now);
       switch (this.state) {
         case 'idle': {
-          // Grounding: if the pet is resting above the floor (e.g. after a
-          // drag-out drop mid-screen), fall back to the ground first instead
-          // of teleporting down on the first walk step.
-          if (Number.isFinite(input.y) && input.y < groundY - 8) {
-            this.schedule(now);
-            return { move: { x, y: groundY }, animation: 'fall' };
-          }
           if (now < this.nextMoveAt) return { move: null, animation: null };
           // Perch first when a suitable foreground window is offered.
           if (input.perch && input.fgRect && input.fgKey && this.random() < this.perchChance) {
@@ -128,7 +124,7 @@
         }
         case 'walk': {
           const dx = this.targetX - x;
-          if (Math.abs(dx) <= 3) { this.state = 'idle'; this.schedule(now); return { move: { x: this.targetX, y: groundY }, animation: 'idle' }; }
+          if (Math.abs(dx) <= 3) { this.state = 'idle'; this.schedule(now); return { move: { x: this.targetX, y: holdY }, animation: 'idle' }; }
           // Eased velocity: ramp up over ~300ms, ease out over the last ~100px,
           // and carry fractional pixels so 60 Hz window moves stay fluid.
           const accel = Math.min(1, (now - (this.moveStart || now)) / 300);
@@ -139,7 +135,7 @@
           if (stepPx >= Math.abs(dx)) { stepPx = Math.abs(dx); this.carry = 0; }
           else this.carry = fl - stepPx;
           const nx = x + Math.sign(dx) * stepPx;
-          return { move: { x: nx, y: groundY }, animation: this.moveAnim };
+          return { move: { x: nx, y: holdY }, animation: this.moveAnim };
         }
         default: this.reset(now); return { move: null, animation: null };
       }

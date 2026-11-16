@@ -82,7 +82,7 @@ function win(w,h){const cap=!!process.env.SHIBA_CAPTURE;const x=new BrowserWindo
 // Pet window sizes (user-facing setting 'size'): the visible cat is the
 // 320px canvas shown at ~68% of the CSS size after sprite-fit, so
 // normal (240px canvas) lands near the ~160px pet he approved.
-const PET_SIZES={small:{w:210,h:232},normal:{w:280,h:304},large:{w:350,h:380}};
+const PET_SIZES={small:{w:150,h:172},normal:{w:220,h:244},large:{w:300,h:324}};
 function petDims(){return PET_SIZES[String(settings.size||'normal')]||PET_SIZES.normal;}
 function applyPetSize(){if(!pet||pet.isDestroyed())return;const pd=petDims();const b=pet.getBounds();const area=screen.getDisplayNearestPoint({x:b.x+Math.round(b.width/2),y:b.y+Math.round(b.height/2)}).workArea;const pos=petPosition(b.x+b.width-pd.w,b.y+b.height-pd.h,area,pd.w,pd.h);pet.setBounds({x:pos.x,y:pos.y,width:pd.w,height:pd.h});try{pet.webContents.send('pet-size',String(settings.size||'normal'));}catch{}}
 function notchOn(){const ns=notchSettings();return ns.enabled&&ns.mode!=='off';}

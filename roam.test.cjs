@@ -79,19 +79,31 @@ test('walk animation kind: long moves leap, medium run, short walk', () => {
   a.equal(ctl.moveKind(900), 'leap'); a.equal(ctl.moveKind(400), 'run'); a.equal(ctl.moveKind(120), 'walk');
 });
 
-test('grounding: pet resting above the floor falls to the ground instead of teleporting on the first walk step', () => {
+test('placement: pet placed mid-air stays there (user decision: no automatic fall to the bottom)', () => {
   const c = new RoamController(() => 0.99);
   const area = { x: 0, y: 0, width: 1000, height: 800 };
   const step = c.step({ now: 1000, x: 400, y: 200, area, paused: false });
-  a.equal(step.animation, 'fall');
-  a.deepEqual(step.move, { x: 400, y: 800 - 130 });
+  a.equal(step.move, null);
+  a.equal(step.animation, null);
 });
 
-test('grounding: custom pet height is honoured (petH)', () => {
-  const c = new RoamController(() => 0.99);
+test('placement: roaming walks along the placed height instead of sinking to the floor', () => {
+  const c = new RoamController(() => 0.9);
   const area = { x: 0, y: 0, width: 1000, height: 800 };
-  const step = c.step({ now: 1000, x: 400, y: 200, area, petW: 280, petH: 304, paused: false });
-  a.deepEqual(step.move, { x: 400, y: 800 - 304 });
+  c.step({ now: 0, x: 100, y: 200, area, paused: false });
+  const start = c.step({ now: 23501, x: 100, y: 200, area, paused: false });
+  a.equal(c.state, 'walk');
+  const step = c.step({ now: 23551, x: 104, y: 200, area, paused: false });
+  a.equal(step.move.y, 200);
+});
+
+test('placement: custom pet height still clamps placement inside the work area (petH)', () => {
+  const c = new RoamController(() => 0.9);
+  const area = { x: 0, y: 0, width: 1000, height: 800 };
+  c.step({ now: 0, x: 100, y: 900, area, petW: 280, petH: 304, paused: false });
+  c.step({ now: 23501, x: 100, y: 900, area, petW: 280, petH: 304, paused: false });
+  const step = c.step({ now: 23551, x: 104, y: 900, area, petW: 280, petH: 304, paused: false });
+  a.equal(step.move.y, 800 - 304); // below the floor clamps up to it
 });
 
 test('grounding: pet already on the floor stays put until the next scheduled move', () => {

@@ -51,7 +51,7 @@ if(mode==='pet'){
  }requestAnimationFrame(tick);
  let lastInteract=performance.now(),sleepFired=false,tapTimes=[];
  // Pet display size (settings.size): the square canvas CSS edge in px.
- const PET_CSS={small:170,normal:240,large:320};
+ const PET_CSS={small:110,normal:180,large:260};
  function applyPetSize(size){const edge=PET_CSS[String(size)]||PET_CSS.normal;const cv=$('.pet-image');if(cv){cv.style.width=edge+'px';cv.style.height=edge+'px';}}
  api.on('pet-state',name=>{behavior.quiet(performance.now());play(name);});api.on('pet-mascot',m=>setMascot(m));api.on('pet-size',s=>applyPetSize(s));api.call('get-state').then(x=>{setMascot((x&&x.mascot)||'dex');applyPetSize(x&&x.size);}).catch(()=>{});api.on('pet-say',line=>{const e=document.querySelector('.reaction');if(e){e.textContent=line;setTimeout(()=>{if(e.textContent===line)e.textContent='';},6000);}});
  let offerShown=false,offerTimer;api.on('pet-offer',d=>{const e=document.querySelector('.reaction');if(!e||!d||typeof d.text!=='string')return;offerShown=true;e.textContent=d.text+' (opens '+d.host+' - nothing else runs)';e.classList.add('offer');clearTimeout(offerTimer);offerTimer=setTimeout(()=>{offerShown=false;e.classList.remove('offer');if(e.textContent.startsWith(d.text))e.textContent='';},120000);});
