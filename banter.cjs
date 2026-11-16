@@ -74,7 +74,17 @@ function groundingCheck(line, snapshot) {
   return true;
 }
 
-function buildBanterPrompt(snapshot, personality = 'cheeky') {
+// Pet identity by mascot. Current main mascot (user decision Nov 16 2026)
+// is Dex the white cat; Rex the Shiba remains available in the picker and
+// his source/art is preserved for later. Only the name and look change -
+// personality, honesty rules and safety behavior are identical for both.
+function petIdentity(mascot) {
+  if (mascot === 'rex') return { name: 'Rex', look: 'a Shiba dog in looks' };
+  return { name: 'Dex', look: 'a small white cat in looks' };
+}
+
+function buildBanterPrompt(snapshot, personality = 'cheeky', mascot) {
+  const id = petIdentity(mascot);
   const facts = [];
   if (snapshot.app) facts.push('Foreground app: ' + snapshot.app);
   if (snapshot.activity) facts.push('Activity: ' + snapshot.activity);
@@ -83,18 +93,18 @@ function buildBanterPrompt(snapshot, personality = 'cheeky') {
   if (snapshot.scene) facts.push('On screen: ' + snapshot.scene);
   if (snapshot.counts) for (const [k, v] of Object.entries(snapshot.counts)) if (v) facts.push('Pet action count ' + k + ': ' + v);
   if (Array.isArray(snapshot.events)) for (const e of snapshot.events.slice(0, 3)) facts.push('Recent pet event: ' + e);
-  const system = 'You are Rex, a small Shiba dog desktop pet. Write ONE short friendly tease (max 20 words) in English. Use ONLY the facts given - never invent apps, activities, counts or times that are not listed. No links. Personality: ' + personality + '.';
+  const system = 'You are ' + id.name + ', a small desktop pet, ' + id.look + '. Write ONE short friendly tease (max 20 words) in English. Use ONLY the facts given - never invent apps, activities, counts or times that are not listed. No links. Personality: ' + personality + '.';
   return [{ role: 'system', content: system }, { role: 'user', content: 'Facts:\n' + (facts.join('\n') || 'The user is just at the desktop.') + '\nWrite the tease now.' }];
 }
 
 // brainFn(messages) -> Promise<string>. Resolves to {line, source} where
 // source is 'brain' (passed the grounding filter) or 'template' (fallback).
-async function generateBanter({ snapshot, personality = 'cheeky', brainFn, templateLine, timeoutMs = 6000 } = {}) {
+async function generateBanter({ snapshot, personality = 'cheeky', brainFn, templateLine, timeoutMs = 6000, mascot } = {}) {
   const fallback = () => ({ line: templateLine || null, source: 'template' });
   if (typeof brainFn !== 'function' || !templateLine && !snapshot) return fallback();
   try {
     const raw = await Promise.race([
-      brainFn(buildBanterPrompt(snapshot || {}, personality)),
+      brainFn(buildBanterPrompt(snapshot || {}, personality, mascot)),
       new Promise((_, rej) => setTimeout(() => rej(Error('banter timeout')), timeoutMs)),
     ]);
     const line = String(raw || '').trim().split('\n')[0];
@@ -103,4 +113,4 @@ async function generateBanter({ snapshot, personality = 'cheeky', brainFn, templ
   } catch { return fallback(); }
 }
 
-module.exports = { buildBanterPrompt, groundingCheck, generateBanter, allowedTerms, allowedNumbers, sceneActivities };
+module.exports = { buildBanterPrompt, groundingCheck, generateBanter, allowedTerms, allowedNumbers, sceneActivities, petIdentity };

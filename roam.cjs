@@ -4,21 +4,17 @@
 // window (only main can setPosition), so main drives this controller on a
 // timer and applies the returned {move, animation} steps.
 //
-// Behaviour: idle at the bottom of the work area -> portal vanish -> portal
-// appear at a new spot -> walk along the bottom to the target -> idle.
-// Long walks fly ('leap'), medium walks run ('run', the walk frames at a faster cadence) - see
-// anim-events.cjs roamMoveKind for the shared thresholds.
+// Behaviour: idle at the bottom of the work area -> walk directly along the
+// bottom to a new spot -> idle. Long walks fly ('leap'), medium walks run
+// ('run') - see moveKind. No portal vanish/appear: portal/peek/climb/cursor
+// are parked (retired old-mascot art, user decision Nov 15 2026).
 //
-// Last-mile item 5 adds two behaviours, both fed by the context poller:
-//   PERCH - the pet climbs onto the foreground window's title bar and
-//     sits there ('climb' then 'sit'), leaving when the window closes,
-//     moves, changes, the perch toggle goes off, or its perch time ends.
-//     The rect comes from context.cjs (Windows GetWindowRect); on other
-//     platforms the source is null and perch simply never triggers.
-//   CURSOR PLAY - occasionally the pet chases the cursor for a few
-//     seconds ('cursor' animation), then settles back to idle/roam.
-//     Cursor position comes from context.cjs getCursorPos (Windows
-//     GetCursorPos); null elsewhere, so chase never triggers there.
+// PERCH - the pet leaps onto the foreground window's title bar and sits
+//   there ('leap' then 'sit'), leaving with 'fall' when the window closes,
+//   moves, changes, the perch toggle goes off, or its perch time ends.
+//   The renderer chains fall->landing->getup->idle on its own.
+//   The rect comes from context.cjs (Windows GetWindowRect); on other
+//   platforms the source is null and perch simply never triggers.
 // Dragging, docking (window hidden) or any pause input resets to idle, so
 // roam never fights the user. Positions are always clamped to the work
 // area by the caller (core.cjs petPosition).
@@ -41,19 +37,18 @@
     return Math.abs(a.left - b.left) > px || Math.abs(a.top - b.top) > px || Math.abs(a.right - b.right) > px;
   }
   class RoamController {
-    constructor(random = Math.random, { flyPx = 700, fastPx = 340, perchChance = 0.5, chaseChance = 0.35, maxPerchMs = 45000, chaseMs = 4000 } = {}) {
+    constructor(random = Math.random, { flyPx = 700, fastPx = 340, perchChance = 0.5, maxPerchMs = 45000 } = {}) {
       this.random = random;
       this.flyPx = flyPx; this.fastPx = fastPx;
-      this.perchChance = perchChance; this.chaseChance = chaseChance;
-      this.maxPerchMs = maxPerchMs; this.chaseMs = chaseMs;
-      this.state = 'idle';           // idle | vanish | walk | perch-go | perched | chase
+      this.perchChance = perchChance;
+      this.maxPerchMs = maxPerchMs;
+      this.state = 'idle';           // idle | walk | perch-go | perched
       this.stageEnds = 0;
       this.nextMoveAt = 0;
       this.targetX = null;
       this.fromX = null;             // where the current move started (fly/fast choice)
       this.moveAnim = 'walk';
       this.perchKey = null; this.perchRect = null; this.perchUntil = 0;
-      this.chaseEnds = 0;
       this.lastNow = 0;
       this.carry = 0;             // fractional pixel carry so 60 Hz ticks stay smooth
       this.moveStart = 0;         // when the current walk began (easing ramp)
@@ -74,18 +69,15 @@
       return false;
     }
     leavePerch(now, x, area) {
-      // Portal off the bar, then walk a short hop on the ground.
-      const lo = area.x, hi = area.x + area.width - PET_W;
-      let tx = x + (this.random() < 0.5 ? -160 : 160);
-      tx = Math.max(lo, Math.min(hi, tx));
-      this.targetX = Math.round(tx); this.fromX = x;
+      // Drop off the bar: 'fall' (the renderer chains landing->getup->idle),
+      // then settle back into ordinary idle scheduling at the ground.
+      const groundY = area.y + area.height - PET_H;
       this.perchKey = null; this.perchRect = null;
-      this.state = 'vanish'; this.stageEnds = now + 900;
-      return { move: null, animation: 'portal' };
+      this.state = 'idle'; this.schedule(now);
+      return { move: { x, y: groundY }, animation: 'fall' };
     }
     // input: {now, x, y, area:{x,y,width,height}, paused,
-    //         perch?:bool, fgRect?:{left,top,right,bottom}|null, fgKey?:string|null,
-    //         cursorPlay?:bool, cursor?:{x,y}|null}
+    //         perch?:bool, fgRect?:{left,top,right,bottom}|null, fgKey?:string|null}
     // returns {move:{x,y}|null, animation:string|null}
     step(input) {
       const { now, x, area, paused } = input;
@@ -104,20 +96,16 @@
               this.perchKey = input.fgKey; this.perchRect = { ...input.fgRect };
               this.perchUntil = now + this.maxPerchMs;
               this.state = 'perch-go'; this.stageEnds = now + 600;
-              return { move: pos, animation: 'climb' };
+              return { move: pos, animation: 'leap' };
             }
-          }
-          // Cursor play: chase the pointer briefly instead of a walk.
-          if (input.cursorPlay && input.cursor && this.random() < this.chaseChance) {
-            this.state = 'chase'; this.chaseEnds = now + this.chaseMs;
-            return { move: null, animation: 'cursor' };
           }
           const lo = area.x, hi = area.x + area.width - PET_W;
           let tx = lo + this.random() * Math.max(0, hi - lo);
           if (Math.abs(tx - x) < 90) tx = tx > x ? Math.min(hi, tx + 160) : Math.max(lo, tx - 160);
           this.targetX = Math.round(tx); this.fromX = x;
-          this.state = 'vanish'; this.stageEnds = now + 900;
-          return { move: null, animation: 'portal' };
+          this.moveAnim = this.moveKind(this.targetX - x);
+          this.state = 'walk'; this.moveStart = now; this.carry = 0;
+          return { move: null, animation: this.moveAnim };
         }
         case 'perch-go': {
           if (now < this.stageEnds) return { move: null, animation: null };
@@ -129,28 +117,6 @@
           if (this.perchInvalid(input)) return this.leavePerch(now, x, area);
           const pos = perchPosition(input.fgRect, area);
           return { move: pos, animation: null };
-        }
-        case 'chase': {
-          const c = input.cursor;
-          if (!c || now > this.chaseEnds) { this.state = 'idle'; this.schedule(now); return { move: { x, y: groundY }, animation: 'idle' }; }
-          const target = Math.max(area.x, Math.min(area.x + area.width - PET_W, Math.round(c.x - PET_W / 2)));
-          const dx = target - x;
-          if (Math.abs(dx) <= 6) return { move: null, animation: 'cursor' };
-          const flc = 185 * dt / 1000 + this.carry;
-          let stepPx = Math.max(1, Math.round(flc));
-          if (stepPx >= Math.abs(dx)) { stepPx = Math.abs(dx); this.carry = 0; }
-          else this.carry = flc - stepPx;
-          const nx = x + Math.sign(dx) * stepPx;
-          return { move: { x: nx, y: groundY }, animation: 'cursor' };
-        }
-        case 'vanish': {
-          if (now < this.stageEnds) return { move: null, animation: null };
-          // Appear part-way: teleport to a spawn point, then walk the rest.
-          const dir = this.targetX >= x ? 1 : -1;
-          const spawn = Math.max(area.x, Math.min(area.x + area.width - PET_W, this.targetX - dir * 220));
-          this.moveAnim = this.moveKind((this.targetX ?? x) - (this.fromX ?? x));
-          this.state = 'walk'; this.stageEnds = 0; this.moveStart = now; this.walkFrom = Math.round(Math.max(area.x, Math.min(area.x + area.width - PET_W, this.targetX - dir * 220))); this.carry = 0;
-          return { move: { x: Math.round(spawn), y: groundY }, animation: 'portal' };
         }
         case 'walk': {
           const dx = this.targetX - x;

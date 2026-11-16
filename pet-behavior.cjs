@@ -1,6 +1,6 @@
 // Pure behavior policy, also loaded by the isolated renderer as a normal script.
 (function(root){
- const actions=['wave','bow','scan','emote','peek'];
+ const actions=['wave','bow','scan','emote']; // peek parked (retired old-mascot art, user decision Nov 15 2026)
  class PetBehavior {
   constructor(random=Math.random){this.random=random;this.lastAction='';this.nextAt=0;this.press=null;}
   quiet(now){this.nextAt=now+6500+this.random()*5500;}

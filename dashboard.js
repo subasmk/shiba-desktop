@@ -11,6 +11,7 @@ async function save(data){await api.call('save-settings',data);Object.assign(sta
 function pill(ok,yes,no){return ok?'<span class="pill ok">'+yes+'</span>':'<span class="pill warn">'+no+'</span>';}
 function tg(label,sub,control){return '<div class="tg"><span class="lab">'+esc(label)+(sub?'<small>'+esc(sub)+'</small>':'')+'</span>'+control+'</div>';}
 function sw(id,on){return '<input type="checkbox" class="sw" id="'+id+'"'+(on?' checked':'')+'>';}
+function swd(id){return '<input type="checkbox" class="sw" id="'+id+'" disabled>';}
 // One-time global listeners (re-rendering tabs must not stack them).
 let setupSink=null,tamilSink=null;
 api.on('setup-progress',d=>{if(setupSink)setupSink(d);});
@@ -54,12 +55,12 @@ function renderHome(m){
  +'<div class="card"><h3>Pet behavior</h3><p class="desc">How Rex moves and reacts</p>'
  +tg('Roaming','',sw('h-roam',!!state.roaming))
  +tg('Perch on windows','',sw('h-perch',state.perch!==false))
- +tg('Cursor play','',sw('h-cursor',!!state.cursorPlay))
+ +tg('Cursor play','paused for now - its art is being redrawn for the new mascot',swd('h-cursor'))
  +tg('Proactive comments','',sw('h-proactive',!!state.proactive))
  +'</div></div><div class="status" id="d-status" role="status"></div>';
  m.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{tab=b.dataset.go;render();});
  const bind=(id,key,invert)=>{const n=$(id);n.onchange=()=>task(async()=>{await save({[key]:n.checked});status('Saved.');});};
- bind('#h-roam','roaming');bind('#h-perch','perch');bind('#h-cursor','cursorPlay');bind('#h-proactive','proactive');
+ bind('#h-roam','roaming');bind('#h-perch','perch');bind('#h-proactive','proactive');
  const go=$('#d-setup-go'),cancel=$('#d-setup-cancel'),bar=$('#d-setup-bar'),prog=$('#d-setup-prog');
  go.onclick=()=>task(async()=>{
   go.disabled=true;cancel.classList.remove('hidden');prog.classList.remove('hidden');bar.classList.remove('hidden');
@@ -104,17 +105,19 @@ function renderVoice(m){
  $('#v-wake').onchange=()=>task(async()=>{await save({wakeWord:$('#v-wake').checked});status($('#v-wake').checked?'Wake word on: say "Hey Rex" to start a call.':'Wake word off.');});
 }
 function renderPet(m){
- m.innerHTML='<h2>Pet behavior</h2><div class="sub">How Rex moves, reacts and talks. Friendly teasing uses only pet-local action counts, never your laptop activity.</div>'
+ m.innerHTML='<h2>Pet behavior</h2><div class="sub">How your pet moves, reacts and talks. Friendly teasing uses only pet-local action counts, never your laptop activity.</div>'
  +'<div class="card"><h3>Movement</h3>'
  +tg('Roaming','the pet wanders the desktop while idle',sw('p-roam',!!state.roaming))
  +tg('Perch on windows','while roaming, the pet may sit on the front window title bar',sw('p-perch',state.perch!==false))
- +tg('Cursor play','while roaming, the pet may chase your cursor for a few seconds',sw('p-cursor',!!state.cursorPlay))
+ +tg('Cursor play','paused for now - its art is being redrawn for the new mascot',swd('p-cursor'))
  +'</div><div class="card"><h3>Personality</h3><p class="desc">Reply style for chat and comments.</p><div class="row"><button class="act ghost" data-personality="calm">Calm</button><button class="act ghost" data-personality="playful">Playful</button><button class="act ghost" data-personality="cheeky">Cheeky</button></div><p class="desc" id="p-current"></p>'
  +tg('Proactive comments','the pet occasionally speaks up, from local signals only, with quiet hours and daily caps',sw('p-proactive',!!state.proactive))
- +'</div><div class="status" id="d-status" role="status"></div>';
+ +'</div><div class="card"><h3>Mascot</h3><p class="desc">Pick your desktop companion. Personality, features and voice are the same for both.</p><div class="row"><button class="act ghost" data-mascot="rex">Rex - Shiba dog</button><button class="act ghost" data-mascot="dex">Dex - white cat</button></div><p class="desc" id="m-current"></p><p class="desc">Dex is the main mascot right now. He knows fewer actions than Rex for now: anything he cannot do yet shows his idle pose. Rex stays available here with his classic art; his new art is being rebuilt.</p></div><div class="status" id="d-status" role="status"></div>';
  $('#p-current').textContent='Current: '+(state.personality||'cheeky');
  const bind=(id,key)=>{const n=$(id);n.onchange=()=>task(async()=>{await save({[key]:n.checked});status('Saved.');});};
- bind('#p-roam','roaming');bind('#p-perch','perch');bind('#p-cursor','cursorPlay');bind('#p-proactive','proactive');
+ bind('#p-roam','roaming');bind('#p-perch','perch');bind('#p-proactive','proactive');
+ $('#m-current').textContent='Current: '+(state.mascot==='rex'?'Rex - Shiba dog':'Dex - white cat');
+ m.querySelectorAll('[data-mascot]').forEach(b=>b.onclick=()=>task(async()=>{await save({mascot:b.dataset.mascot});$('#m-current').textContent='Current: '+(b.dataset.mascot==='dex'?'Dex - white cat':'Rex - Shiba dog');status(b.dataset.mascot==='dex'?'Mascot: Dex the cat.':'Mascot: Rex the Shiba.');}));
  m.querySelectorAll('[data-personality]').forEach(b=>b.onclick=()=>task(async()=>{await save({personality:b.dataset.personality});$('#p-current').textContent='Current: '+b.dataset.personality;status('Personality: '+b.dataset.personality);}));
 }
 function renderFeatures(m){

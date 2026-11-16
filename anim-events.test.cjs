@@ -3,7 +3,7 @@ const fs = require('node:fs'), path = require('node:path');
 const AE = require('./anim-events.cjs');
 
 test('every required event resolves to a GIF and a sprite', () => {
-  for (const name of ['celebrate', 'wake-trigger', 'listening-start', 'power-run', 'timer-ignored', 'roam-fly', 'perch-climb', 'roam-fast', 'tap-combo', 'drag-drop', 'proactive-comment', 'chat-reaction', 'long-idle', 'idle', 'portal', 'vanish', 'cursor-chase', 'scene-change'])
+  for (const name of ['celebrate', 'wake-trigger', 'listening-start', 'power-run', 'timer-ignored', 'roam-fly', 'roam-fast', 'tap-combo', 'drag-drop', 'proactive-comment', 'chat-reaction', 'long-idle', 'idle', 'scene-change'])
     a.ok(AE.forEvent(name), 'missing event ' + name);
   a.equal(AE.forEvent('nope'), null);
 });
@@ -56,13 +56,12 @@ test('old-pack GIF overlay layer stays retired: sprites carry every event', () =
 test('each event sprite matches its intended visible behavior', () => {
   const intended = {
     'celebrate': 'leap',        // focus done: joy jump (8-frame leap arc)
-    'wake-trigger': 'portal',   // summon: golden portal ring appear
+    'wake-trigger': 'wave',      // summon: friendly wave (portal art is parked)
     'listening-start': 'scan',  // listening: dog at laptop scanning the hologram
     'power-run': 'scan',        // command running: same laptop-working art, not a bare point
     'timer-ignored': 'rage',    // flames + anger vein
     'roam-fly': 'leap',         // long travel: big bounding arc
     'roam-fast': 'run',         // fast travel: fast walk cycle, never the katana attack
-    'perch-climb': 'climb',
     'drag-drop': 'getup',       // drop lifecycle: landing -> getup -> idle chain
     'proactive-comment': 'gesture',
     'scene-change': 'gesture',
@@ -70,9 +69,6 @@ test('each event sprite matches its intended visible behavior', () => {
     'tap-combo': 'swing',       // playful hit: katana swing with slash arcs
     'long-idle': 'sleep',
     'idle': 'idle',
-    'portal': 'portal',
-    'vanish': 'portal',
-    'cursor-chase': 'cursor',
   };
   for (const [name, sprite] of Object.entries(intended))
     a.equal(AE.forEvent(name).sprite, sprite, 'event ' + name + ' lost its intended sprite');

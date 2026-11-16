@@ -269,56 +269,6 @@
       "y": 640
     }
   ],
-  "portal": [
-    {
-      "file": "portal1.png",
-      "ms": 160,
-      "x": 640,
-      "y": 640
-    },
-    {
-      "file": "portal2.png",
-      "ms": 160,
-      "x": 800,
-      "y": 640
-    },
-    {
-      "file": "portal3.png",
-      "ms": 160,
-      "x": 960,
-      "y": 640
-    },
-    {
-      "file": "portal4.png",
-      "ms": 160,
-      "x": 1120,
-      "y": 640
-    },
-    {
-      "file": "portal5.png",
-      "ms": 160,
-      "x": 0,
-      "y": 800
-    },
-    {
-      "file": "portal6.png",
-      "ms": 160,
-      "x": 160,
-      "y": 800
-    },
-    {
-      "file": "portal7.png",
-      "ms": 160,
-      "x": 320,
-      "y": 800
-    },
-    {
-      "file": "portal8.png",
-      "ms": 160,
-      "x": 480,
-      "y": 800
-    }
-  ],
   "leap": [
     {
       "file": "leap1.png",
@@ -395,58 +345,6 @@
       "y": 0
     }
   ],
-  "peek": [
-    {
-      "file": "peek1.png",
-      "ms": 280,
-      "x": 480,
-      "y": 960
-    },
-    {
-      "file": "peek2.png",
-      "ms": 280,
-      "x": 640,
-      "y": 960
-    },
-    {
-      "file": "peek3.png",
-      "ms": 280,
-      "x": 800,
-      "y": 960
-    },
-    {
-      "file": "peek4.png",
-      "ms": 280,
-      "x": 960,
-      "y": 960
-    }
-  ],
-  "climb": [
-    {
-      "file": "climb1.png",
-      "ms": 240,
-      "x": 1120,
-      "y": 960
-    },
-    {
-      "file": "climb2.png",
-      "ms": 240,
-      "x": 0,
-      "y": 1120
-    },
-    {
-      "file": "climb3.png",
-      "ms": 240,
-      "x": 160,
-      "y": 1120
-    },
-    {
-      "file": "climb4.png",
-      "ms": 240,
-      "x": 320,
-      "y": 1120
-    }
-  ],
   "sit": [
     {
       "file": "sit1.png",
@@ -459,38 +357,6 @@
       "ms": 1400,
       "x": 320,
       "y": 0
-    }
-  ],
-  "cursor": [
-    {
-      "file": "cur1.png",
-      "ms": 190,
-      "x": 480,
-      "y": 1120
-    },
-    {
-      "file": "cur2.png",
-      "ms": 190,
-      "x": 640,
-      "y": 1120
-    },
-    {
-      "file": "cur3.png",
-      "ms": 190,
-      "x": 800,
-      "y": 1120
-    },
-    {
-      "file": "cur4.png",
-      "ms": 190,
-      "x": 960,
-      "y": 1120
-    },
-    {
-      "file": "cur5.png",
-      "ms": 190,
-      "x": 1120,
-      "y": 1120
     }
   ],
   "emote": [
@@ -617,6 +483,1885 @@
       "ms": 90,
       "x": 800,
       "y": 0
+    }
+  ],
+  "dex-idle": [
+    {
+      "file": "dex-idle1.png",
+      "ms": 167,
+      "x": 0,
+      "y": 0,
+      "a": 2
+    },
+    {
+      "file": "dex-idle2.png",
+      "ms": 167,
+      "x": 320,
+      "y": 0,
+      "a": 2
+    },
+    {
+      "file": "dex-idle3.png",
+      "ms": 167,
+      "x": 640,
+      "y": 0,
+      "a": 2
+    },
+    {
+      "file": "dex-idle4.png",
+      "ms": 167,
+      "x": 960,
+      "y": 0,
+      "a": 2
+    },
+    {
+      "file": "dex-idle5.png",
+      "ms": 167,
+      "x": 1280,
+      "y": 0,
+      "a": 2
+    },
+    {
+      "file": "dex-idle6.png",
+      "ms": 167,
+      "x": 1600,
+      "y": 0,
+      "a": 2
+    },
+    {
+      "file": "dex-idle7.png",
+      "ms": 167,
+      "x": 1920,
+      "y": 0,
+      "a": 2
+    },
+    {
+      "file": "dex-idle8.png",
+      "ms": 167,
+      "x": 2240,
+      "y": 0,
+      "a": 2
+    },
+    {
+      "file": "dex-idle9.png",
+      "ms": 167,
+      "x": 2560,
+      "y": 0,
+      "a": 2
+    },
+    {
+      "file": "dex-idle10.png",
+      "ms": 167,
+      "x": 2880,
+      "y": 0,
+      "a": 2
+    },
+    {
+      "file": "dex-idle11.png",
+      "ms": 167,
+      "x": 3200,
+      "y": 0,
+      "a": 2
+    },
+    {
+      "file": "dex-idle12.png",
+      "ms": 167,
+      "x": 3520,
+      "y": 0,
+      "a": 2
+    },
+    {
+      "file": "dex-idle13.png",
+      "ms": 167,
+      "x": 0,
+      "y": 320,
+      "a": 2
+    },
+    {
+      "file": "dex-idle14.png",
+      "ms": 167,
+      "x": 320,
+      "y": 320,
+      "a": 2
+    },
+    {
+      "file": "dex-idle15.png",
+      "ms": 167,
+      "x": 640,
+      "y": 320,
+      "a": 2
+    }
+  ],
+  "dex-walk": [
+    {
+      "file": "dex-walk1.png",
+      "ms": 100,
+      "x": 960,
+      "y": 320,
+      "a": 2
+    },
+    {
+      "file": "dex-walk2.png",
+      "ms": 190,
+      "x": 1280,
+      "y": 320,
+      "a": 2
+    },
+    {
+      "file": "dex-walk3.png",
+      "ms": 190,
+      "x": 1600,
+      "y": 320,
+      "a": 2
+    },
+    {
+      "file": "dex-walk4.png",
+      "ms": 190,
+      "x": 1920,
+      "y": 320,
+      "a": 2
+    },
+    {
+      "file": "dex-walk5.png",
+      "ms": 190,
+      "x": 2240,
+      "y": 320,
+      "a": 2
+    },
+    {
+      "file": "dex-walk6.png",
+      "ms": 190,
+      "x": 2560,
+      "y": 320,
+      "a": 2
+    },
+    {
+      "file": "dex-walk7.png",
+      "ms": 190,
+      "x": 2880,
+      "y": 320,
+      "a": 2
+    },
+    {
+      "file": "dex-walk8.png",
+      "ms": 190,
+      "x": 3200,
+      "y": 320,
+      "a": 2
+    },
+    {
+      "file": "dex-walk9.png",
+      "ms": 190,
+      "x": 3520,
+      "y": 320,
+      "a": 2
+    },
+    {
+      "file": "dex-walk10.png",
+      "ms": 190,
+      "x": 0,
+      "y": 640,
+      "a": 2
+    },
+    {
+      "file": "dex-walk11.png",
+      "ms": 190,
+      "x": 320,
+      "y": 640,
+      "a": 2
+    },
+    {
+      "file": "dex-walk12.png",
+      "ms": 190,
+      "x": 640,
+      "y": 640,
+      "a": 2
+    }
+  ],
+  "dex-run": [
+    {
+      "file": "dex-run1.png",
+      "ms": 165,
+      "x": 960,
+      "y": 640,
+      "a": 2
+    },
+    {
+      "file": "dex-run2.png",
+      "ms": 165,
+      "x": 1280,
+      "y": 640,
+      "a": 2
+    },
+    {
+      "file": "dex-run3.png",
+      "ms": 165,
+      "x": 1600,
+      "y": 640,
+      "a": 2
+    },
+    {
+      "file": "dex-run4.png",
+      "ms": 165,
+      "x": 1920,
+      "y": 640,
+      "a": 2
+    },
+    {
+      "file": "dex-run5.png",
+      "ms": 165,
+      "x": 2240,
+      "y": 640,
+      "a": 2
+    },
+    {
+      "file": "dex-run6.png",
+      "ms": 165,
+      "x": 2560,
+      "y": 640,
+      "a": 2
+    },
+    {
+      "file": "dex-run7.png",
+      "ms": 165,
+      "x": 2880,
+      "y": 640,
+      "a": 2
+    },
+    {
+      "file": "dex-run8.png",
+      "ms": 165,
+      "x": 3200,
+      "y": 640,
+      "a": 2
+    },
+    {
+      "file": "dex-run9.png",
+      "ms": 165,
+      "x": 3520,
+      "y": 640,
+      "a": 2
+    },
+    {
+      "file": "dex-run10.png",
+      "ms": 165,
+      "x": 0,
+      "y": 960,
+      "a": 2
+    },
+    {
+      "file": "dex-run11.png",
+      "ms": 165,
+      "x": 320,
+      "y": 960,
+      "a": 2
+    },
+    {
+      "file": "dex-run12.png",
+      "ms": 165,
+      "x": 640,
+      "y": 960,
+      "a": 2
+    }
+  ],
+  "dex-sit": [
+    {
+      "file": "dex-sit1.png",
+      "ms": 190,
+      "x": 960,
+      "y": 960,
+      "a": 2
+    },
+    {
+      "file": "dex-sit2.png",
+      "ms": 190,
+      "x": 1280,
+      "y": 960,
+      "a": 2
+    },
+    {
+      "file": "dex-sit3.png",
+      "ms": 190,
+      "x": 1600,
+      "y": 960,
+      "a": 2
+    },
+    {
+      "file": "dex-sit4.png",
+      "ms": 190,
+      "x": 1920,
+      "y": 960,
+      "a": 2
+    },
+    {
+      "file": "dex-sit5.png",
+      "ms": 190,
+      "x": 2240,
+      "y": 960,
+      "a": 2
+    },
+    {
+      "file": "dex-sit6.png",
+      "ms": 190,
+      "x": 2560,
+      "y": 960,
+      "a": 2
+    },
+    {
+      "file": "dex-sit7.png",
+      "ms": 190,
+      "x": 2880,
+      "y": 960,
+      "a": 2
+    },
+    {
+      "file": "dex-sit8.png",
+      "ms": 190,
+      "x": 3200,
+      "y": 960,
+      "a": 2
+    },
+    {
+      "file": "dex-sit9.png",
+      "ms": 190,
+      "x": 3520,
+      "y": 960,
+      "a": 2
+    },
+    {
+      "file": "dex-sit10.png",
+      "ms": 190,
+      "x": 0,
+      "y": 1280,
+      "a": 2
+    }
+  ],
+  "dex-talk": [
+    {
+      "file": "dex-talk1.png",
+      "ms": 130,
+      "x": 320,
+      "y": 1280,
+      "a": 2
+    },
+    {
+      "file": "dex-talk2.png",
+      "ms": 120,
+      "x": 640,
+      "y": 1280,
+      "a": 2
+    },
+    {
+      "file": "dex-talk3.png",
+      "ms": 120,
+      "x": 960,
+      "y": 1280,
+      "a": 2
+    },
+    {
+      "file": "dex-talk4.png",
+      "ms": 120,
+      "x": 1280,
+      "y": 1280,
+      "a": 2
+    },
+    {
+      "file": "dex-talk5.png",
+      "ms": 120,
+      "x": 1600,
+      "y": 1280,
+      "a": 2
+    },
+    {
+      "file": "dex-talk6.png",
+      "ms": 120,
+      "x": 1920,
+      "y": 1280,
+      "a": 2
+    },
+    {
+      "file": "dex-talk7.png",
+      "ms": 120,
+      "x": 2240,
+      "y": 1280,
+      "a": 2
+    },
+    {
+      "file": "dex-talk8.png",
+      "ms": 120,
+      "x": 2560,
+      "y": 1280,
+      "a": 2
+    },
+    {
+      "file": "dex-talk9.png",
+      "ms": 120,
+      "x": 2880,
+      "y": 1280,
+      "a": 2
+    },
+    {
+      "file": "dex-talk10.png",
+      "ms": 120,
+      "x": 3200,
+      "y": 1280,
+      "a": 2
+    },
+    {
+      "file": "dex-talk11.png",
+      "ms": 120,
+      "x": 3520,
+      "y": 1280,
+      "a": 2
+    },
+    {
+      "file": "dex-talk12.png",
+      "ms": 120,
+      "x": 0,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-talk13.png",
+      "ms": 120,
+      "x": 320,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-talk14.png",
+      "ms": 120,
+      "x": 640,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-talk15.png",
+      "ms": 120,
+      "x": 960,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-talk16.png",
+      "ms": 240,
+      "x": 1280,
+      "y": 1600,
+      "a": 2
+    }
+  ],
+  "dex-listening": [
+    {
+      "file": "dex-listening1.png",
+      "ms": 140,
+      "x": 1600,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening2.png",
+      "ms": 140,
+      "x": 1920,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening3.png",
+      "ms": 140,
+      "x": 2240,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening4.png",
+      "ms": 140,
+      "x": 2560,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening5.png",
+      "ms": 140,
+      "x": 2880,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening6.png",
+      "ms": 140,
+      "x": 3200,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening7.png",
+      "ms": 140,
+      "x": 3520,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening8.png",
+      "ms": 140,
+      "x": 0,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-listening9.png",
+      "ms": 140,
+      "x": 320,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-listening10.png",
+      "ms": 140,
+      "x": 640,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-listening11.png",
+      "ms": 140,
+      "x": 960,
+      "y": 1920,
+      "a": 2
+    }
+  ],
+  "dex-sleep": [
+    {
+      "file": "dex-sleep1.png",
+      "ms": 100,
+      "x": 1280,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-sleep2.png",
+      "ms": 125,
+      "x": 1600,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-sleep3.png",
+      "ms": 125,
+      "x": 1920,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-sleep4.png",
+      "ms": 165,
+      "x": 2240,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-sleep5.png",
+      "ms": 195,
+      "x": 2560,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-sleep6.png",
+      "ms": 285,
+      "x": 2880,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-sleep7.png",
+      "ms": 395,
+      "x": 3200,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-sleep8.png",
+      "ms": 395,
+      "x": 3520,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-sleep9.png",
+      "ms": 445,
+      "x": 0,
+      "y": 2240,
+      "a": 2
+    },
+    {
+      "file": "dex-sleep10.png",
+      "ms": 165,
+      "x": 320,
+      "y": 2240,
+      "a": 2
+    },
+    {
+      "file": "dex-sleep11.png",
+      "ms": 125,
+      "x": 640,
+      "y": 2240,
+      "a": 2
+    },
+    {
+      "file": "dex-sleep12.png",
+      "ms": 125,
+      "x": 960,
+      "y": 2240,
+      "a": 2
+    }
+  ],
+  "dex-rage": [
+    {
+      "file": "dex-rage1.png",
+      "ms": 143,
+      "x": 1280,
+      "y": 2240,
+      "a": 2
+    },
+    {
+      "file": "dex-rage2.png",
+      "ms": 143,
+      "x": 1600,
+      "y": 2240,
+      "a": 2
+    },
+    {
+      "file": "dex-rage3.png",
+      "ms": 143,
+      "x": 1920,
+      "y": 2240,
+      "a": 2
+    },
+    {
+      "file": "dex-rage4.png",
+      "ms": 143,
+      "x": 2240,
+      "y": 2240,
+      "a": 2
+    },
+    {
+      "file": "dex-rage5.png",
+      "ms": 143,
+      "x": 2560,
+      "y": 2240,
+      "a": 2
+    },
+    {
+      "file": "dex-rage6.png",
+      "ms": 143,
+      "x": 2880,
+      "y": 2240,
+      "a": 2
+    },
+    {
+      "file": "dex-rage7.png",
+      "ms": 143,
+      "x": 3200,
+      "y": 2240,
+      "a": 2
+    },
+    {
+      "file": "dex-rage8.png",
+      "ms": 143,
+      "x": 3520,
+      "y": 2240,
+      "a": 2
+    },
+    {
+      "file": "dex-rage9.png",
+      "ms": 143,
+      "x": 0,
+      "y": 2560,
+      "a": 2
+    },
+    {
+      "file": "dex-rage10.png",
+      "ms": 143,
+      "x": 320,
+      "y": 2560,
+      "a": 2
+    },
+    {
+      "file": "dex-rage11.png",
+      "ms": 143,
+      "x": 640,
+      "y": 2560,
+      "a": 2
+    },
+    {
+      "file": "dex-rage12.png",
+      "ms": 143,
+      "x": 960,
+      "y": 2560,
+      "a": 2
+    },
+    {
+      "file": "dex-rage13.png",
+      "ms": 143,
+      "x": 1280,
+      "y": 2560,
+      "a": 2
+    },
+    {
+      "file": "dex-rage14.png",
+      "ms": 143,
+      "x": 1600,
+      "y": 2560,
+      "a": 2
+    },
+    {
+      "file": "dex-rage15.png",
+      "ms": 143,
+      "x": 1920,
+      "y": 2560,
+      "a": 2
+    }
+  ],
+  "dex-scan": [
+    {
+      "file": "dex-scan1.png",
+      "ms": 100,
+      "x": 2240,
+      "y": 2560,
+      "a": 2
+    },
+    {
+      "file": "dex-scan2.png",
+      "ms": 143,
+      "x": 2560,
+      "y": 2560,
+      "a": 2
+    },
+    {
+      "file": "dex-scan3.png",
+      "ms": 143,
+      "x": 2880,
+      "y": 2560,
+      "a": 2
+    },
+    {
+      "file": "dex-scan4.png",
+      "ms": 143,
+      "x": 3200,
+      "y": 2560,
+      "a": 2
+    },
+    {
+      "file": "dex-scan5.png",
+      "ms": 143,
+      "x": 3520,
+      "y": 2560,
+      "a": 2
+    },
+    {
+      "file": "dex-scan6.png",
+      "ms": 143,
+      "x": 0,
+      "y": 2880,
+      "a": 2
+    },
+    {
+      "file": "dex-scan7.png",
+      "ms": 143,
+      "x": 320,
+      "y": 2880,
+      "a": 2
+    },
+    {
+      "file": "dex-scan8.png",
+      "ms": 143,
+      "x": 640,
+      "y": 2880,
+      "a": 2
+    },
+    {
+      "file": "dex-scan9.png",
+      "ms": 143,
+      "x": 960,
+      "y": 2880,
+      "a": 2
+    },
+    {
+      "file": "dex-scan10.png",
+      "ms": 143,
+      "x": 1280,
+      "y": 2880,
+      "a": 2
+    },
+    {
+      "file": "dex-scan11.png",
+      "ms": 143,
+      "x": 1600,
+      "y": 2880,
+      "a": 2
+    },
+    {
+      "file": "dex-scan12.png",
+      "ms": 143,
+      "x": 1920,
+      "y": 2880,
+      "a": 2
+    },
+    {
+      "file": "dex-scan13.png",
+      "ms": 429,
+      "x": 2240,
+      "y": 2880,
+      "a": 2
+    }
+  ],
+  "dex-gesture": [
+    {
+      "file": "dex-gesture1.png",
+      "ms": 160,
+      "x": 2560,
+      "y": 2880,
+      "a": 2
+    },
+    {
+      "file": "dex-gesture2.png",
+      "ms": 160,
+      "x": 2880,
+      "y": 2880,
+      "a": 2
+    },
+    {
+      "file": "dex-gesture3.png",
+      "ms": 160,
+      "x": 3200,
+      "y": 2880,
+      "a": 2
+    },
+    {
+      "file": "dex-gesture4.png",
+      "ms": 160,
+      "x": 3520,
+      "y": 2880,
+      "a": 2
+    },
+    {
+      "file": "dex-gesture5.png",
+      "ms": 160,
+      "x": 0,
+      "y": 3200,
+      "a": 2
+    },
+    {
+      "file": "dex-gesture6.png",
+      "ms": 160,
+      "x": 320,
+      "y": 3200,
+      "a": 2
+    },
+    {
+      "file": "dex-gesture7.png",
+      "ms": 160,
+      "x": 640,
+      "y": 3200,
+      "a": 2
+    },
+    {
+      "file": "dex-gesture8.png",
+      "ms": 160,
+      "x": 960,
+      "y": 3200,
+      "a": 2
+    },
+    {
+      "file": "dex-gesture9.png",
+      "ms": 160,
+      "x": 1280,
+      "y": 3200,
+      "a": 2
+    },
+    {
+      "file": "dex-gesture10.png",
+      "ms": 160,
+      "x": 1600,
+      "y": 3200,
+      "a": 2
+    },
+    {
+      "file": "dex-gesture11.png",
+      "ms": 160,
+      "x": 1920,
+      "y": 3200,
+      "a": 2
+    }
+  ],
+  "dex-emote": [
+    {
+      "file": "dex-emote1.png",
+      "ms": 180,
+      "x": 2240,
+      "y": 3200,
+      "a": 2
+    },
+    {
+      "file": "dex-emote2.png",
+      "ms": 180,
+      "x": 2560,
+      "y": 3200,
+      "a": 2
+    },
+    {
+      "file": "dex-emote3.png",
+      "ms": 180,
+      "x": 2880,
+      "y": 3200,
+      "a": 2
+    },
+    {
+      "file": "dex-emote4.png",
+      "ms": 180,
+      "x": 3200,
+      "y": 3200,
+      "a": 2
+    },
+    {
+      "file": "dex-emote5.png",
+      "ms": 180,
+      "x": 3520,
+      "y": 3200,
+      "a": 2
+    },
+    {
+      "file": "dex-emote6.png",
+      "ms": 180,
+      "x": 0,
+      "y": 3520,
+      "a": 2
+    },
+    {
+      "file": "dex-emote7.png",
+      "ms": 180,
+      "x": 320,
+      "y": 3520,
+      "a": 2
+    },
+    {
+      "file": "dex-emote8.png",
+      "ms": 180,
+      "x": 640,
+      "y": 3520,
+      "a": 2
+    },
+    {
+      "file": "dex-emote9.png",
+      "ms": 180,
+      "x": 960,
+      "y": 3520,
+      "a": 2
+    },
+    {
+      "file": "dex-emote10.png",
+      "ms": 180,
+      "x": 1280,
+      "y": 3520,
+      "a": 2
+    },
+    {
+      "file": "dex-emote11.png",
+      "ms": 180,
+      "x": 1600,
+      "y": 3520,
+      "a": 2
+    },
+    {
+      "file": "dex-emote12.png",
+      "ms": 180,
+      "x": 1920,
+      "y": 3520,
+      "a": 2
+    },
+    {
+      "file": "dex-emote13.png",
+      "ms": 180,
+      "x": 2240,
+      "y": 3520,
+      "a": 2
+    },
+    {
+      "file": "dex-emote14.png",
+      "ms": 180,
+      "x": 2560,
+      "y": 3520,
+      "a": 2
+    },
+    {
+      "file": "dex-emote15.png",
+      "ms": 180,
+      "x": 2880,
+      "y": 3520,
+      "a": 2
+    }
+  ],
+  "dex-wave": [
+    {
+      "file": "dex-wave1.png",
+      "ms": 240,
+      "x": 3200,
+      "y": 3520,
+      "a": 2
+    },
+    {
+      "file": "dex-wave2.png",
+      "ms": 100,
+      "x": 3520,
+      "y": 3520,
+      "a": 2
+    },
+    {
+      "file": "dex-wave3.png",
+      "ms": 100,
+      "x": 0,
+      "y": 3840,
+      "a": 2
+    },
+    {
+      "file": "dex-wave4.png",
+      "ms": 100,
+      "x": 320,
+      "y": 3840,
+      "a": 2
+    },
+    {
+      "file": "dex-wave5.png",
+      "ms": 100,
+      "x": 640,
+      "y": 3840,
+      "a": 2
+    },
+    {
+      "file": "dex-wave6.png",
+      "ms": 100,
+      "x": 960,
+      "y": 3840,
+      "a": 2
+    },
+    {
+      "file": "dex-wave7.png",
+      "ms": 100,
+      "x": 1280,
+      "y": 3840,
+      "a": 2
+    },
+    {
+      "file": "dex-wave8.png",
+      "ms": 100,
+      "x": 1600,
+      "y": 3840,
+      "a": 2
+    },
+    {
+      "file": "dex-wave9.png",
+      "ms": 100,
+      "x": 1920,
+      "y": 3840,
+      "a": 2
+    },
+    {
+      "file": "dex-wave10.png",
+      "ms": 100,
+      "x": 2240,
+      "y": 3840,
+      "a": 2
+    },
+    {
+      "file": "dex-wave11.png",
+      "ms": 150,
+      "x": 2560,
+      "y": 3840,
+      "a": 2
+    },
+    {
+      "file": "dex-wave12.png",
+      "ms": 220,
+      "x": 2880,
+      "y": 3840,
+      "a": 2
+    }
+  ],
+  "dex-leap": [
+    {
+      "file": "dex-leap1.png",
+      "ms": 42,
+      "x": 3200,
+      "y": 3840,
+      "a": 2
+    },
+    {
+      "file": "dex-leap2.png",
+      "ms": 42,
+      "x": 3520,
+      "y": 3840,
+      "a": 2
+    },
+    {
+      "file": "dex-leap3.png",
+      "ms": 42,
+      "x": 0,
+      "y": 4160,
+      "a": 2
+    },
+    {
+      "file": "dex-leap4.png",
+      "ms": 42,
+      "x": 320,
+      "y": 4160,
+      "a": 2
+    },
+    {
+      "file": "dex-leap5.png",
+      "ms": 42,
+      "x": 640,
+      "y": 4160,
+      "a": 2
+    },
+    {
+      "file": "dex-leap6.png",
+      "ms": 42,
+      "x": 960,
+      "y": 4160,
+      "a": 2
+    },
+    {
+      "file": "dex-leap7.png",
+      "ms": 42,
+      "x": 1280,
+      "y": 4160,
+      "a": 2
+    },
+    {
+      "file": "dex-leap8.png",
+      "ms": 42,
+      "x": 1600,
+      "y": 4160,
+      "a": 2
+    },
+    {
+      "file": "dex-leap9.png",
+      "ms": 42,
+      "x": 1920,
+      "y": 4160,
+      "a": 2
+    },
+    {
+      "file": "dex-leap10.png",
+      "ms": 42,
+      "x": 2240,
+      "y": 4160,
+      "a": 2
+    },
+    {
+      "file": "dex-leap11.png",
+      "ms": 42,
+      "x": 2560,
+      "y": 4160,
+      "a": 2
+    },
+    {
+      "file": "dex-leap12.png",
+      "ms": 42,
+      "x": 2880,
+      "y": 4160,
+      "a": 2
+    },
+    {
+      "file": "dex-leap13.png",
+      "ms": 42,
+      "x": 3200,
+      "y": 4160,
+      "a": 2
+    },
+    {
+      "file": "dex-leap14.png",
+      "ms": 42,
+      "x": 3520,
+      "y": 4160,
+      "a": 2
+    },
+    {
+      "file": "dex-leap15.png",
+      "ms": 42,
+      "x": 0,
+      "y": 4480,
+      "a": 2
+    },
+    {
+      "file": "dex-leap16.png",
+      "ms": 42,
+      "x": 320,
+      "y": 4480,
+      "a": 2
+    },
+    {
+      "file": "dex-leap17.png",
+      "ms": 42,
+      "x": 640,
+      "y": 4480,
+      "a": 2
+    },
+    {
+      "file": "dex-leap18.png",
+      "ms": 42,
+      "x": 960,
+      "y": 4480,
+      "a": 2
+    },
+    {
+      "file": "dex-leap19.png",
+      "ms": 42,
+      "x": 1280,
+      "y": 4480,
+      "a": 2
+    },
+    {
+      "file": "dex-leap20.png",
+      "ms": 42,
+      "x": 1600,
+      "y": 4480,
+      "a": 2
+    },
+    {
+      "file": "dex-leap21.png",
+      "ms": 42,
+      "x": 1920,
+      "y": 4480,
+      "a": 2
+    },
+    {
+      "file": "dex-leap22.png",
+      "ms": 42,
+      "x": 2240,
+      "y": 4480,
+      "a": 2
+    },
+    {
+      "file": "dex-leap23.png",
+      "ms": 42,
+      "x": 2560,
+      "y": 4480,
+      "a": 2
+    },
+    {
+      "file": "dex-leap24.png",
+      "ms": 42,
+      "x": 2880,
+      "y": 4480,
+      "a": 2
+    },
+    {
+      "file": "dex-leap25.png",
+      "ms": 42,
+      "x": 3200,
+      "y": 4480,
+      "a": 2
+    },
+    {
+      "file": "dex-leap26.png",
+      "ms": 42,
+      "x": 3520,
+      "y": 4480,
+      "a": 2
+    },
+    {
+      "file": "dex-leap27.png",
+      "ms": 42,
+      "x": 0,
+      "y": 4800,
+      "a": 2
+    },
+    {
+      "file": "dex-leap28.png",
+      "ms": 42,
+      "x": 320,
+      "y": 4800,
+      "a": 2
+    },
+    {
+      "file": "dex-leap29.png",
+      "ms": 42,
+      "x": 640,
+      "y": 4800,
+      "a": 2
+    },
+    {
+      "file": "dex-leap30.png",
+      "ms": 42,
+      "x": 960,
+      "y": 4800,
+      "a": 2
+    },
+    {
+      "file": "dex-leap31.png",
+      "ms": 42,
+      "x": 1280,
+      "y": 4800,
+      "a": 2
+    },
+    {
+      "file": "dex-leap32.png",
+      "ms": 42,
+      "x": 1600,
+      "y": 4800,
+      "a": 2
+    },
+    {
+      "file": "dex-leap33.png",
+      "ms": 42,
+      "x": 1920,
+      "y": 4800,
+      "a": 2
+    },
+    {
+      "file": "dex-leap34.png",
+      "ms": 42,
+      "x": 2240,
+      "y": 4800,
+      "a": 2
+    },
+    {
+      "file": "dex-leap35.png",
+      "ms": 42,
+      "x": 2560,
+      "y": 4800,
+      "a": 2
+    }
+  ],
+  "dex-fall": [
+    {
+      "file": "dex-fall1.png",
+      "ms": 100,
+      "x": 2880,
+      "y": 4800,
+      "a": 2
+    },
+    {
+      "file": "dex-fall2.png",
+      "ms": 110,
+      "x": 3200,
+      "y": 4800,
+      "a": 2
+    },
+    {
+      "file": "dex-fall3.png",
+      "ms": 110,
+      "x": 3520,
+      "y": 4800,
+      "a": 2
+    },
+    {
+      "file": "dex-fall4.png",
+      "ms": 110,
+      "x": 0,
+      "y": 5120,
+      "a": 2
+    },
+    {
+      "file": "dex-fall5.png",
+      "ms": 130,
+      "x": 320,
+      "y": 5120,
+      "a": 2
+    },
+    {
+      "file": "dex-fall6.png",
+      "ms": 140,
+      "x": 640,
+      "y": 5120,
+      "a": 2
+    },
+    {
+      "file": "dex-fall7.png",
+      "ms": 150,
+      "x": 960,
+      "y": 5120,
+      "a": 2
+    },
+    {
+      "file": "dex-fall8.png",
+      "ms": 170,
+      "x": 1280,
+      "y": 5120,
+      "a": 2
+    },
+    {
+      "file": "dex-fall9.png",
+      "ms": 160,
+      "x": 1600,
+      "y": 5120,
+      "a": 2
+    },
+    {
+      "file": "dex-fall10.png",
+      "ms": 140,
+      "x": 1920,
+      "y": 5120,
+      "a": 2
+    },
+    {
+      "file": "dex-fall11.png",
+      "ms": 120,
+      "x": 2240,
+      "y": 5120,
+      "a": 2
+    }
+  ],
+  "dex-landing": [
+    {
+      "file": "dex-landing1.png",
+      "ms": 200,
+      "x": 2560,
+      "y": 5120,
+      "a": 2
+    },
+    {
+      "file": "dex-landing2.png",
+      "ms": 105,
+      "x": 2880,
+      "y": 5120,
+      "a": 2
+    },
+    {
+      "file": "dex-landing3.png",
+      "ms": 105,
+      "x": 3200,
+      "y": 5120,
+      "a": 2
+    },
+    {
+      "file": "dex-landing4.png",
+      "ms": 105,
+      "x": 3520,
+      "y": 5120,
+      "a": 2
+    },
+    {
+      "file": "dex-landing5.png",
+      "ms": 105,
+      "x": 0,
+      "y": 5440,
+      "a": 2
+    },
+    {
+      "file": "dex-landing6.png",
+      "ms": 440,
+      "x": 320,
+      "y": 5440,
+      "a": 2
+    },
+    {
+      "file": "dex-landing7.png",
+      "ms": 180,
+      "x": 640,
+      "y": 5440,
+      "a": 2
+    },
+    {
+      "file": "dex-landing8.png",
+      "ms": 780,
+      "x": 960,
+      "y": 5440,
+      "a": 2
+    }
+  ],
+  "dex-drag": [
+    {
+      "file": "dex-drag1.png",
+      "ms": 100,
+      "x": 1280,
+      "y": 5440,
+      "a": 2
+    },
+    {
+      "file": "dex-drag2.png",
+      "ms": 110,
+      "x": 1600,
+      "y": 5440,
+      "a": 2
+    },
+    {
+      "file": "dex-drag3.png",
+      "ms": 110,
+      "x": 1920,
+      "y": 5440,
+      "a": 2
+    },
+    {
+      "file": "dex-drag4.png",
+      "ms": 110,
+      "x": 2240,
+      "y": 5440,
+      "a": 2
+    },
+    {
+      "file": "dex-drag5.png",
+      "ms": 120,
+      "x": 2560,
+      "y": 5440,
+      "a": 2
+    },
+    {
+      "file": "dex-drag6.png",
+      "ms": 130,
+      "x": 2880,
+      "y": 5440,
+      "a": 2
+    },
+    {
+      "file": "dex-drag7.png",
+      "ms": 140,
+      "x": 3200,
+      "y": 5440,
+      "a": 2
+    },
+    {
+      "file": "dex-drag8.png",
+      "ms": 150,
+      "x": 3520,
+      "y": 5440,
+      "a": 2
+    },
+    {
+      "file": "dex-drag9.png",
+      "ms": 160,
+      "x": 0,
+      "y": 5760,
+      "a": 2
+    },
+    {
+      "file": "dex-drag10.png",
+      "ms": 150,
+      "x": 320,
+      "y": 5760,
+      "a": 2
+    },
+    {
+      "file": "dex-drag11.png",
+      "ms": 130,
+      "x": 640,
+      "y": 5760,
+      "a": 2
+    }
+  ],
+  "dex-click": [
+    {
+      "file": "dex-click1.png",
+      "ms": 250,
+      "x": 960,
+      "y": 5760,
+      "a": 2
+    },
+    {
+      "file": "dex-click2.png",
+      "ms": 250,
+      "x": 1280,
+      "y": 5760,
+      "a": 2
+    },
+    {
+      "file": "dex-click3.png",
+      "ms": 250,
+      "x": 1600,
+      "y": 5760,
+      "a": 2
+    },
+    {
+      "file": "dex-click4.png",
+      "ms": 250,
+      "x": 1920,
+      "y": 5760,
+      "a": 2
+    },
+    {
+      "file": "dex-click5.png",
+      "ms": 250,
+      "x": 2240,
+      "y": 5760,
+      "a": 2
+    },
+    {
+      "file": "dex-click6.png",
+      "ms": 250,
+      "x": 2560,
+      "y": 5760,
+      "a": 2
+    },
+    {
+      "file": "dex-click7.png",
+      "ms": 250,
+      "x": 2880,
+      "y": 5760,
+      "a": 2
+    },
+    {
+      "file": "dex-click8.png",
+      "ms": 250,
+      "x": 3200,
+      "y": 5760,
+      "a": 2
+    },
+    {
+      "file": "dex-click9.png",
+      "ms": 250,
+      "x": 3520,
+      "y": 5760,
+      "a": 2
+    },
+    {
+      "file": "dex-click10.png",
+      "ms": 250,
+      "x": 0,
+      "y": 6080,
+      "a": 2
+    },
+    {
+      "file": "dex-click11.png",
+      "ms": 250,
+      "x": 320,
+      "y": 6080,
+      "a": 2
+    }
+  ],
+  "dex-coffee": [
+    {
+      "file": "dex-coffee1.png",
+      "ms": 150,
+      "x": 640,
+      "y": 6080,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee2.png",
+      "ms": 150,
+      "x": 960,
+      "y": 6080,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee3.png",
+      "ms": 150,
+      "x": 1280,
+      "y": 6080,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee4.png",
+      "ms": 150,
+      "x": 1600,
+      "y": 6080,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee5.png",
+      "ms": 150,
+      "x": 1920,
+      "y": 6080,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee6.png",
+      "ms": 150,
+      "x": 2240,
+      "y": 6080,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee7.png",
+      "ms": 150,
+      "x": 2560,
+      "y": 6080,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee8.png",
+      "ms": 150,
+      "x": 2880,
+      "y": 6080,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee9.png",
+      "ms": 150,
+      "x": 3200,
+      "y": 6080,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee10.png",
+      "ms": 150,
+      "x": 3520,
+      "y": 6080,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee11.png",
+      "ms": 150,
+      "x": 0,
+      "y": 6400,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee12.png",
+      "ms": 150,
+      "x": 320,
+      "y": 6400,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee13.png",
+      "ms": 150,
+      "x": 640,
+      "y": 6400,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee14.png",
+      "ms": 150,
+      "x": 960,
+      "y": 6400,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee15.png",
+      "ms": 150,
+      "x": 1280,
+      "y": 6400,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee16.png",
+      "ms": 150,
+      "x": 1600,
+      "y": 6400,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee17.png",
+      "ms": 150,
+      "x": 1920,
+      "y": 6400,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee18.png",
+      "ms": 150,
+      "x": 2240,
+      "y": 6400,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee19.png",
+      "ms": 150,
+      "x": 2560,
+      "y": 6400,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee20.png",
+      "ms": 150,
+      "x": 2880,
+      "y": 6400,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee21.png",
+      "ms": 150,
+      "x": 3200,
+      "y": 6400,
+      "a": 2
+    },
+    {
+      "file": "dex-coffee22.png",
+      "ms": 150,
+      "x": 3520,
+      "y": 6400,
+      "a": 2
+    }
+  ],
+  "dex-side-listen": [
+    {
+      "file": "dex-listening1.png",
+      "ms": 140,
+      "x": 1600,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening2.png",
+      "ms": 140,
+      "x": 1920,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening3.png",
+      "ms": 140,
+      "x": 2240,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening4.png",
+      "ms": 140,
+      "x": 2560,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening5.png",
+      "ms": 140,
+      "x": 2880,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening6.png",
+      "ms": 140,
+      "x": 3200,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening7.png",
+      "ms": 140,
+      "x": 3520,
+      "y": 1600,
+      "a": 2
+    },
+    {
+      "file": "dex-listening8.png",
+      "ms": 140,
+      "x": 0,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-listening9.png",
+      "ms": 140,
+      "x": 320,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-listening10.png",
+      "ms": 140,
+      "x": 640,
+      "y": 1920,
+      "a": 2
+    },
+    {
+      "file": "dex-listening11.png",
+      "ms": 140,
+      "x": 960,
+      "y": 1920,
+      "a": 2
     }
   ]
 }

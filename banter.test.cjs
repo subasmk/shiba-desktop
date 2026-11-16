@@ -44,3 +44,19 @@ test('banter prompt includes the scene as a fact', () => {
   const msgs = buildBanterPrompt(sceneSnap, 'cheeky');
   a.match(msgs[1].content, /On screen: User is watching a GTA 6 trailer/);
 });
+
+test('mascot identity: default Rex, optional Dex the white cat', () => {
+  const { petIdentity } = require('./banter.cjs');
+  a.equal(petIdentity().name, 'Dex');
+  a.equal(petIdentity('rex').name, 'Rex');
+  a.equal(petIdentity('dex').name, 'Dex');
+  const rexMsgs = buildBanterPrompt(snap, 'cheeky', 'rex');
+  a.match(rexMsgs[0].content, /You are Rex/);
+  a.match(rexMsgs[0].content, /Shiba dog/);
+  const dexMsgs = buildBanterPrompt(snap, 'cheeky', 'dex');
+  a.match(dexMsgs[0].content, /You are Dex/);
+  a.match(dexMsgs[0].content, /white cat/);
+  // personality and honesty rules unchanged for both mascots
+  a.match(dexMsgs[0].content, /ONLY the facts given/);
+  a.match(dexMsgs[0].content, /Personality: cheeky/);
+});
