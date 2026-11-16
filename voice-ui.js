@@ -46,5 +46,12 @@ window.petAPI.on('pet-speak',async(text)=>{if(!session.active||session.phase!=='
 // release the session stops, but only if hold-to-talk started it.
 let holdStarted=false;
 window.petAPI.on('hold-state',async d=>{if(!d)return;if(d.active){if(session.active||holdStarted)return;holdStarted=true;wakeCaptureStop();show('Hold-to-talk: preparing local voice...');try{await session.start();fireAnim('listening-start');window.petAPI.send('voice-active',true);show('Hold-to-talk: listening');}catch(e){holdStarted=false;show(e.message);}}else if(holdStarted){holdStarted=false;window.petAPI.send('voice-active',false);session.stop();wakeResume();show('Hold-to-talk: microphone off');}});
+// Notch feeds: main shows the live session phase on the notch status
+// line (Listening / Thinking / Talking), so forward it whenever it
+// changes; and the notch Mic button toggles the session through exactly
+// the same start/stop path as the panel buttons above.
+let lastPhaseSent='';
+setInterval(()=>{const p=session.active?session.phase:'';if(p!==lastPhaseSent){lastPhaseSent=p;window.petAPI.send('voice-phase',p);}},300);
+window.petAPI.on('notch-mic',async()=>{if(session.active){window.petAPI.send('voice-active',false);session.stop();wakeResume();show('Microphone off');return;}wakeCaptureStop();show('Preparing local voice...');try{await session.start();fireAnim('listening-start');window.petAPI.send('voice-active',true);show('Listening');}catch(e){show(e.message);}});
 window.addEventListener('beforeunload',()=>{window.petAPI.send('voice-active',false);wakeCaptureStop();session.stop();});
 })();
