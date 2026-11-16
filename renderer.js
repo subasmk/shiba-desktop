@@ -11,22 +11,35 @@ if(mode==='pet'){
  const atlas=new Image();atlas.src='1-sprites-clean.png';const atlas2=new Image();atlas2.src='2-sprites-new.png';const atlas3=new Image();atlas3.src='3-sprites-dex.png';const sheets=[atlas,atlas2,atlas3];const SHEET_CELL=[160,160,320];function sheetFor(f){const s=sheets[f&&f.a|0];return s||atlas;}function cellFor(f){return SHEET_CELL[f&&f.a|0]||160;}
  let sprites={},seq=[],idx=0,nextAt=0,anim='idle',resolvedAnim='idle',finished=false,blend=null,lastDrawn=null,mascot='dex',wantedMascot='dex',requestedAnim='idle';const behavior=new PetBehavior();behavior.quiet(performance.now());
  // Optional second mascot (user-approved Nov 16 2026): when mascot is 'dex',
- // a requested state plays its 'dex-' variant when the dex sheet has it and
- // falls back to 'dex-idle' otherwise (the dex sheet covers fewer actions).
- function resolveAnim(name){if(name.startsWith('dex-')&&sprites[name])return name;if(mascot==='dex'){return sprites['dex-'+name]?'dex-'+name:'dex-idle';}return name;}
+ // a requested state plays its 'dex-' variant when the dex sheet has it.
+ // States the sheet lacks (touch-*, swing, bow, getup) and 'wave' (whose
+ // dex art is the retired portal sequence) resolve through the fallback
+ // table in mascot-anims.cjs instead of silently showing dex-idle.
+ function resolveAnim(name){return window.MascotAnims?MascotAnims.resolveSprite(name,mascot,n=>!!sprites[n]):name;}
+ // Dex size normalisation (sprite-fit.cjs): the dex sheet's cat changes
+ // height from animation to animation (median content height 144-278px
+ // across animations), so once the atlas and the manifest are both in,
+ // measure every dex frame's alpha bbox and draw dex frames through the
+ // fit table - one scale per animation, a shared feet baseline. Rex
+ // frames and not-yet-measured frames draw the full cell, as before.
+ let dexFit=null;
+ function buildDexFit(){if(dexFit||!window.SpriteFit||!sprites['dex-idle']||!atlas3.complete||!atlas3.naturalWidth)return;const cv=document.createElement('canvas');cv.width=320;cv.height=320;const cx2=cv.getContext('2d',{willReadFrequently:true});const byAnim={};for(const name of Object.keys(sprites)){if(!name.startsWith('dex-'))continue;const boxes=[];for(const f of sprites[name]){cx2.clearRect(0,0,320,320);cx2.drawImage(atlas3,f.x,f.y,320,320,0,0,320,320);boxes.push(SpriteFit.alphaBBox(cx2.getImageData(0,0,320,320).data,320,320,40));}byAnim[name]=boxes;}dexFit=SpriteFit.buildFitTable(byAnim,{cell:320,canvas:320});}
+ atlas3.onload=()=>buildDexFit();
+ function fitFor(animName,i){const t=dexFit&&dexFit.table[animName];return t?t.frames[i]:null;}
+ function drawFrame(ctx,frame,fit,alpha){const img=sheetFor(frame);if(!img.complete||!img.naturalWidth)return false;ctx.globalAlpha=alpha;if(fit)ctx.drawImage(img,frame.x+fit.bx,frame.y+fit.by,fit.bw,fit.bh,fit.dx,fit.dy,fit.dw,fit.dh);else{const csz=cellFor(frame);ctx.drawImage(img,frame.x,frame.y,csz,csz,0,0,320,320);}ctx.globalAlpha=1;return true;}
  function setMascot(m){wantedMascot=(m==='dex')?'dex':'rex';let next=wantedMascot;if(next==='dex'&&!sprites['dex-idle'])next='rex';const cv=$('.pet-image');if(cv)cv.style.imageRendering=next==='rex'?'':'auto';if(next===mascot)return;mascot=next;play(requestedAnim);}
  const finite=new Set(['landing','getup','fall','wave','click','bow','gesture','rage','sleep','scan','sit','swing','leap','emote','touch-head','touch-body','touch-paws']);const chain={landing:'getup',fall:'getup'};
- fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;setMascot(wantedMascot);play('idle');});
- function play(name){requestedAnim=name;const resolved=resolveAnim(name);if(resolved!==resolvedAnim&&lastDrawn)blend={sx:lastDrawn.x,sy:lastDrawn.y,sa:lastDrawn.a,until:performance.now()+90};anim=name;resolvedAnim=resolved;seq=sprites[resolved]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;} // anim keeps the requested name so finite/chain semantics survive mascot fallbacks
+ fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;buildDexFit();setMascot(wantedMascot);play('idle');});
+ function play(name){requestedAnim=name;const resolved=resolveAnim(name);if(resolved!==resolvedAnim&&lastDrawn)blend={frame:lastDrawn.frame,fit:lastDrawn.fit,until:performance.now()+90};anim=name;resolvedAnim=resolved;seq=sprites[resolved]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;} // anim keeps the requested name so finite/chain semantics survive mascot fallbacks
  function tick(t){
   if(seq.length){
    if(finished&&t>=nextAt){const next=chain[anim];play(next||'idle');if(!next)behavior.quiet(t);}
    const frame=seq[idx];const blending=blend&&t<blend.until;
    if((t>=nextAt||blending)){const img=sheetFor(frame);if(img.complete&&img.naturalWidth){
-    const canvas=$('.pet-image');canvas.dataset.frame=frame.file;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);const csz=cellFor(frame);
+    const canvas=$('.pet-image');canvas.dataset.frame=frame.file;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);const fit=fitFor(resolvedAnim,idx);
     let alpha=1;
-    if(blending){const bimg=sheets[blend.sa|0]||atlas;const p=1-(blend.until-t)/90;ctx.globalAlpha=Math.max(0,1-p);ctx.drawImage(bimg,blend.sx,blend.sy,SHEET_CELL[blend.sa|0]||160,SHEET_CELL[blend.sa|0]||160,0,0,320,320);alpha=Math.min(1,p);}else blend=null;
-    ctx.globalAlpha=alpha;ctx.drawImage(img,frame.x,frame.y,csz,csz,0,0,320,320);ctx.globalAlpha=1;lastDrawn={x:frame.x,y:frame.y,a:frame.a|0};
+    if(blending){const p=1-(blend.until-t)/90;drawFrame(ctx,blend.frame,blend.fit,Math.max(0,1-p));alpha=Math.min(1,p);}else blend=null;
+    if(drawFrame(ctx,frame,fit,alpha))lastDrawn={frame,fit};
    }}
    if(t>=nextAt){nextAt=t+frame.ms;idx++;if(idx>=seq.length){if(finite.has(anim))finished=true;else idx=0;}}
   }

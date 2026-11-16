@@ -56,7 +56,7 @@ function renderHome(m){
  +tg('Wake word "Hey Rex"','off until you enable it',(state.wakeWord?'<span class="pill ok">on</span>':'<span class="pill off">off</span>'))
  +'<div class="tg"><button class="linkish" data-go="voice">Open Voice settings</button></div></div>'
  +'<div class="card"><h3>Pet behavior</h3><p class="desc">How Rex moves and reacts</p>'
- +tg('Roaming','',sw('h-roam',!!state.roaming))
+ +tg('Roaming','',sw('h-roam',state.roaming!==false))
  +tg('Perch on windows','',sw('h-perch',state.perch!==false))
  +tg('Cursor play','paused for now - its art is being redrawn for the new mascot',swd('h-cursor'))
  +tg('Proactive comments','',sw('h-proactive',!!state.proactive))
@@ -114,7 +114,7 @@ function renderVoice(m){
 function renderPet(m){
  m.innerHTML='<h2>Pet behavior</h2><div class="sub">How your pet moves, reacts and talks. Friendly teasing uses only pet-local action counts, never your laptop activity.</div>'
  +'<div class="card"><h3>Movement</h3>'
- +tg('Roaming','the pet wanders the desktop while idle',sw('p-roam',!!state.roaming))
+ +tg('Roaming','the pet wanders the desktop while idle',sw('p-roam',state.roaming!==false))
  +tg('Perch on windows','while roaming, the pet may sit on the front window title bar',sw('p-perch',state.perch!==false))
  +tg('Cursor play','paused for now - its art is being redrawn for the new mascot',swd('p-cursor'))
  +'</div><div class="card"><h3>Personality</h3><p class="desc">Reply style for chat and comments.</p><div class="row"><button class="act ghost" data-personality="calm">Calm</button><button class="act ghost" data-personality="playful">Playful</button><button class="act ghost" data-personality="cheeky">Cheeky</button></div><p class="desc" id="p-current"></p>'
