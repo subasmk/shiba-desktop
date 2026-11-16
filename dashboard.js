@@ -15,6 +15,7 @@ function swd(id){return '<input type="checkbox" class="sw" id="'+id+'" disabled>
 // One-time global listeners (re-rendering tabs must not stack them).
 let setupSink=null,tamilSink=null,musicSink=null;
 api.on('setup-progress',d=>{if(setupSink)setupSink(d);});
+api.on('dash-tab',k=>{if(TABS.some(t=>t[0]===k)&&tab!==k){tab=k;render();}});
 api.on('music-state',d=>{if(musicSink)musicSink(d);});
 api.on('tamil-setup-progress',d=>{if(tamilSink)tamilSink(d);});
 async function refreshSetup(){try{setupStatus=await api.call('setup-status');}catch{setupStatus=null;}return setupStatus;}
@@ -119,9 +120,10 @@ function renderPet(m){
  +'</div><div class="card"><h3>Personality</h3><p class="desc">Reply style for chat and comments.</p><div class="row"><button class="act ghost" data-personality="calm">Calm</button><button class="act ghost" data-personality="playful">Playful</button><button class="act ghost" data-personality="cheeky">Cheeky</button></div><p class="desc" id="p-current"></p>'
  +tg('Proactive comments','the pet occasionally speaks up, from local signals only, with quiet hours and daily caps',sw('p-proactive',!!state.proactive))
  +'</div><div class="card"><h3>Mascot</h3><p class="desc">Pick your desktop companion. Personality, features and voice are the same for both.</p><div class="row"><button class="act ghost" data-mascot="rex">Rex - Shiba dog</button><button class="act ghost" data-mascot="dex">Dex - white cat</button></div><p class="desc" id="m-current"></p><p class="desc">Dex is the main mascot right now. He knows fewer actions than Rex for now: anything he cannot do yet shows his idle pose. Rex stays available here with his classic art; his new art is being rebuilt.</p></div>'
- +'<div class="card"><h3>Notch</h3><p class="desc">The Dexter-style bar at the top of your screen: Rex\'s face, a live status line, quick actions and a glance at CPU / memory. Its buttons are edited inside the notch itself - open it and use Edit deck. Here you only choose whether it shows, and how it wakes.</p>'
- +tg('Notch','top-of-screen bar with Rex, status and quick actions',sw('pt-notch',state.notch!==false))
- +'<label class="plain">Notch mode</label><div class="row"><select id="pt-notch-mode" aria-label="Notch mode"><option value="always">Always - the pill stays visible</option><option value="hover">Hover - a thin sliver until the cursor reaches the top edge</option><option value="off">Off - no notch</option></select></div></div>'
+ +'<div class="card"><h3>Notch</h3><p class="desc">The Dexter-style bar at the top of your screen: the cat peeks over the top edge, hover opens a deck of up to 12 tiles - your real apps, actions like Mic / Do Not Disturb / routines, and live CPU / RAM tiles. Tiles are edited inside the notch itself: open it and tap the pencil. Here you only choose whether it shows, how it wakes, and whether the floating stats pill (CPU / RAM / battery, right edge of the screen) shows.</p>'
+ +tg('Notch','top-of-screen bar with the pet, status pill and tile deck',sw('pt-notch',state.notch!==false))
+ +tg('Stats pill','small floating CPU / RAM / battery readout at the right edge of the screen',sw('pt-notch-stats',state.notchStats!==false))
+ +'<label class="plain">Notch mode</label><div class="row"><select id="pt-notch-mode" aria-label="Notch mode"><option value="always">Always - the peek tab stays visible</option><option value="hover">Hover - a thin sliver until the cursor reaches the top edge</option><option value="off">Off - no notch</option></select></div></div>'
  +'<div class="status" id="d-status" role="status"></div>';
  $('#p-current').textContent='Current: '+(state.personality||'cheeky');
  const bind=(id,key)=>{const n=$(id);n.onchange=()=>task(async()=>{await save({[key]:n.checked});status('Saved.');});};
@@ -130,6 +132,7 @@ function renderPet(m){
  m.querySelectorAll('[data-mascot]').forEach(b=>b.onclick=()=>task(async()=>{await save({mascot:b.dataset.mascot});$('#m-current').textContent='Current: '+(b.dataset.mascot==='dex'?'Dex - white cat':'Rex - Shiba dog');status(b.dataset.mascot==='dex'?'Mascot: Dex the cat.':'Mascot: Rex the Shiba.');}));
  m.querySelectorAll('[data-personality]').forEach(b=>b.onclick=()=>task(async()=>{await save({personality:b.dataset.personality});$('#p-current').textContent='Current: '+b.dataset.personality;status('Personality: '+b.dataset.personality);}));
  $('#pt-notch').onchange=()=>task(async()=>{await save({notch:$('#pt-notch').checked});status($('#pt-notch').checked?'Notch on.':'Notch off.');});
+ $('#pt-notch-stats').onchange=()=>task(async()=>{await save({notchStats:$('#pt-notch-stats').checked});status($('#pt-notch-stats').checked?'Stats pill on.':'Stats pill off.');});
  $('#pt-notch-mode').value=['always','hover','off'].includes(state.notchMode)?state.notchMode:'always';
  $('#pt-notch-mode').onchange=()=>task(async()=>{await save({notchMode:$('#pt-notch-mode').value});status('Notch mode saved.');});
 }

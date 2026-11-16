@@ -4,13 +4,19 @@ const crypto=require('node:crypto');
 let catalog=[];
 function normalize(s){return String(s).normalize('NFKC').trim().toLocaleLowerCase();}
 function selectApps(items,query){const q=normalize(query);if(!q||q.length>100)return [];const exact=items.filter(x=>normalize(x.name)===q);return exact.length?exact:items.filter(x=>normalize(x.name).includes(q));}
-function readApps(){return new Promise((resolve,reject)=>{
+function scanCatalog(){return new Promise((resolve,reject)=>{
  if(process.platform!=='win32')return reject(Error('Installed-app launching requires Windows.'));
  execFile('powershell.exe',['-NoProfile','-NonInteractive','-Command',"[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();@(Get-StartApps | Select-Object Name,AppID) | ConvertTo-Json -Compress"],{windowsHide:true,timeout:12000,maxBuffer:1024*1024,encoding:'utf8'},(e,out)=>{
  if(e)return reject(Error('Could not read Windows Start menu. No app was started.'));
- try{const rows=JSON.parse(out.replace(/^﻿/,''));catalog=(Array.isArray(rows)?rows:[rows]).filter(r=>typeof r.Name==='string'&&typeof r.AppID==='string'&&r.AppID.length<1024&&!/[\x00-\x1f]/.test(r.AppID)).slice(0,2000).map(r=>({name:r.Name.slice(0,200),id:r.AppID,token:crypto.randomBytes(16).toString('hex')}));resolve(catalog.map(({name,token})=>({name,token})));}catch{reject(Error('Windows app list was unreadable. No app was started.'));}
+ try{const rows=JSON.parse(out.replace(/^﻿/,''));catalog=(Array.isArray(rows)?rows:[rows]).filter(r=>typeof r.Name==='string'&&typeof r.AppID==='string'&&r.AppID.length<1024&&!/[\x00-\x1f]/.test(r.AppID)).slice(0,2000).map(r=>({name:r.Name.slice(0,200),id:r.AppID,token:crypto.randomBytes(16).toString('hex')}));resolve(catalog);}catch{reject(Error('Windows app list was unreadable. No app was started.'));}
  });
 });}
+// Public app list for pickers: names + launch tokens only, never AppIDs.
+function readApps(){return scanCatalog().then(c=>c.map(({name,token})=>({name,token})));}
+// Full catalog rows (name, AppID, token) for the notch: main needs the
+// AppID to ask Electron for the app's real icon. Same scan, same catalog;
+// tokens are per-scan, so callers must launch through the latest scan.
+function readAppCatalog(){return scanCatalog().then(c=>c.map(({name,id,token})=>({name,id,token})));}
 function launchApp(token){return new Promise((resolve,reject)=>{
  const app=catalog.find(a=>a.token===token);if(!app)return reject(Error('Choose an app from the current installed list.'));
  // Explorer resolves the exact catalog identity, never a free-form executable or arguments.
@@ -35,4 +41,4 @@ function readRunningApps(execFileFn=execFile,platform=process.platform){return n
  });
 });}
 async function launchByName(query){const apps=await readApps(),matches=selectApps(apps,query);if(matches.length!==1)return{status:matches.length?'ambiguous':'not-found',choices:matches.slice(0,10).map(a=>a.name)};return launchApp(matches[0].token);}
-module.exports={readApps,launchApp,selectApps,parseLaunch,launchByName,buildRunningAppsScript,parseRunningApps,readRunningApps};
+module.exports={readApps,readAppCatalog,launchApp,selectApps,parseLaunch,launchByName,buildRunningAppsScript,parseRunningApps,readRunningApps};

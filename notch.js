@@ -1,196 +1,315 @@
-// Notch window renderer: draws the collapsed pill / hover deck / open
-// panel from the shared notch.cjs model, and owns pointer behaviour.
-//
-// Click-through: the window itself is sized for the OPEN state and main
-// keeps it mouse-transparent (setIgnoreMouseEvents with forwarding).
-// Forwarded mousemove events still reach this page, so the moment the
-// pointer is over real notch UI ([data-hit]) we ask main to make the
-// window solid; when it leaves, we hand the clicks back to the desktop.
-//
-// Action routing: chat / discord / vision are chat-row actions - they
-// open the panel and prefill the existing chat intents ("post to
-// discord: ..." and "where is ..." are parsed by the normal brain path
-// in main). Everything else dispatches through main's 'notch-action'.
+// Notch window renderer (V2): Dexter-style layout — peek tab, cat-centre
+// header with status pill + utility icons, 6x2 tile deck, edit mode with a
+// searchable picker, chat view with a provider chip, and cat drag-out.
+// Machine state lives in window.Notch (notch.cjs); main owns settings, app
+// icons, stats and every real action — this file only renders and dispatches.
+'use strict';
 const api = window.petAPI;
 const N = window.Notch;
 const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const LETTER_COLORS = ['#5B6CFF', '#d94f2b', '#2e9e63', '#8a5fd0', '#c9931b', '#2f7fb8', '#b84d7a', '#4d7c8a'];
+const letterColor = (name) => { let h = 0; for (const ch of String(name || '')) h = (h * 31 + ch.charCodeAt(0)) % 997; return LETTER_COLORS[h % LETTER_COLORS.length]; };
+
 const machine = new N.NotchMachine({});
-let deck = N.DEFAULT_DECK.slice();
-let ignoring = true; // matches main's initial setIgnoreMouseEvents(true)
+let deck = N.saneDeck(undefined); // replaced by the pushed state (scan default or saved deck)
+let mascotName = 'Dex';
+let pillState = { text: 'IDLE', tone: 'idle' };
+let statusLine = 'Idle';
+let dnd = false;
+let muted = false;
+let musicPlaying = false;
+let stats = { cpuPct: null, ramPct: null };
+let batteryPct = null;
+// Edit mode data: fetched once per edit session, reused across renders.
+let appsCache = null;      // [names]
+let routinesCache = null;  // [names]
+let pkCategory = 'Stats';
+let pkQuery = '';
+let pkList = [];           // candidates currently shown (index-based clicks)
+const iconCache = new Map(); // app name -> data URL | null (null = no icon, letter fallback)
+const iconWanted = new Set();
 
-function setIgnore(v) {
-  if (v === ignoring) return;
-  ignoring = v;
-  api.send('notch-set-ignore', { ignore: v });
+// --- rendering -----------------------------------------------------------------
+function tileInner(tile) {
+  if (tile.kind === 'app') {
+    const url = iconCache.get(tile.name);
+    if (url) return `<span class="tic"><img src="${url}" alt=""></span>`;
+    requestIcon(tile.name);
+    return `<span class="tic"><span class="letter" style="background:${letterColor(tile.name)}">${esc((tile.name || '?').trim().charAt(0).toUpperCase() || '?')}</span></span>`;
+  }
+  if (tile.kind === 'info') {
+    const v = tile.id === 'cpu' ? stats.cpuPct : tile.id === 'ram' ? stats.ramPct : batteryPct;
+    return `<span class="tic"><span class="val">${v == null ? '—' : v + '%'}</span></span>`;
+  }
+  return `<span class="tic">${esc(N.tileIcon(tile))}</span>`;
 }
-function esc(s) { return String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
-
-function render() {
-  const st = machine.state;
-  document.body.dataset.state = st;
-  $('#cat').classList.toggle('out', machine.petOut);
-  $('#dock').classList.toggle('hidden', !machine.petOut);
-  $('#expand').textContent = st === 'open' ? '▴' : '▾';
-  renderDeck();
-  if (st === 'open') renderTiles();
-  api.send('notch-ui-state', { state: st });
+function tileActive(tile) {
+  if (tile.kind === 'action' && tile.id === 'dnd') return dnd;
+  if (tile.kind === 'action' && tile.id === 'music') return musicPlaying;
+  return false;
 }
-
-function renderDeck() {
-  $('#deck').innerHTML = deck.map((id) => {
-    const a = N.ACTIONS[id];
-    return '<button class="dbtn" data-action="' + id + '" title="' + esc(a.label) + '"><span class="ic">' + a.icon + '</span><span class="lb">' + esc(a.label) + '</span></button>';
+function renderGrid() {
+  const grid = $('#grid');
+  let html = deck.map((tile, i) =>
+    `<button class="tile${tileActive(tile) ? ' on' : ''}" data-tile="${i}" title="${esc(N.tileLabel(tile))}">${tileInner(tile)}<span class="lb">${esc(N.tileLabel(tile))}</span><span class="minus" data-remove="${i}" title="Remove tile">−</span></button>`).join('');
+  if (machine.editing) for (let i = deck.length; i < N.MAX_TILES; i++) html += '<div class="slot"></div>';
+  grid.innerHTML = html;
+  $('#edit-count').textContent = `${deck.length} of ${N.MAX_TILES}`;
+}
+function requestIcon(name) {
+  if (iconCache.has(name) || iconWanted.has(name) || !name) return;
+  iconWanted.add(name);
+  api.call('notch-app-icon', { name }).then((url) => { iconCache.set(name, url || null); renderGrid(); if (machine.editing) renderPicker(); })
+    .catch(() => { iconCache.set(name, null); });
+}
+function renderPicker() {
+  $('#pk-tabs').innerHTML = N.PICKER_CATEGORIES.map((c) =>
+    `<button class="pk-tab${c === pkCategory ? ' on' : ''}" data-tab="${esc(c)}">${esc(c)}</button>`).join('');
+  const candidates = N.pickerCandidates({ apps: appsCache || [], routines: routinesCache || [], deck });
+  pkList = N.filterTiles(candidates[pkCategory] || [], pkQuery);
+  if (appsCache === null && (pkCategory === 'Desktop' || pkCategory === 'Socials')) {
+    $('#pk-grid').innerHTML = '<span class="pk-empty">Scanning installed apps…</span>';
+    return;
+  }
+  if (!pkList.length) { $('#pk-grid').innerHTML = '<span class="pk-empty">Nothing here.</span>'; return; }
+  $('#pk-grid').innerHTML = pkList.map((t, i) => {
+    const tile = t.kind === 'app' ? { kind: 'app', name: t.name }
+      : t.kind === 'info' ? { kind: 'info', id: t.id } : { kind: 'action', id: t.id, ...(t.name ? { name: t.name } : {}) };
+    let icon;
+    if (tile.kind === 'app') {
+      const url = iconCache.get(tile.name);
+      icon = url ? `<img src="${url}" alt="" style="width:20px;height:20px;border-radius:6px">` : `<span class="letter" style="background:${letterColor(tile.name)}">${esc((tile.name || '?').charAt(0).toUpperCase())}</span>`;
+      if (!url) requestIcon(tile.name);
+    } else icon = `<span class="ic">${esc(N.tileIcon(tile))}</span>`;
+    return `<button class="cand${t.inDeck ? ' added' : ''}" data-cand="${i}" title="${esc(N.tileLabel(tile))}">${icon}<span>${esc(N.tileLabel(tile))}</span>${t.inDeck ? '<span class="tag">Added</span>' : ''}</button>`;
   }).join('');
 }
-function renderTiles() {
-  $('#tiles').innerHTML = deck.length ? deck.map((id, i) => {
-    const a = N.ACTIONS[id];
-    return '<span class="tile"><span class="ic">' + a.icon + '</span>' + esc(a.label)
-      + '<button data-move="-1" data-id="' + id + '" title="Move left" ' + (i === 0 ? 'disabled' : '') + '>‹</button>'
-      + '<button data-move="1" data-id="' + id + '" title="Move right" ' + (i === deck.length - 1 ? 'disabled' : '') + '>›</button>'
-      + '<button data-remove="' + id + '" title="Remove from deck">×</button></span>';
-  }).join('') : '<span class="tile">Deck is empty - add actions below.</span>';
-  const avail = N.availableActions(deck);
-  $('#palette').innerHTML = avail.length
-    ? avail.map((id) => '<span class="tile add" data-add="' + id + '"><span class="ic">' + N.ACTIONS[id].icon + '</span>+ ' + esc(N.ACTIONS[id].label) + '</span>').join('')
-    : '<span class="tile">Everything is in the deck.</span>';
+function flash(msg) { $('#flash').textContent = msg || ''; }
+function render() {
+  document.body.dataset.state = machine.state;
+  document.body.dataset.view = machine.view;
+  document.body.classList.toggle('editing', machine.editing);
+  $('#cat').classList.toggle('out', machine.petOut);
+  $('#peek-cat').classList.toggle('out', machine.petOut);
+  $('#dock-btn').classList.toggle('hidden', !machine.petOut);
+  $('#pill').dataset.tone = pillState.tone;
+  $('#pill-text').textContent = pillState.text;
+  $('#chat-status').textContent = statusLine;
+  $('#peek').title = statusLine;
+  document.querySelector('[data-util="chat"]').classList.toggle('on', machine.view === 'chat');
+  document.querySelector('[data-util="deck"]').classList.toggle('on', machine.view === 'deck');
+  const muteBtn = document.querySelector('[data-util="mute"]');
+  muteBtn.textContent = muted ? '🔇' : '🔊';
+  muteBtn.classList.toggle('on', muted);
+  renderGrid();
+  if (machine.editing) renderPicker();
+  api.send('notch-ui-state', { state: machine.state });
 }
-
-async function saveDeck(next) {
-  if (!next) return;
-  try {
-    const saved = await api.call('notch-set-deck', { deck: next });
-    deck = N.saneDeck(saved);
-  } catch (e) {
-    flashReply(e.message);
-  }
-  render();
-}
-function flashReply(t) { const el = $('#chat-reply'); if (el) el.textContent = t; }
-
-// --- state pushes from main -------------------------------------------------
 function applyState(d) {
   if (!d) return;
-  machine.setEnabled(d.enabled !== false);
-  machine.setMode(d.mode || 'always');
-  machine.setPetOut(!!d.petOut);
+  machine.setEnabled(d.enabled);
+  machine.setMode(d.mode);
+  machine.setPetOut(d.petOut);
   if (Array.isArray(d.deck)) deck = N.saneDeck(d.deck);
-  if (typeof d.statusLine === 'string') $('#status').textContent = d.statusLine;
-  $('#dot').classList.toggle('on', d.statusDot === 'on');
-  if (typeof d.glance === 'string') $('#glance').textContent = d.glance;
+  if (d.mascot) {
+    mascotName = String(d.mascot);
+    $('#chat-ask').textContent = `Ask ${mascotName} anything…`;
+    $('#chat-input').placeholder = `Message ${mascotName}`;
+  }
+  if (d.pill && d.pill.text) pillState = { text: String(d.pill.text), tone: String(d.pill.tone || 'idle') };
+  if (typeof d.statusLine === 'string') statusLine = d.statusLine;
+  if (typeof d.dnd === 'boolean') dnd = d.dnd;
+  if (typeof d.muted === 'boolean') muted = d.muted;
+  if (typeof d.musicPlaying === 'boolean') musicPlaying = d.musicPlaying;
+  if (d.stats && typeof d.stats === 'object') stats = { cpuPct: d.stats.cpuPct ?? null, ramPct: d.stats.ramPct ?? null };
+  $('#peek-dot').className = d.statusDot === 'on' ? 'on' : '';
   render();
 }
 api.on('notch-state', applyState);
 
-// --- pointer behaviour --------------------------------------------------------
-document.addEventListener('mousemove', (e) => {
-  const hit = e.target && e.target.closest ? e.target.closest('[data-hit]') : null;
-  if (hit) {
-    setIgnore(false);
-    if (machine.state === 'sliver') { machine.pointerTop(); render(); }
-  } else {
-    setIgnore(true);
-  }
-});
-document.addEventListener('mouseleave', () => { machine.pointerAway(); setIgnore(true); render(); });
-const bar = $('#bar');
-bar.addEventListener('mouseenter', () => { machine.hoverIn(); render(); });
-bar.addEventListener('mouseleave', () => { if (!$('#panel').contains(document.activeElement)) { machine.hoverOut(); render(); } });
-bar.addEventListener('click', (e) => {
-  if (e.target.closest('button') || e.target.closest('#cat')) return;
-  machine.toggleOpen(); render();
-  if (machine.state === 'open') $('#chat-input').focus();
-});
-$('#expand').onclick = () => { machine.toggleOpen(); render(); };
-$('#close-panel').onclick = () => { machine.closePanel(); render(); };
-$('#dock').onclick = () => { api.send('notch-dock'); };
-
-// Cat drag-out: a press that travels becomes a drag; release over the
-// desktop asks main to summon the pet window at the drop point (the
-// same landing the panel's drag-head produces). A plain click toggles
-// the panel instead.
-const cat = $('#cat');
-let dragStart = null, dragMoved = false;
-cat.addEventListener('pointerdown', (e) => {
-  if (e.button !== 0) return;
-  dragStart = { x: e.screenX, y: e.screenY };
-  dragMoved = false;
-  cat.setPointerCapture(e.pointerId);
-});
-cat.addEventListener('pointermove', (e) => {
-  if (!dragStart) return;
-  if (Math.hypot(e.screenX - dragStart.x, e.screenY - dragStart.y) > 30) dragMoved = true;
-});
-cat.addEventListener('pointerup', (e) => {
-  const wasDrag = dragMoved;
-  dragStart = null; dragMoved = false;
-  if (wasDrag) { api.send('notch-drag-out', { x: e.screenX, y: e.screenY }); return; }
-  machine.toggleOpen(); render();
-});
-
-// --- deck actions ---------------------------------------------------------------
-$('#deck').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-action]');
-  if (!b) return;
-  runAction(b.dataset.action);
-});
-function focusChat(prefill) {
-  if (machine.state !== 'open') machine.toggleOpen();
+// --- deck editing ------------------------------------------------------------------
+function saveDeck(next) {
+  if (!next) { flash('That deck change is not allowed.'); return; }
+  api.call('notch-set-deck', { deck: next }).then((saved) => {
+    deck = N.saneDeck(saved);
+    render();
+  }).catch(() => flash('Could not save the deck.'));
+}
+function enterEdit() {
+  machine.setEditing(true);
   render();
+  if (appsCache === null) {
+    api.call('notch-apps').then((r) => { appsCache = (r && r.apps) || []; renderPicker(); }).catch(() => { appsCache = []; renderPicker(); });
+  }
+  if (routinesCache === null) {
+    api.call('list-routines').then((rs) => { routinesCache = (Array.isArray(rs) ? rs : []).map((r) => r && r.name).filter(Boolean); renderPicker(); })
+      .catch(() => { routinesCache = []; renderPicker(); });
+  }
+}
+$('#edit-btn').addEventListener('click', enterEdit);
+$('#done-btn').addEventListener('click', () => { machine.setEditing(false); flash(''); render(); });
+$('#pk-search').addEventListener('input', (e) => { pkQuery = e.target.value; renderPicker(); });
+$('#pk-tabs').addEventListener('click', (e) => {
+  const tab = e.target.closest('[data-tab]');
+  if (!tab) return;
+  pkCategory = tab.dataset.tab;
+  renderPicker();
+});
+$('#pk-grid').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-cand]');
+  if (!btn) return;
+  const t = pkList[Number(btn.dataset.cand)];
+  if (!t) return;
+  if (t.inDeck) { flash('Already in the deck.'); return; }
+  const tile = t.kind === 'app' ? { kind: 'app', name: t.name }
+    : t.kind === 'info' ? { kind: 'info', id: t.id } : { kind: 'action', id: t.id, ...(t.name ? { name: t.name } : {}) };
+  saveDeck(N.deckAdd(deck, tile));
+});
+
+// --- tile actions ---------------------------------------------------------------------
+function runTile(tile) {
+  if (!tile) return;
+  if (tile.kind === 'info') return; // info tiles are displays, not buttons
+  if (tile.kind === 'app') {
+    api.call('notch-action', { action: 'app', name: tile.name }).then((r) => {
+      flash(r && r.launched ? `Opening ${tile.name}…` : (r && r.error) || `Could not open ${tile.name}.`);
+    }).catch(() => flash(`Could not open ${tile.name}.`));
+    return;
+  }
+  switch (tile.id) {
+    case 'chat': machine.setView('chat'); render(); $('#chat-input').focus(); break;
+    case 'vision': machine.setView('chat'); render(); prefill('where is '); break;
+    case 'discord-post': machine.setView('chat'); render(); prefill('post to discord: '); break;
+    case 'dnd': api.call('notch-action', { action: 'dnd' }).then((r) => { if (r && typeof r.dnd === 'boolean') { dnd = r.dnd; render(); } flash(dnd ? 'Do not disturb ON — the pet stays quiet.' : 'Do not disturb off.'); }).catch(() => flash('Could not toggle Do not disturb.')); break;
+    case 'run-routine': api.call('notch-action', { action: 'run-routine', name: tile.name }).then((r) => {
+      const launched = (r && r.launched) || [], problems = (r && r.problems) || [];
+      flash(problems.length ? `Routine: opened ${launched.length}, ${problems.length} problem(s).` : `Routine running — opened ${launched.length} app(s).`);
+    }).catch(() => flash('Could not run that routine.')); break;
+    default: // mic, timer, note, music, music-next, playlists, routines
+      api.call('notch-action', { action: tile.id }).then((r) => { if (r && r.error) flash(String(r.error)); }).catch(() => {});
+  }
+}
+$('#grid').addEventListener('click', (e) => {
+  const minus = e.target.closest('[data-remove]');
+  if (minus && machine.editing) { e.stopPropagation(); saveDeck(N.deckRemoveAt(deck, Number(minus.dataset.remove))); return; }
+  if (machine.editing) return; // tiles do not run while editing
+  const btn = e.target.closest('[data-tile]');
+  if (btn) runTile(deck[Number(btn.dataset.tile)]);
+});
+
+// --- header utility icons ---------------------------------------------------------------
+document.querySelectorAll('[data-util]').forEach((btn) => btn.addEventListener('click', () => {
+  const what = btn.dataset.util;
+  if (what === 'mute') {
+    api.call('notch-action', { action: 'mute' }).then((r) => { if (r && typeof r.muted === 'boolean') { muted = r.muted; render(); } flash(muted ? 'Wake word muted.' : 'Wake word live.'); })
+      .catch(() => flash('Could not toggle mute.'));
+  } else if (what === 'hide') {
+    flash('');
+    machine.pointerAway();
+    api.send('notch-set-ignore', { ignore: true });
+    render();
+  } else if (what === 'deck') { machine.setView('deck'); render(); }
+  else if (what === 'chat') { machine.setView('chat'); render(); $('#chat-input').focus(); }
+}));
+
+// --- chat view -----------------------------------------------------------------------------
+function prefill(text) {
   const input = $('#chat-input');
-  if (prefill && !input.value) input.value = prefill;
+  input.value = text;
   input.focus();
 }
-async function runAction(id) {
-  if (id === 'chat') { focusChat(''); return; }
-  if (id === 'discord') { focusChat('post to discord: '); return; }
-  if (id === 'vision') { focusChat('where is '); return; }
-  try {
-    await api.call('notch-action', { action: id });
-  } catch (err) {
-    if (machine.state !== 'open') machine.toggleOpen();
-    render();
-    flashReply(err.message);
-  }
+function providerChanged() {
+  const p = $('#provider').value;
+  $('#consent-row').classList.toggle('show', p !== 'local');
+  $('#consent-text').textContent = p === 'groq' ? 'Allow this message to go to Groq' : 'Allow this message to go to the free cloud provider';
 }
-
-// --- edit deck ---------------------------------------------------------------------
-$('#tiles').addEventListener('click', (e) => {
-  const mv = e.target.closest('[data-move]');
-  if (mv) { saveDeck(N.deckMove(deck, mv.dataset.id, Number(mv.dataset.move))); return; }
-  const rm = e.target.closest('[data-remove]');
-  if (rm) { saveDeck(N.deckRemove(deck, rm.dataset.remove)); }
-});
-$('#palette').addEventListener('click', (e) => {
-  const add = e.target.closest('[data-add]');
-  if (add) saveDeck(N.deckAdd(deck, add.dataset.add));
-});
-
-// --- chat row -------------------------------------------------------------------------
-async function sendChat() {
+$('#provider').addEventListener('change', providerChanged);
+function sendChat() {
   const input = $('#chat-input');
   const text = input.value.trim();
   if (!text) return;
+  const mode = $('#provider').value;
+  const consent = mode !== 'local' && $('#chat-consent').checked;
+  if (mode !== 'local' && !consent) {
+    $('#chat-reply').textContent = `Tick the box to let this message go to ${mode === 'groq' ? 'Groq' : 'the cloud provider'}.`;
+    return;
+  }
   const btn = $('#chat-send');
   btn.disabled = true;
-  flashReply('Thinking…');
-  try {
-    const r = await api.call('notch-chat', { text });
+  $('#chat-reply').textContent = 'Thinking…';
+  api.call('notch-chat', { text, mode, consent }).then((r) => {
+    const reply = r && r.reply != null ? r.reply : r;
+    $('#chat-reply').textContent = reply ? String(reply) : '(no reply)';
     input.value = '';
-    flashReply(r && r.reply ? r.reply : 'Sent.');
-  } catch (err) {
-    flashReply(err.message);
-  } finally {
-    btn.disabled = false;
-    input.focus();
-  }
+  }).catch((err) => {
+    $('#chat-reply').textContent = 'Chat failed: ' + String((err && err.message) || err).replace(/^Error invoking remote method '[^']+': /, '');
+  }).finally(() => { btn.disabled = false; $('#chat-consent').checked = false; }); // consent is per message
 }
-$('#chat-send').onclick = sendChat;
-$('#chat-input').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') sendChat();
-  if (e.key === 'Escape') { machine.closePanel(); render(); }
+$('#chat-send').addEventListener('click', sendChat);
+$('#chat-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChat(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (machine.view === 'chat') { machine.setView('deck'); render(); return; }
+  machine.closePanel();
+  api.send('notch-set-ignore', { ignore: true });
+  render();
 });
 
-// --- boot --------------------------------------------------------------------------------
-api.call('notch-get-state').then(applyState).catch(() => render());
+// --- pointer behaviour: peek raise, hover, click-through --------------------------------
+$('#peek').addEventListener('mouseenter', () => { machine.hoverIn(); render(); });
+$('#peek').addEventListener('click', () => { machine.toggleOpen(); render(); if (machine.state !== 'open') api.send('notch-set-ignore', { ignore: true }); });
+$('#panel').addEventListener('mouseenter', () => { machine.hoverIn(); render(); });
+$('#panel').addEventListener('mouseleave', () => {
+  if ($('#panel').contains(document.activeElement)) return; // typing in chat: stay
+  machine.hoverOut();
+  render();
+});
+document.addEventListener('mousemove', (e) => {
+  const hit = !!(e.target && e.target.closest && e.target.closest('[data-hit]'));
+  api.send('notch-set-ignore', { ignore: !hit });
+});
+document.addEventListener('mouseleave', () => {
+  machine.pointerAway();
+  api.send('notch-set-ignore', { ignore: true });
+  render();
+});
+$('#dock-btn').addEventListener('click', () => api.send('notch-dock'));
+
+// --- cat drag-out: tilt while dragging, summon on a real drop ------------------------------
+const cat = $('#cat');
+let drag = null;
+cat.addEventListener('pointerdown', (e) => {
+  drag = { x: e.screenX, y: e.screenY, moved: false };
+  cat.setPointerCapture(e.pointerId);
+});
+cat.addEventListener('pointermove', (e) => {
+  if (!drag) return;
+  const dx = e.screenX - drag.x, dy = e.screenY - drag.y;
+  if (Math.abs(dx) + Math.abs(dy) > 30) drag.moved = true;
+  if (drag.moved) {
+    // The dragged feel from the reference photos: the cat leans into the drag.
+    const tilt = Math.max(-16, Math.min(16, dx / 6));
+    cat.style.transform = `rotate(${tilt}deg) scale(1.06)`;
+  }
+});
+cat.addEventListener('pointerup', (e) => {
+  const was = drag;
+  drag = null;
+  cat.style.transform = '';
+  if (was && was.moved) api.send('notch-drag-out', { x: e.screenX, y: e.screenY });
+});
+cat.addEventListener('pointercancel', () => { drag = null; cat.style.transform = ''; });
+
+// Battery for the stats pill + battery info tile (renderer-side, per spec).
+if (navigator.getBattery) {
+  navigator.getBattery().then((b) => {
+    const upd = () => { batteryPct = Math.round(b.level * 100); if (machine.state === 'open' || machine.state === 'hover') renderGrid(); };
+    b.addEventListener('levelchange', upd);
+    upd();
+  }).catch(() => {});
+}
+
+// Boot.
 render();
+api.call('notch-get-state').then(applyState).catch(() => {});

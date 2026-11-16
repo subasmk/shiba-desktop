@@ -1,65 +1,141 @@
-<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rex notch</title><style>
+<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Notch</title><style>
 *{box-sizing:border-box;margin:0}html,body{height:100%;background:transparent;overflow:hidden;font:13px/1.45 system-ui,sans-serif;color:#f2eee5;-webkit-user-select:none;user-select:none}
-#stage{display:flex;flex-direction:column;align-items:center;padding-top:0}
+#stage{display:flex;flex-direction:column;align-items:center}
+.hidden{display:none!important}
+/* --- peek tab (collapsed): a black tab at the top edge, cat peeking over it --- */
 #sliver{display:none;width:190px;height:5px;border-radius:0 0 6px 6px;background:#101014;box-shadow:0 1px 6px rgba(0,0,0,.5)}
 body[data-state="sliver"] #sliver{display:block}
-body[data-state="sliver"] #bar,body[data-state="sliver"] #panel,body[data-state="hidden"] #bar,body[data-state="hidden"] #panel,body[data-state="hidden"] #sliver{display:none}
-#bar{display:flex;align-items:center;gap:10px;max-width:572px;padding:7px 12px;border-radius:0 0 18px 18px;background:linear-gradient(180deg,#1d1d24,#101014);border:1px solid #2c2c35;border-top:0;box-shadow:0 10px 28px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.07);cursor:pointer}
-#cat{width:46px;height:32px;object-fit:contain;flex:none;cursor:grab}
+body[data-state="sliver"] #peek,body[data-state="sliver"] #panel,body[data-state="hidden"] #peek,body[data-state="hidden"] #panel,body[data-state="hidden"] #sliver{display:none}
+#peek{display:none;width:138px;height:32px;border-radius:0 0 18px 18px;background:linear-gradient(180deg,#1d1d24,#101014);border:1px solid #2c2c35;border-top:0;box-shadow:0 8px 20px rgba(0,0,0,.5);overflow:hidden;position:relative;cursor:pointer}
+body[data-state="collapsed"] #peek{display:block}
+#peek-cat{width:52px;height:52px;object-fit:cover;object-position:top center;display:block;margin:5px auto 0}
+#peek-cat.out{opacity:.4;filter:grayscale(.6)}
+#peek-dot{position:absolute;top:7px;right:10px;width:7px;height:7px;border-radius:50%;background:#55555f}
+#peek-dot.on{background:#3ddc84;box-shadow:0 0 6px rgba(61,220,132,.9)}
+/* --- expanded panel --- */
+#panel{display:none;width:592px;margin-top:30px;padding:12px 14px 14px;border-radius:18px;background:linear-gradient(180deg,#191920,#101014);border:1px solid #2c2c35;box-shadow:0 16px 38px rgba(0,0,0,.55);position:relative}
+body[data-state="hover"] #panel,body[data-state="open"] #panel{display:block}
+#catwrap{position:absolute;top:-27px;left:50%;transform:translateX(-50%);width:58px;height:46px;display:flex;justify-content:center}
+#cat{width:56px;height:44px;object-fit:contain;cursor:grab;transition:transform .12s ease}
 #cat.out{opacity:.4;filter:grayscale(.6)}
-#who{display:none;flex-direction:column;min-width:86px}
-#name{font-weight:700;font-size:13.5px;letter-spacing:.02em}
-#status{color:#9a97a3;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px}
-#deck{display:none;align-items:center;gap:6px}
-.dbtn{display:flex;flex-direction:column;align-items:center;gap:0;min-width:44px;padding:5px 6px 4px;border:0;border-radius:12px;background:linear-gradient(180deg,#26262e,#17171d);color:#f2eee5;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
-.dbtn:hover{filter:brightness(1.3)}
-.dbtn .ic{font-size:15px;line-height:1.15}
-.dbtn .lb{font-size:9.5px;color:#9a97a3}
-#glance{display:none;color:#8fd6a8;font-size:11px;white-space:nowrap;font-variant-numeric:tabular-nums}
-#dot{width:8px;height:8px;border-radius:50%;background:#55555f;flex:none}
-#dot.on{background:#3ddc84;box-shadow:0 0 7px rgba(61,220,132,.9)}
-#expand,#dock{flex:none;border:0;border-radius:10px;padding:4px 8px;background:#26262e;color:#f2eee5;cursor:pointer}
-#dock{background:#d94f2b;font-weight:600}
-#expand{display:none}
-.hidden{display:none!important}
-body[data-state="hover"] #who,body[data-state="open"] #who,body[data-state="hover"] #deck,body[data-state="open"] #deck,body[data-state="hover"] #glance,body[data-state="open"] #glance,body[data-state="hover"] #expand,body[data-state="open"] #expand{display:flex}
-body[data-state="hover"] #who,body[data-state="open"] #who{display:flex}
-#panel{display:none;width:560px;margin-top:8px;padding:12px 14px;border-radius:16px;background:linear-gradient(180deg,#191920,#101014);border:1px solid #2c2c35;box-shadow:0 14px 34px rgba(0,0,0,.55)}
-body[data-state="open"] #panel{display:block}
-.p-head{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:12.5px;margin-bottom:8px}
-.p-head button{border:0;border-radius:8px;background:#26262e;color:#f2eee5;padding:3px 9px;cursor:pointer}
-.p-sub{color:#9a97a3;font-size:11px;margin:10px 0 6px}
-#tiles,#palette{display:flex;flex-wrap:wrap;gap:6px}
-.tile{display:flex;align-items:center;gap:5px;padding:5px 7px;border-radius:11px;background:#1d1d24;border:1px solid #2c2c35;font-size:11.5px}
-.tile .ic{font-size:14px}
-.tile button{border:0;border-radius:7px;background:#26262e;color:#f2eee5;padding:1px 6px;cursor:pointer;font-size:11px}
-.tile button:hover{background:#d94f2b}
-.tile.add{border-style:dashed;cursor:pointer;color:#9a97a3}
-.tile.add:hover{color:#f2eee5;border-color:#d94f2b}
-#chat-reply{color:#c9c9d2;font-size:12px;min-height:16px;margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#chat-row{display:flex;gap:8px;margin-top:6px}
-#chat-input{flex:1;background:#1a1a20;border:1px solid #2c2c35;border-radius:11px;color:#f2eee5;padding:8px 11px;font:inherit;-webkit-user-select:text;user-select:text}
-#chat-input:focus{outline:2px solid #d94f2b;outline-offset:0}
-#chat-send{border:0;border-radius:11px;background:#d94f2b;color:#fff;font-weight:700;padding:8px 16px;cursor:pointer}
+#p-head{display:flex;align-items:flex-start;justify-content:space-between;min-height:34px}
+#head-left{display:flex;align-items:center;gap:7px;min-width:170px}
+#pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:#1d1d24;border:1px solid #2c2c35;font-size:10.5px;font-weight:700;letter-spacing:.06em;color:#c9c9d2}
+#pill-dot{width:7px;height:7px;border-radius:50%;background:#55555f;flex:none}
+#pill[data-tone="on"] #pill-dot{background:#3ddc84;box-shadow:0 0 6px rgba(61,220,132,.9)}
+#pill[data-tone="on"]{color:#8fd6a8}
+#pill[data-tone="busy"] #pill-dot{background:#ffb84d;box-shadow:0 0 6px rgba(255,184,77,.8)}
+#pill[data-tone="busy"]{color:#ffcf87}
+#pill[data-tone="standby"] #pill-dot{background:#6ec1ff}
+#pill[data-tone="standby"]{color:#a8d4ff}
+#pill[data-tone="dnd"] #pill-dot{background:#d94f2b}
+#pill[data-tone="dnd"]{color:#ff9d85}
+.icon-btn{width:28px;height:28px;border:0;border-radius:50%;background:#26262e;color:#f2eee5;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.icon-btn:hover{filter:brightness(1.35)}
+.icon-btn.on{background:#d94f2b}
+#dock-btn{border:0;border-radius:999px;padding:5px 11px;background:#d94f2b;color:#fff;font-weight:700;cursor:pointer;font-size:11.5px}
+#head-right{display:flex;align-items:center;gap:6px;min-width:170px;justify-content:flex-end}
+#utils{display:flex;gap:6px}
+#edit-label{display:none;font-weight:800;font-size:12px;letter-spacing:.05em;color:#ff9d85}
+#done-btn{display:none;border:0;border-radius:999px;padding:5px 14px;background:#f2eee5;color:#101014;font-weight:700;cursor:pointer}
+body.editing #pill,body.editing #edit-btn,body.editing #utils{display:none}
+body.editing #edit-label{display:inline}
+body.editing #done-btn{display:inline-block}
+/* --- deck grid --- */
+#grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:6px}
+.tile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:84px;padding:8px 4px 6px;border:1px solid #2c2c35;border-radius:14px;background:linear-gradient(180deg,#22222a,#16161c);color:#f2eee5;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.tile:hover{filter:brightness(1.3)}
+.tile.on{outline:2px solid #d94f2b;outline-offset:-2px}
+.tile .tic{height:32px;display:flex;align-items:center;justify-content:center;font-size:21px;line-height:1}
+.tile .tic img{width:30px;height:30px;border-radius:7px}
+.tile .letter{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff}
+.tile .val{font-size:16.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.tile .lb{font-size:10px;color:#b9b7c0;text-align:center;line-height:1.25;max-height:25px;overflow:hidden}
+.tile .minus{display:none;position:absolute;top:-7px;right:-7px;width:19px;height:19px;border-radius:50%;background:#3a3a44;border:1px solid #5a5a66;color:#fff;font-size:13px;line-height:1;cursor:pointer;z-index:2}
+body.editing .tile .minus{display:flex;align-items:center;justify-content:center}
+.slot{border:1.5px dashed #3d3d48;border-radius:14px;min-height:84px;display:none}
+body.editing .slot{display:block}
+#flash{min-height:15px;color:#ffb84d;font-size:11.5px;margin-top:8px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* --- edit-mode picker --- */
+#picker{display:none;margin-top:10px;border-top:1px solid #2c2c35;padding-top:10px}
+body.editing #picker{display:block}
+#pk-search{width:100%;background:#1a1a20;border:1px solid #2c2c35;border-radius:10px;color:#f2eee5;padding:7px 11px;font:inherit;-webkit-user-select:text;user-select:text}
+#pk-search:focus{outline:2px solid #d94f2b}
+#pk-tabs{display:flex;gap:6px;margin:9px 0 8px;flex-wrap:wrap}
+.pk-tab{border:1px solid #2c2c35;border-radius:999px;background:#1d1d24;color:#9a97a3;padding:3px 11px;cursor:pointer;font-size:11.5px}
+.pk-tab.on{background:#f2eee5;color:#101014;font-weight:700}
+#pk-grid{display:flex;flex-wrap:wrap;gap:6px;max-height:168px;overflow-y:auto}
+.cand{display:flex;align-items:center;gap:6px;padding:5px 9px;border-radius:11px;background:#1d1d24;border:1px solid #2c2c35;font-size:11.5px;color:#f2eee5;cursor:pointer}
+.cand:hover{border-color:#d94f2b}
+.cand .ic{font-size:14px}
+.cand .letter{width:20px;height:20px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#fff}
+.cand.added{opacity:.45;cursor:default}
+.cand .tag{color:#8fd6a8;font-size:10px}
+.pk-empty{color:#9a97a3;font-size:11.5px}
+/* --- chat view --- */
+#view-chat{display:none}
+body[data-view="chat"] #view-chat{display:block}
+body[data-view="chat"] #view-deck{display:none}
+#chat-ask{font-size:14px;color:#d8d5dd;text-align:center;margin:10px 0 2px}
+#chat-status{color:#9a97a3;font-size:11px;text-align:center;min-height:14px}
+#chat-reply{color:#f2eee5;font-size:12.5px;min-height:17px;margin-top:8px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#consent-row{display:none;align-items:center;gap:7px;justify-content:center;color:#9a97a3;font-size:11.5px;margin-top:8px;cursor:pointer}
+#consent-row.show{display:flex}
+#chat-bar{display:flex;gap:8px;margin-top:10px;align-items:center}
+#provider{background:#26262e;color:#f2eee5;border:1px solid #3a3a44;border-radius:999px;padding:7px 9px;font:inherit;font-size:12px;cursor:pointer;flex:none}
+#chat-input{flex:1;background:#1a1a20;border:1px solid #2c2c35;border-radius:999px;color:#f2eee5;padding:8px 14px;font:inherit;-webkit-user-select:text;user-select:text}
+#chat-input:focus{outline:2px solid #d94f2b}
+#chat-send{width:36px;height:36px;border:0;border-radius:50%;background:#d94f2b;color:#fff;font-weight:800;font-size:16px;cursor:pointer;flex:none}
 #chat-send:disabled{opacity:.5}
-</style></head><body data-state="collapsed"><div id="stage">
+</style></head><body data-state="collapsed" data-view="deck"><div id="stage">
 <div id="sliver" data-hit></div>
-<div id="bar" data-hit>
-<img id="cat" src="cat-head.png" draggable="false" alt="Rex - drag out onto the desktop" title="Drag me out onto the desktop">
-<div id="who"><div id="name">Rex</div><div id="status">Idle</div></div>
-<div id="deck"></div>
-<div id="glance" title="CPU and memory right now"></div>
-<span id="dot" title="Listening status"></span>
-<button id="dock" class="hidden" title="Bring Rex back to the notch">Dock</button>
-<button id="expand" title="Open the notch panel">▾</button>
+<div id="peek" data-hit title="Notch - hover to open">
+<img id="peek-cat" src="cat-head.png" draggable="false" alt="Pet peeking from the notch">
+<span id="peek-dot"></span>
 </div>
 <section id="panel" data-hit>
-<div class="p-head"><span>Edit deck</span><button id="close-panel" title="Close panel">▴</button></div>
-<div id="tiles"></div>
-<div class="p-sub">Add to the deck</div>
-<div id="palette"></div>
+<div id="catwrap"><img id="cat" src="cat-head.png" draggable="false" alt="Pet - drag out onto the desktop" title="Drag me out onto the desktop"></div>
+<header id="p-head">
+<div id="head-left">
+<span id="pill" data-tone="idle"><span id="pill-dot"></span><span id="pill-text">IDLE</span></span>
+<button id="edit-btn" class="icon-btn" title="Edit deck">✎</button>
+<span id="edit-label">EDITING <span id="edit-count">0 of 12</span></span>
+<button id="dock-btn" class="hidden" title="Bring the pet back to the notch">Dock</button>
+</div>
+<div id="head-right">
+<div id="utils">
+<button class="icon-btn" data-util="mute" title="Mute / unmute the wake word (Ctrl+Shift+M)">🔊</button>
+<button class="icon-btn" data-util="hide" title="Hide the notch">✕</button>
+<button class="icon-btn" data-util="deck" title="Deck view">▦</button>
+<button class="icon-btn" data-util="chat" title="Chat view">💬</button>
+</div>
+<button id="done-btn" title="Done editing">Done</button>
+</div>
+</header>
+<div id="view-deck">
+<div id="grid"></div>
+<div id="flash"></div>
+<div id="picker">
+<input id="pk-search" type="text" placeholder="Search" aria-label="Search tiles to add">
+<div id="pk-tabs"></div>
+<div id="pk-grid"></div>
+</div>
+</div>
+<div id="view-chat">
+<p id="chat-ask">Ask Dex anything…</p>
+<div id="chat-status">Idle</div>
 <div id="chat-reply"></div>
-<div id="chat-row"><input id="chat-input" type="text" maxlength="5000" placeholder="Ask Rex anything…" aria-label="Chat with Rex"><button id="chat-send">Chat</button></div>
+<label id="consent-row"><input type="checkbox" id="chat-consent" style="width:auto"><span id="consent-text">Allow this message to go to the cloud provider</span></label>
+<div id="chat-bar">
+<select id="provider" aria-label="Brain provider">
+<option value="local">Local</option>
+<option value="cloud">OpenRouter</option>
+<option value="groq">Groq</option>
+</select>
+<input id="chat-input" type="text" maxlength="5000" placeholder="Message Dex" aria-label="Chat message">
+<button id="chat-send" title="Send">↑</button>
+</div>
+</div>
 </section>
 </div>
 <script src="notch.cjs"></script>
