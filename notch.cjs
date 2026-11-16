@@ -39,6 +39,7 @@
     routines: { label: 'Routine list', icon: '📋' },
     'run-routine': { label: 'Run a routine', icon: '▶️' },
     chat: { label: 'Chat', icon: '💬' },
+    setup: { label: 'Setup', icon: '⬇️' },
     vision: { label: 'Vision', icon: '👁' },
     'discord-post': { label: 'Discord post', icon: '👾' },
   };
@@ -196,6 +197,7 @@
         mark({ kind: 'action', id: 'timer' }),
         mark({ kind: 'action', id: 'note' }),
         mark({ kind: 'action', id: 'chat' }),
+        mark({ kind: 'action', id: 'setup' }),
         mark({ kind: 'action', id: 'vision' }),
         mark({ kind: 'action', id: 'dnd' }),
         mark({ kind: 'action', id: 'routines' }),
@@ -229,7 +231,9 @@
       // main then substitutes the first-run default built from the app
       // scan. A saved deck - even an empty one - is honoured as saved.
       deck: Array.isArray(r.notchDeck) ? saneDeck(r.notchDeck) : null,
-      stats: r.notchStats !== false,
+      // Floating stats pill: OFF unless the user explicitly switched it on
+      // (the notch itself already shows glance stats while expanded).
+      stats: r.notchStats === true,
       dnd: !!r.notchDnd,
     };
   }

@@ -78,3 +78,26 @@ test('walk animation kind: long moves leap, medium run, short walk', () => {
   const ctl = new RoamController(() => 0);
   a.equal(ctl.moveKind(900), 'leap'); a.equal(ctl.moveKind(400), 'run'); a.equal(ctl.moveKind(120), 'walk');
 });
+
+test('grounding: pet resting above the floor falls to the ground instead of teleporting on the first walk step', () => {
+  const c = new RoamController(() => 0.99);
+  const area = { x: 0, y: 0, width: 1000, height: 800 };
+  const step = c.step({ now: 1000, x: 400, y: 200, area, paused: false });
+  a.equal(step.animation, 'fall');
+  a.deepEqual(step.move, { x: 400, y: 800 - 130 });
+});
+
+test('grounding: custom pet height is honoured (petH)', () => {
+  const c = new RoamController(() => 0.99);
+  const area = { x: 0, y: 0, width: 1000, height: 800 };
+  const step = c.step({ now: 1000, x: 400, y: 200, area, petW: 280, petH: 304, paused: false });
+  a.deepEqual(step.move, { x: 400, y: 800 - 304 });
+});
+
+test('grounding: pet already on the floor stays put until the next scheduled move', () => {
+  const c = new RoamController(() => 0.99);
+  const area = { x: 0, y: 0, width: 1000, height: 800 };
+  const step = c.step({ now: 1000, x: 400, y: 800 - 130, area, paused: false });
+  a.equal(step.move, null);
+  a.equal(step.animation, null);
+});

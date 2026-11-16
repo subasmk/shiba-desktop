@@ -123,8 +123,8 @@ test('filterTiles: case-insensitive label search; empty query keeps everything',
 });
 
 // --- settings shape ------------------------------------------------------------------
-test('saneNotchSettings: master/stats on by default, mode validated, dnd off by default', () => {
-  assert.deepEqual(N.saneNotchSettings({}), { enabled: true, mode: 'always', deck: null, stats: true, dnd: false });
+test('saneNotchSettings: master on by default, stats pill off unless enabled, mode validated, dnd off by default', () => {
+  assert.deepEqual(N.saneNotchSettings({}), { enabled: true, mode: 'always', deck: null, stats: false, dnd: false });
   assert.deepEqual(N.saneNotchSettings({ notch: false, notchMode: 'hover', notchDeck: ['chat'], notchStats: false, notchDnd: true }),
     { enabled: false, mode: 'hover', deck: [A('chat')], stats: false, dnd: true });
   assert.equal(N.saneNotchSettings({ notchMode: 'sometimes' }).mode, 'always');

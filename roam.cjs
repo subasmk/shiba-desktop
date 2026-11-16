@@ -22,14 +22,14 @@
   const PET_W = 120, PET_H = 130;
   // Where the pet sits on a title bar: left-ish on the bar, window bottom
   // overlapping the bar top by 16px so the sprite's feet rest on it.
-  function perchPosition(rect, area) {
+  function perchPosition(rect, area, petW = PET_W, petH = PET_H) {
     if (!rect || !area) return null;
-    const lo = area.x, hi = area.x + area.width - PET_W;
+    const lo = area.x, hi = area.x + area.width - petW;
     let x = rect.left + 24;
-    const maxOnBar = rect.right - PET_W - 8;
+    const maxOnBar = rect.right - petW - 8;
     if (maxOnBar >= rect.left && x > maxOnBar) x = maxOnBar;
     x = Math.max(lo, Math.min(hi, x));
-    const y = Math.max(area.y, rect.top - PET_H + 16);
+    const y = Math.max(area.y, rect.top - petH + 16);
     return { x: Math.round(x), y: Math.round(y) };
   }
   function rectMoved(a, b, px = 6) {
@@ -68,10 +68,10 @@
       if (input.now > this.perchUntil) return true;
       return false;
     }
-    leavePerch(now, x, area) {
+    leavePerch(now, x, area, petH = PET_H) {
       // Drop off the bar: 'fall' (the renderer chains landing->getup->idle),
       // then settle back into ordinary idle scheduling at the ground.
-      const groundY = area.y + area.height - PET_H;
+      const groundY = area.y + area.height - petH;
       this.perchKey = null; this.perchRect = null;
       this.state = 'idle'; this.schedule(now);
       return { move: { x, y: groundY }, animation: 'fall' };
@@ -81,17 +81,25 @@
     // returns {move:{x,y}|null, animation:string|null}
     step(input) {
       const { now, x, area, paused } = input;
+      const petW = Number(input.petW) || PET_W, petH = Number(input.petH) || PET_H;
       const dt = this.lastNow ? Math.min(200, now - this.lastNow) : 0;
       this.lastNow = now;
-      const groundY = area.y + area.height - PET_H;
+      const groundY = area.y + area.height - petH;
       if (paused) { if (this.state !== 'idle') this.reset(now); return { move: null, animation: null }; }
       if (!this.nextMoveAt) this.schedule(now);
       switch (this.state) {
         case 'idle': {
+          // Grounding: if the pet is resting above the floor (e.g. after a
+          // drag-out drop mid-screen), fall back to the ground first instead
+          // of teleporting down on the first walk step.
+          if (Number.isFinite(input.y) && input.y < groundY - 8) {
+            this.schedule(now);
+            return { move: { x, y: groundY }, animation: 'fall' };
+          }
           if (now < this.nextMoveAt) return { move: null, animation: null };
           // Perch first when a suitable foreground window is offered.
           if (input.perch && input.fgRect && input.fgKey && this.random() < this.perchChance) {
-            const pos = perchPosition(input.fgRect, area);
+            const pos = perchPosition(input.fgRect, area, petW, petH);
             if (pos) {
               this.perchKey = input.fgKey; this.perchRect = { ...input.fgRect };
               this.perchUntil = now + this.maxPerchMs;
@@ -99,7 +107,7 @@
               return { move: pos, animation: 'leap' };
             }
           }
-          const lo = area.x, hi = area.x + area.width - PET_W;
+          const lo = area.x, hi = area.x + area.width - petW;
           let tx = lo + this.random() * Math.max(0, hi - lo);
           if (Math.abs(tx - x) < 90) tx = tx > x ? Math.min(hi, tx + 160) : Math.max(lo, tx - 160);
           this.targetX = Math.round(tx); this.fromX = x;
@@ -109,12 +117,12 @@
         }
         case 'perch-go': {
           if (now < this.stageEnds) return { move: null, animation: null };
-          if (this.perchInvalid(input)) return this.leavePerch(now, x, area);
+          if (this.perchInvalid(input)) return this.leavePerch(now, x, area, petH);
           this.state = 'perched';
           return { move: null, animation: 'sit' };
         }
         case 'perched': {
-          if (this.perchInvalid(input)) return this.leavePerch(now, x, area);
+          if (this.perchInvalid(input)) return this.leavePerch(now, x, area, petH);
           const pos = perchPosition(input.fgRect, area);
           return { move: pos, animation: null };
         }

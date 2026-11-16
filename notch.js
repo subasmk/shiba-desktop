@@ -209,7 +209,8 @@ document.querySelectorAll('[data-util]').forEach((btn) => btn.addEventListener('
     machine.pointerAway();
     api.send('notch-set-ignore', { ignore: true });
     render();
-  } else if (what === 'deck') { machine.setView('deck'); render(); }
+  } else if (what === 'dash') { api.send('open-dashboard'); }
+  else if (what === 'deck') { machine.setView('deck'); render(); }
   else if (what === 'chat') { machine.setView('chat'); render(); $('#chat-input').focus(); }
 }));
 
