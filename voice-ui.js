@@ -40,5 +40,11 @@ window.petAPI.on('wake-state',d=>{if(!d)return;if(typeof d.muted==='boolean'){wa
 window.shibaVoice={session,wake:{setEnabled:async on=>{wakeOn=!!on;if(wakeOn){wakeDet.enable();wakeResume();}else{wakeDet.disable();wakeCaptureStop();}},isOn:()=>wakeOn},attach(){clearInterval(displayTimer);document.querySelector('#voice-start').onclick=async()=>{wakeCaptureStop();show('Preparing local voice...');try{await session.start();fireAnim('listening-start');window.petAPI.send('voice-active',true);show('Listening');}catch(e){show(e.message);}};document.querySelector('#voice-stop').onclick=()=>{window.petAPI.send('voice-active',false);session.stop();wakeResume();};displayTimer=setInterval(()=>{if(session.active)show(session.phase+' (mic on)');},200);}};
 // Proactive comments speak only during a live call, and only while listening.
 window.petAPI.on('pet-speak',async(text)=>{if(!session.active||session.phase!=='listening'||!context||typeof text!=='string'||!text)return;try{const a=await window.petAPI.call('voice-synthesize',text);if(a&&a.system){speechSynthesis.speak(new SpeechSynthesisUtterance(text));return;}if(!context)return;const buffer=context.createBuffer(1,a.samples.length,a.sampleRate);buffer.copyToChannel(Float32Array.from(a.samples),0);const src=context.createBufferSource();src.buffer=buffer;src.connect(context.destination);src.start();}catch{}});
+// Hold-to-talk (hotkey.cjs in main): while the combo is held, main sends
+// hold-state active and this panel runs the NORMAL voice session - the same
+// Start/Stop path as the button, so all session rules apply unchanged. On
+// release the session stops, but only if hold-to-talk started it.
+let holdStarted=false;
+window.petAPI.on('hold-state',async d=>{if(!d)return;if(d.active){if(session.active||holdStarted)return;holdStarted=true;wakeCaptureStop();show('Hold-to-talk: preparing local voice...');try{await session.start();fireAnim('listening-start');window.petAPI.send('voice-active',true);show('Hold-to-talk: listening');}catch(e){holdStarted=false;show(e.message);}}else if(holdStarted){holdStarted=false;window.petAPI.send('voice-active',false);session.stop();wakeResume();show('Hold-to-talk: microphone off');}});
 window.addEventListener('beforeunload',()=>{window.petAPI.send('voice-active',false);wakeCaptureStop();session.stop();});
 })();

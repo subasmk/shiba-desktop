@@ -3,7 +3,7 @@
 // statuses are read live, nothing is simulated.
 const api=window.petAPI;const $=s=>document.querySelector(s);
 let state={},tab='home',setupStatus=null;
-const TABS=[['home','Home'],['brain','Brain'],['voice','Voice'],['pet','Pet behavior'],['features','Features'],['privacy','Data & privacy']];
+const TABS=[['home','Home'],['brain','Brain'],['voice','Voice'],['pet','Pet behavior'],['notes','Notes'],['features','Features'],['privacy','Data & privacy']];
 function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function status(t){const n=$('#d-status');if(n)n.textContent=t;}
 async function task(fn){try{await fn();}catch(e){status(e.message);}}
@@ -13,8 +13,9 @@ function tg(label,sub,control){return '<div class="tg"><span class="lab">'+esc(l
 function sw(id,on){return '<input type="checkbox" class="sw" id="'+id+'"'+(on?' checked':'')+'>';}
 function swd(id){return '<input type="checkbox" class="sw" id="'+id+'" disabled>';}
 // One-time global listeners (re-rendering tabs must not stack them).
-let setupSink=null,tamilSink=null;
+let setupSink=null,tamilSink=null,musicSink=null;
 api.on('setup-progress',d=>{if(setupSink)setupSink(d);});
+api.on('music-state',d=>{if(musicSink)musicSink(d);});
 api.on('tamil-setup-progress',d=>{if(tamilSink)tamilSink(d);});
 async function refreshSetup(){try{setupStatus=await api.call('setup-status');}catch{setupStatus=null;}return setupStatus;}
 function gb(b){return b==null?'unknown':(b/1073741824).toFixed(1)+' GB';}
@@ -34,6 +35,7 @@ function render(){shell();const m=$('#d-main');
  if(tab==='brain')return renderBrain(m);
  if(tab==='voice')return renderVoice(m);
  if(tab==='pet')return renderPet(m);
+ if(tab==='notes')return renderNotes(m);
  if(tab==='features')return renderFeatures(m);
  if(tab==='privacy')return renderPrivacy(m);
 }
@@ -93,6 +95,8 @@ function renderVoice(m){
  +'<label class="plain">Voice language</label><div class="row"><select id="v-lang" aria-label="Voice language"><option value="en">English (Kokoro)</option><option value="ta">Tamil (experimental)</option><option value="tanglish">Tanglish (experimental)</option></select></div><p class="desc">Tamil and Tanglish use the experimental local Tamil voice; picking either downloads its model automatically (one-time, about 150 MB, public sources, checksum-verified). If it is missing or fails, the pet falls back to English and tells you.</p></div>'
  +'<div class="card"><h3>Listening</h3>'
  +tg('Wake word "Hey Rex"','starts a voice call when you say it; the mic then listens only for that phrase, and Ctrl+Shift+M mutes it instantly',sw('v-wake',!!state.wakeWord))
+ +tg('Hold-to-talk','hold the key anywhere to talk, release to stop; on Windows the release is read from the real key state, on other systems each press toggles',sw('v-hold',!!state.holdToTalk))
+ +'<label class="plain">Hold-to-talk key (accelerator)</label><div class="row"><input type="text" id="v-hold-key" aria-label="Hold-to-talk key" placeholder="CommandOrControl+Shift+Space"></div>'
  +'</div><div class="status" id="d-status" role="status"></div>';
  $('#v-replies').onchange=()=>task(async()=>{await save({voice:$('#v-replies').checked});status('Saved.');});
  $('#v-engine').value=state.voiceEngine||'kokoro';$('#v-cb-command').value=state.chatterboxCommand||'';$('#v-cb-args').value=typeof state.chatterboxArgs==='string'?state.chatterboxArgs:'';
@@ -103,6 +107,8 @@ function renderVoice(m){
  $('#v-lang').onchange=()=>task(async()=>{const lang=$('#v-lang').value;await save({voiceLang:lang});status('Voice language: '+lang);
   if(lang==='ta'||lang==='tanglish'){const st=await api.call('tamil-setup-status');if(st&&st.ready){status('Tamil voice is ready.');return;}status('Downloading the Tamil voice - one-time, about 150 MB. The pet uses English until this finishes.');tamilSink=p=>{const pct=p.total?Math.round(100*p.bytes/p.total)+'%':Math.round(p.bytes/1048576)+' MB';status('Downloading Tamil voice: '+p.step+' '+pct);};try{const r=await api.call('tamil-setup-run');if(r&&r.ok)status('Tamil voice ready.');else status('Tamil voice download is already running.');}catch(e){status('Tamil voice download failed: '+e.message+' Falling back to English for now.');}finally{tamilSink=null;}}});
  $('#v-wake').onchange=()=>task(async()=>{await save({wakeWord:$('#v-wake').checked});status($('#v-wake').checked?'Wake word on: say "Hey Rex" to start a call.':'Wake word off.');});
+ $('#v-hold').onchange=()=>task(async()=>{await save({holdToTalk:$('#v-hold').checked});status($('#v-hold').checked?'Hold-to-talk on: hold the key to talk, release to stop.':'Hold-to-talk off.');});
+ $('#v-hold-key').value=state.holdToTalkKey||'';$('#v-hold-key').onchange=()=>task(async()=>{await save({holdToTalkKey:$('#v-hold-key').value.trim()});status('Hold-to-talk key saved.');});
 }
 function renderPet(m){
  m.innerHTML='<h2>Pet behavior</h2><div class="sub">How your pet moves, reacts and talks. Friendly teasing uses only pet-local action counts, never your laptop activity.</div>'
@@ -120,22 +126,92 @@ function renderPet(m){
  m.querySelectorAll('[data-mascot]').forEach(b=>b.onclick=()=>task(async()=>{await save({mascot:b.dataset.mascot});$('#m-current').textContent='Current: '+(b.dataset.mascot==='dex'?'Dex - white cat':'Rex - Shiba dog');status(b.dataset.mascot==='dex'?'Mascot: Dex the cat.':'Mascot: Rex the Shiba.');}));
  m.querySelectorAll('[data-personality]').forEach(b=>b.onclick=()=>task(async()=>{await save({personality:b.dataset.personality});$('#p-current').textContent='Current: '+b.dataset.personality;status('Personality: '+b.dataset.personality);}));
 }
+function renderNotes(m){
+ m.innerHTML='<h2>Notes</h2><div class="sub">Full notes, stored only on this laptop (notes.json in the app data folder). Separate from the panel quick note. Bodies are plain text and are shown escaped, never as HTML.</div>'
+ +'<div class="row"><input type="text" id="n-search" placeholder="Search notes" aria-label="Search notes"></div>'
+ +'<div class="grid"><div class="card"><h3>Your notes</h3><div id="n-list"></div></div>'
+ +'<div class="card"><h3>Editor</h3><div class="row"><input type="text" id="n-title" placeholder="Title" aria-label="Note title"></div><textarea id="n-body" rows="12" style="width:100%" placeholder="Write the note here." aria-label="Note body"></textarea><div class="row"><button class="act" id="n-save">Save note</button><button class="act ghost" id="n-new">New</button><button class="act ghost" id="n-pin">Pin / unpin</button><button class="act ghost" id="n-del">Delete</button></div><p class="desc" id="n-meta"></p></div></div>'
+ +'<div class="status" id="d-status" role="status"></div>';
+ let notes=[],editing=null;
+ const paint=()=>{const el=$('#n-list');el.innerHTML=notes.length?notes.map(n=>'<div class="tg"><span class="lab">'+(n.pinned?'&#128204; ':'')+esc(n.title||'Untitled')+'<small>'+esc(new Date(n.updatedAt).toLocaleString())+'</small></span><button class="act ghost" data-nopen="'+n.id+'">Open</button></div>').join(''):'<p class="desc">No notes yet.</p>';
+  el.querySelectorAll('[data-nopen]').forEach(b=>b.onclick=()=>{const n=notes.find(x=>x.id===b.dataset.nopen);if(!n)return;editing=n.id;$('#n-title').value=n.title;$('#n-body').value=n.body;$('#n-meta').textContent=(n.pinned?'Pinned. ':'')+'Last edited '+new Date(n.updatedAt).toLocaleString();});};
+ const load=async()=>{notes=await api.call('notes-list',{q:$('#n-search').value.trim()});paint();};
+ $('#n-search').oninput=()=>task(load);
+ $('#n-new').onclick=()=>{editing=null;$('#n-title').value='';$('#n-body').value='';$('#n-meta').textContent='';};
+ $('#n-save').onclick=()=>task(async()=>{const r=await api.call('notes-save',{id:editing||undefined,title:$('#n-title').value,body:$('#n-body').value});editing=r.id;status('Note saved.');await load();});
+ $('#n-del').onclick=()=>task(async()=>{if(!editing)return status('Open a note first.');await api.call('notes-delete',{id:editing});editing=null;$('#n-title').value='';$('#n-body').value='';$('#n-meta').textContent='';status('Note deleted.');await load();});
+ $('#n-pin').onclick=()=>task(async()=>{if(!editing)return status('Open a note first.');const n=notes.find(x=>x.id===editing);const r=await api.call('notes-pin',{id:editing,pinned:!(n&&n.pinned)});status(r&&r.pinned?'Pinned.':'Unpinned.');await load();});
+ task(load);
+}
 function renderFeatures(m){
  m.innerHTML='<h2>Features</h2><div class="sub">Every feature here is off unless you switch it on; toggles save instantly and nothing switches itself on.</div>'
  +'<div class="card"><h3>Awareness</h3>'
  +tg('Context awareness','notices which app is in front; needed for vision comments and perching',sw('f-context',!!state.contextAware))
  +tg('Vision comments','a local vision model describes the screen so the pet can react to what changed',sw('f-vision',!!state.contextVision))
+ +tg('Vision pointing','ask "where is X" in chat and the pet marks it on screen with a pulsing pointer; same local vision model, screenshots never leave the laptop',sw('f-vpoint',!!state.visionPoint))
+ +'<label class="plain">Try pointing: find on screen</label><div class="row"><input type="text" id="f-vpoint-q" placeholder="e.g. the settings icon"><button class="act ghost" id="f-vpoint-go">Point</button></div>'
  +'<label class="plain">Vision model</label><div class="row"><input type="text" id="f-vision-model" placeholder="moondream (light) - or qwen2.5vl:7b (sharper, gaming GPU)"></div>'
  +'<label class="plain">Vision check every (seconds, 30-300)</label><div class="row"><input type="number" id="f-vision-interval" min="30" max="300" step="10"></div>'
  +'</div><div class="card"><h3>Assistant features (all opt-in)</h3>'
  +tg('News scout','occasionally offers one fresh AI/tech headline; clicking the pet bubble opens just that link',sw('f-scout',!!state.scout))
  +tg('Web tools','allow "search the web for ..." and "fetch https://..." commands in chat',sw('f-web',!!state.webTools))
  +tg('Power mode','allow "run command: ..." and file tools in chat - every command needs your yes, dangerous commands are refused, files stay inside your home/Documents',sw('f-power',!!state.powerMode))
+ +'</div><div class="card"><h3>Music</h3><p class="desc">Hidden YouTube player - audio only, its window never shows. Paste a video or playlist link to queue it. Songs imported from a screenshot arrive as titles; paste each song\'s link (Link button) before it can play.</p>'
+ +'<div class="row"><input type="text" id="m-url" placeholder="YouTube video or playlist link" aria-label="YouTube link"><button class="act" id="m-add">Add</button></div>'
+ +'<div class="row"><button class="act ghost" id="m-prev">Prev</button><button class="act" id="m-play">Play</button><button class="act ghost" id="m-pause">Pause</button><button class="act ghost" id="m-next">Next</button></div>'
+ +'<label class="plain">Volume</label><div class="row"><input type="range" id="m-vol" min="0" max="100" step="1" aria-label="Volume"></div>'
+ +'<div id="m-queue"></div>'
+ +'<div class="row"><button class="act ghost" id="m-clear">Clear queue</button></div>'
+ +'<label class="plain">Playlists</label><div class="row"><input type="text" id="m-pl-name" placeholder="Playlist name" aria-label="Playlist name"><button class="act ghost" id="m-pl-save">Save queue as playlist</button></div>'
+ +'<div id="m-playlists"></div>'
+ +'<label class="plain">Import playlist from a screenshot (uses the local vision model)</label><div class="row"><input type="file" id="m-shot" accept="image/*" aria-label="Playlist screenshot"></div>'
+ +'</div><div class="card"><h3>Workflows</h3><p class="desc">Rules that run on their own. Trigger: at a time (07:30), when an app opens (its process name), after idle minutes, or on a hotkey (e.g. CommandOrControl+Shift+F9). Action: the pet says a line, launches an app, starts music, adds a note, or posts to Discord.</p>'
+ +'<div id="w-list"></div>'
+ +'<div class="row"><input type="text" id="w-name" placeholder="Rule name" aria-label="Workflow name"></div>'
+ +'<div class="row"><select id="w-ttype" aria-label="Trigger type"><option value="at-time">At time</option><option value="app-launch">When app opens</option><option value="idle">After idle</option><option value="hotkey">On hotkey</option></select><input type="text" id="w-tval" placeholder="07:30 / app name / minutes / hotkey" aria-label="Trigger value"></div>'
+ +'<div class="row"><select id="w-atype" aria-label="Action type"><option value="say">Pet says</option><option value="launch-app">Launch app</option><option value="start-music">Start music</option><option value="add-note">Add note</option><option value="discord-post">Post to Discord</option></select><input type="text" id="w-aval" placeholder="Text / app name / playlist" aria-label="Action value"></div>'
+ +'<div class="row"><button class="act" id="w-add">Add workflow</button></div>'
+ +'</div><div class="card"><h3>Discord</h3><p class="desc">Post to your Discord server through your own webhook (Discord: Server Settings - Integrations - Webhooks - New Webhook, then copy its address). The address is a secret: stored encrypted on this device, never shown again. In chat, "post to discord: your message" sends it; workflows can post too.</p>'
+ +'<div class="row"><input type="password" id="dc-hook" autocomplete="off" placeholder="'+(state.hasDiscordWebhook?'Webhook saved on this device - type to replace':'Paste your Discord webhook address')+'"><button class="act" id="dc-save">Save / clear</button></div>'
+ +'<p class="desc" id="dc-state">'+(state.hasDiscordWebhook?'Status: webhook configured.':'Status: webhook set pannala (not set yet) - nothing can post until you add one.')+'</p>'
+ +'<div class="row"><input type="text" id="dc-text" placeholder="Test message" aria-label="Discord test message"><button class="act ghost" id="dc-post">Post test</button></div>'
  +'</div><div class="status" id="d-status" role="status"></div>';
  const bind=(id,key)=>{const n=$(id);n.onchange=()=>task(async()=>{await save({[key]:n.checked});status('Saved.');});};
- bind('#f-context','contextAware');bind('#f-vision','contextVision');bind('#f-scout','scout');bind('#f-web','webTools');bind('#f-power','powerMode');
+ bind('#f-context','contextAware');bind('#f-vision','contextVision');bind('#f-vpoint','visionPoint');bind('#f-scout','scout');bind('#f-web','webTools');bind('#f-power','powerMode');
+ $('#f-vpoint-go').onclick=()=>task(async()=>{const q=$('#f-vpoint-q').value.trim();if(!q)return status('Type what to find first.');status('Looking at the screen...');const r=await api.call('vision-locate',{target:q});status('Pointed at "'+q+'" ('+r.point.x+', '+r.point.y+' of 1000).');});
  $('#f-vision-model').value=state.visionModel||'moondream';$('#f-vision-model').onchange=()=>task(async()=>{await save({visionModel:$('#f-vision-model').value.trim()||'moondream'});status('Vision model saved.');});
  $('#f-vision-interval').value=state.visionIntervalSec||60;$('#f-vision-interval').onchange=()=>task(async()=>{await save({visionIntervalSec:Math.min(300,Math.max(30,Number($('#f-vision-interval').value)||60))});status('Vision interval saved.');});
+ let musicState=null,linkIdx=-1;
+ function paintMusic(){if(!musicState)return;const q=$('#m-queue');if(q){q.innerHTML=musicState.queue.length?musicState.queue.map((it,i)=>'<div class="tg"><span class="lab">'+(i===musicState.index?'&#9654; ':'')+esc(it.title)+'<small>'+esc(it.kind)+(it.needsLink?' - needs link':'')+'</small></span><span>'+(it.needsLink?'<button class="act ghost" data-mlink="'+i+'">Link</button>':'')+'<button class="act ghost" data-mdel="'+i+'">x</button></span></div>').join(''):'<p class="desc">Queue is empty.</p>';
+  q.querySelectorAll('[data-mdel]').forEach(b=>b.onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'remove',index:Number(b.dataset.mdel)});paintMusic();}));
+  q.querySelectorAll('[data-mlink]').forEach(b=>b.onclick=()=>{linkIdx=Number(b.dataset.mlink);status('Now paste the YouTube link for "'+musicState.queue[linkIdx].title+'" above and press Add.');$('#m-url').focus();});}
+ const pl=$('#m-playlists');if(pl){pl.innerHTML=musicState.playlists.length?musicState.playlists.map(p=>'<div class="tg"><span class="lab">'+esc(p.name)+'<small>'+p.count+' songs</small></span><span><button class="act ghost" data-mplay="'+esc(p.name)+'">Play</button><button class="act ghost" data-mpdel="'+esc(p.name)+'">x</button></span></div>').join(''):'<p class="desc">No playlists yet.</p>';
+  pl.querySelectorAll('[data-mplay]').forEach(b=>b.onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'play-playlist',name:b.dataset.mplay});paintMusic();status('Playing playlist: '+b.dataset.mplay);}));
+  pl.querySelectorAll('[data-mpdel]').forEach(b=>b.onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'delete-playlist',name:b.dataset.mpdel});paintMusic();}));}
+ const vol=$('#m-vol');if(vol)vol.value=musicState.volume;}
+ musicSink=d=>{musicState=d;paintMusic();};
+ $('#m-add').onclick=()=>task(async()=>{const url=$('#m-url').value.trim();if(!url)return status('Paste a YouTube link first.');if(linkIdx>=0){musicState=await api.call('music-control',{action:'link-title',index:linkIdx,url});status('Linked - that song can play now.');linkIdx=-1;}else{musicState=await api.call('music-control',{action:'add-url',url});status('Added to the queue.');}$('#m-url').value='';paintMusic();});
+ $('#m-play').onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'play'});paintMusic();status('Playing.');});
+ $('#m-pause').onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'pause'});paintMusic();});
+ $('#m-next').onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'next'});paintMusic();});
+ $('#m-prev').onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'prev'});paintMusic();});
+ $('#m-clear').onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'clear'});paintMusic();status('Queue cleared.');});
+ $('#m-vol').onchange=()=>task(async()=>{musicState=await api.call('music-control',{action:'volume',value:Number($('#m-vol').value)});});
+ $('#m-pl-save').onclick=()=>task(async()=>{const name=$('#m-pl-name').value.trim();if(!name)return status('Give the playlist a name first.');musicState=await api.call('music-control',{action:'save-playlist',name});$('#m-pl-name').value='';paintMusic();status('Playlist saved: '+name);});
+ $('#m-shot').onchange=()=>{const f=$('#m-shot').files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>task(async()=>{status('Reading song titles from the screenshot...');const r=await api.call('music-import-image',{image:String(rd.result).split(',')[1]||''});musicState=r.music;paintMusic();status('Imported '+r.titles.length+' songs into playlist "'+r.playlist+'" - paste a link for each title to make it playable.');});rd.readAsDataURL(f);};
+ task(async()=>{musicState=await api.call('music-get-state');paintMusic();});
+ let wfRules=[];
+ const wfSummary=r=>{const t=r.trigger,a=r.action;const ts=t.type==='at-time'?('at '+t.time):t.type==='app-launch'?('when '+t.app+' opens'):t.type==='idle'?('after '+t.idleMinutes+' min idle'):('hotkey '+t.accelerator);const as=a.type==='say'?('say "'+a.text+'"'):a.type==='launch-app'?('launch '+a.app):a.type==='start-music'?('start music'+(a.playlist?' ('+a.playlist+')':'')):a.type==='add-note'?('add note "'+(a.title||'')+'"'):('post to Discord: "'+a.text+'"');return ts+' -> '+as;};
+ async function paintWorkflows(){try{wfRules=await api.call('workflows-list');}catch{wfRules=[];}const el=$('#w-list');if(!el)return;el.innerHTML=wfRules.length?wfRules.map(r=>'<div class="tg"><span class="lab">'+esc(r.name)+'<small>'+esc(wfSummary(r))+'</small></span><span><input type="checkbox" class="sw" data-wen="'+r.id+'"'+(r.enabled?' checked':'')+' aria-label="Enable workflow"><button class="act ghost" data-wdel="'+r.id+'">x</button></span></div>').join(''):'<p class="desc">No workflows yet.</p>';
+  el.querySelectorAll('[data-wdel]').forEach(b=>b.onclick=()=>task(async()=>{await api.call('workflows-delete',{id:b.dataset.wdel});paintWorkflows();}));
+  el.querySelectorAll('[data-wen]').forEach(c=>c.onchange=()=>task(async()=>{const r=wfRules.find(x=>x.id===c.dataset.wen);if(r)await api.call('workflows-save',{rule:Object.assign({},r,{enabled:c.checked})});}));}
+ $('#w-add').onclick=()=>task(async()=>{const tt=$('#w-ttype').value,tv=$('#w-tval').value.trim(),at=$('#w-atype').value,av=$('#w-aval').value.trim();
+  const trigger=tt==='at-time'?{type:tt,time:tv}:tt==='app-launch'?{type:tt,app:tv}:tt==='idle'?{type:tt,idleMinutes:Number(tv)||10}:{type:tt,accelerator:tv};
+  const action=at==='say'?{type:at,text:av}:at==='launch-app'?{type:at,app:av}:at==='add-note'?{type:at,title:av}:at==='discord-post'?{type:at,text:av}:{type:at,playlist:av};
+  await api.call('workflows-save',{rule:{name:$('#w-name').value.trim()||'Workflow',trigger,action,enabled:true}});status('Workflow saved.');paintWorkflows();});
+ task(paintWorkflows);
+ $('#dc-save').onclick=()=>task(async()=>{const r=await api.call('discord-webhook',$('#dc-hook').value);state=await api.call('get-state');status(r.configured?'Discord webhook saved securely on this device.':'Discord webhook removed.');render();});
+ $('#dc-post').onclick=()=>task(async()=>{const t=$('#dc-text').value.trim();if(!t)return status('Type a test message first.');await api.call('discord-post',{text:t});$('#dc-text').value='';status('Posted to Discord.');});
 }
 function renderPrivacy(m){
  m.innerHTML='<h2>Data &amp; privacy</h2><div class="sub">What stays here and what can leave.</div>'

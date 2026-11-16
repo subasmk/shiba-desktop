@@ -20,5 +20,19 @@ function launchApp(token){return new Promise((resolve,reject)=>{
  });
 });}
 function parseLaunch(text){const t=String(text).trim();let m=t.match(/^(?:open|launch|start)\s+(.{1,100}?)(?:\s+app)?[.!?]?$/i);if(!m)m=t.match(/^(.{1,100}?)\s+(?:app\s+)?open\s+(?:pannu|panra|pannunga)[.!?]?$/i);return m?m[1].trim():null;}
+// Running process names (for workflow app-launch triggers). One fixed
+// PowerShell script, same execFile pattern as readApps; names only, no
+// paths or arguments. execFileFn/platform injectable for tests; rejects
+// off Windows so callers can distinguish "unknown" from "none running".
+function buildRunningAppsScript(){return "[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();@(Get-Process | Group-Object ProcessName | Select-Object -ExpandProperty Name) | ConvertTo-Json -Compress";}
+function parseRunningApps(out){try{const rows=JSON.parse(String(out).replace(/^﻿/,'').trim());const list=Array.isArray(rows)?rows:[rows];return [...new Set(list.filter(x=>typeof x==='string'&&x).map(x=>x.slice(0,120)))];}catch{return null;}}
+function readRunningApps(execFileFn=execFile,platform=process.platform){return new Promise((resolve,reject)=>{
+ if(platform!=='win32')return reject(Error('Running-app detection requires Windows.'));
+ execFileFn('powershell.exe',['-NoProfile','-NonInteractive','-Command',buildRunningAppsScript()],{windowsHide:true,timeout:12000,maxBuffer:1024*1024,encoding:'utf8'},(e,out)=>{
+ if(e)return reject(Error('Could not read the running app list.'));
+ const names=parseRunningApps(out);if(!names)return reject(Error('Running app list was unreadable.'));
+ resolve(names);
+ });
+});}
 async function launchByName(query){const apps=await readApps(),matches=selectApps(apps,query);if(matches.length!==1)return{status:matches.length?'ambiguous':'not-found',choices:matches.slice(0,10).map(a=>a.name)};return launchApp(matches[0].token);}
-module.exports={readApps,launchApp,selectApps,parseLaunch,launchByName};
+module.exports={readApps,launchApp,selectApps,parseLaunch,launchByName,buildRunningAppsScript,parseRunningApps,readRunningApps};
