@@ -93,8 +93,11 @@
       switch (this.state) {
         case 'idle': {
           if (now < this.nextMoveAt) return { move: null, animation: null };
-          // Perch first when a suitable foreground window is offered.
-          if (input.perch && input.fgRect && input.fgKey && this.random() < this.perchChance) {
+          // Perch only from the ground: a pet the user placed mid-screen
+          // stays at that level (walks along it) and never teleports onto
+          // a title bar - manual placement wins over the perch feature.
+          const onGround = Math.abs((Number.isFinite(input.y) ? input.y : groundY) - groundY) < 40;
+          if (onGround && input.perch && input.fgRect && input.fgKey && this.random() < this.perchChance) {
             const pos = perchPosition(input.fgRect, area, petW, petH);
             if (pos) {
               this.perchKey = input.fgKey; this.perchRect = { ...input.fgRect };

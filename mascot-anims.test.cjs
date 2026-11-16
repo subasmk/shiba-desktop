@@ -17,10 +17,10 @@ test('dex: direct sprites resolve to themselves', () => {
   }
 });
 
-test('dex: tap reactions land on dex-click, not silent dex-idle (hit animation fix)', () => {
-  for (const n of ['touch-head', 'touch-body', 'touch-paws']) {
-    assert.equal(resolveSprite(n, 'dex', hasDex), 'dex-click', n);
-  }
+test('dex: tap reactions are distinct per hit region, all existing art (hit variety fix)', () => {
+  assert.equal(resolveSprite('touch-head', 'dex', hasDex), 'dex-click');
+  assert.equal(resolveSprite('touch-body', 'dex', hasDex), 'dex-emote');
+  assert.equal(resolveSprite('touch-paws', 'dex', hasDex), 'dex-gesture');
 });
 
 test('dex: tap-combo swing lands on dex-rage', () => {

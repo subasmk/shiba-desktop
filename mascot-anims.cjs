@@ -11,7 +11,11 @@
 // table those requests silently resolve to dex-idle and the pet shows
 // NO reaction - most visibly, taps did nothing at all. DEX_FALLBACK
 // maps each such state to the closest EXISTING dex animation:
-//   touch-*  -> dex-click   the startled paws-up shrug reads as a hit
+//   touch-head -> dex-click   the startled paws-up shrug reads as a head
+//                           bonk. touch-body -> dex-emote (paw-to-mouth
+//                           flinch), touch-paws -> dex-gesture (paw swat) -
+//                           distinct reactions per hit region (user
+//                           decision, Nov 16 2026), all existing atlas art
 //   swing    -> dex-rage    tap-combo over-reaction (red face, steam)
 //   bow      -> dex-gesture a friendly paw gesture, the polite move
 //   wave     -> dex-gesture its first half IS a paw wave (dex-wave is
@@ -23,8 +27,8 @@
 (function (root) {
   const DEX_FALLBACK = {
     'touch-head': 'dex-click',
-    'touch-body': 'dex-click',
-    'touch-paws': 'dex-click',
+    'touch-body': 'dex-emote',
+    'touch-paws': 'dex-gesture',
     'swing': 'dex-rage',
     'bow': 'dex-gesture',
     'wave': 'dex-gesture',

@@ -113,3 +113,23 @@ test('grounding: pet already on the floor stays put until the next scheduled mov
   a.equal(step.move, null);
   a.equal(step.animation, null);
 });
+
+test('placement: perch never fires from a manually placed mid-air height', () => {
+  const c = new RoamController(() => 0); // deterministic: perch would always win if offered
+  const area = { x: 0, y: 0, width: 1000, height: 800 };
+  const fgRect = { left: 200, top: 100, right: 900, bottom: 700 };
+  c.step({ now: 0, x: 400, y: 200, area, paused: false, perch: true, fgRect, fgKey: 'app|title' });
+  c.step({ now: 10001, x: 400, y: 200, area, paused: false, perch: true, fgRect, fgKey: 'app|title' });
+  a.notEqual(c.state, 'perch-go'); // placed mid-air: no teleport to a title bar
+  a.equal(c.state, 'walk');        // it may only wander along its placed level
+});
+
+test('placement: perch still offered from the ground', () => {
+  const c = new RoamController(() => 0);
+  const area = { x: 0, y: 0, width: 1000, height: 800 };
+  const fgRect = { left: 200, top: 100, right: 900, bottom: 700 };
+  c.step({ now: 0, x: 400, y: 800 - 130, area, paused: false, perch: true, fgRect, fgKey: 'app|title' });
+  const r = c.step({ now: 10001, x: 400, y: 800 - 130, area, paused: false, perch: true, fgRect, fgKey: 'app|title' });
+  a.equal(c.state, 'perch-go');
+  a.equal(r.animation, 'leap');
+});
