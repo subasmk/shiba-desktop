@@ -15,7 +15,7 @@ if(mode==='pet'){
  // States the sheet lacks (touch-*, swing, bow, getup) and 'wave' (whose
  // dex art is the retired portal sequence) resolve through the fallback
  // table in mascot-anims.cjs instead of silently showing dex-idle.
- function resolveAnim(name){return window.MascotAnims?MascotAnims.resolveSprite(name,mascot,n=>!!sprites[n]):name;}
+ function resolveAnim(name){if(!window.MascotAnims)return name;const ev=MascotAnims.resolveEvent(name,mascot,n=>!!sprites[n]);return ev||MascotAnims.resolveSprite(name,mascot,n=>!!sprites[n]);}
  // Dex size normalisation (sprite-fit.cjs): the dex sheet's cat changes
  // height from animation to animation (median content height 144-278px
  // across animations), so once the atlas and the manifest are both in,
@@ -32,7 +32,12 @@ if(mode==='pet'){
  // roam driver switches the state when the flight ends. Re-sending a
  // finite leap mid-flight restarted it from frame 0 every 1.2s (the
  // 'animations repeat / break in the middle' he reported).
- const finite=new Set(['landing','getup','fall','wave','click','bow','gesture','rage','sleep','scan','sit','swing','emote','touch-head','touch-body','touch-paws']);const chain={landing:'getup',fall:'getup'};
+ // Semantic wiring events (mascot-anims.cjs): ambient beats and react-*
+ // one-shots are finite so the pet returns to idle after them. The
+ // 'thinking' / 'thinking-long' events are deliberately NOT finite -
+ // they must hold (loop) until the brain's reply lands and main sends
+ // the reaction.
+ const finite=new Set(['landing','getup','fall','wave','click','bow','gesture','rage','sleep','scan','sit','swing','emote','touch-head','touch-body','touch-paws','ambient-coffee','ambient-sit','ambient-scan','ambient-emote','ambient-gesture','react-success','react-error','react-sad','react-confused','react-idea']);const chain={landing:'getup',fall:'getup'};
  fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;buildDexFit();setMascot(wantedMascot);play('idle');});
  function play(name){requestedAnim=name;const resolved=resolveAnim(name);if(resolved!==resolvedAnim&&lastDrawn)blend={frame:lastDrawn.frame,fit:lastDrawn.fit,until:performance.now()+90};anim=name;resolvedAnim=resolved;seq=sprites[resolved]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;} // anim keeps the requested name so finite/chain semantics survive mascot fallbacks
  function tick(t){
@@ -53,6 +58,12 @@ if(mode==='pet'){
  // Pet display size (settings.size): the square canvas CSS edge in px.
  const PET_CSS={small:110,normal:180,large:260};
  function applyPetSize(size){const edge=PET_CSS[String(size)]||PET_CSS.normal;const cv=$('.pet-image');if(cv){cv.style.width=edge+'px';cv.style.height=edge+'px';}}
+ // Annoyance mood (annoyance.cjs): main owns the leaky bucket and
+ // pushes the level after every hit; while annoyed/furious, taps play
+ // rage with a mood bubble instead of the per-region reaction.
+ let petMood='calm',bubbleToken=0;
+ function annoyedBubble(){const e=document.querySelector('.reaction');if(!e)return;const line=window.Annoyance?Annoyance.lineFor(petMood,Math.random):'Podhum bro 😤';e.textContent=line;const tk=++bubbleToken;setTimeout(()=>{if(bubbleToken===tk&&e.textContent===line)e.textContent='';},2400);}
+ api.on('pet-mood',d=>{petMood=(d&&d.mood)||'calm';});
  api.on('pet-state',name=>{behavior.quiet(performance.now());play(name);});api.on('pet-face',d=>{const cv=$('.pet-image');if(cv)cv.style.transform='translateX(-50%)'+(Number(d)<0?' scaleX(-1)':'');});api.on('pet-mascot',m=>setMascot(m));api.on('pet-size',s=>applyPetSize(s));api.call('get-state').then(x=>{setMascot((x&&x.mascot)||'dex');applyPetSize(x&&x.size);}).catch(()=>{});api.on('pet-say',line=>{const e=document.querySelector('.reaction');if(e){e.textContent=line;setTimeout(()=>{if(e.textContent===line)e.textContent='';},6000);}});
  let offerShown=false,offerTimer;api.on('pet-offer',d=>{const e=document.querySelector('.reaction');if(!e||!d||typeof d.text!=='string')return;offerShown=true;e.textContent=d.text+' (opens '+d.host+' - nothing else runs)';e.classList.add('offer');clearTimeout(offerTimer);offerTimer=setTimeout(()=>{offerShown=false;e.classList.remove('offer');if(e.textContent.startsWith(d.text))e.textContent='';},120000);});
  document.querySelector('.reaction').addEventListener('pointerdown',e=>{if(!offerShown)return;e.stopPropagation();offerShown=false;clearTimeout(offerTimer);const el=document.querySelector('.reaction');el.classList.remove('offer');el.textContent='Opening...';setTimeout(()=>{if(el.textContent==='Opening...')el.textContent='';},3000);api.send('scout-open');});
@@ -63,7 +74,7 @@ if(mode==='pet'){
  function hitRegion(e){const c=$('.pet-image'),r=c.getBoundingClientRect();const x=Math.floor((e.clientX-r.left)*c.width/r.width),y=Math.floor((e.clientY-r.top)*c.height/r.height);if(x<0||y<0||x>=c.width||y>=c.height)return null;const ctx=c.getContext('2d');if(ctx.getImageData(x,y,1,1).data[3]<40)return null;
   // Classify within current visible silhouette, not the whole transparent window.
   const pixels=ctx.getImageData(0,0,c.width,c.height).data;let top=c.height,bottom=0;for(let yy=0;yy<c.height;yy++)for(let xx=0;xx<c.width;xx++)if(pixels[(yy*c.width+xx)*4+3]>40){top=Math.min(top,yy);bottom=Math.max(bottom,yy);}const p=(y-top)/Math.max(1,bottom-top);return p<.47?'head':p>.82?'paws':'body';}
- function release(e,cancel){const result=behavior.up(cancel);if(stage.hasPointerCapture(e.pointerId))stage.releasePointerCapture(e.pointerId);lastInteract=performance.now();let combo=false;if(result==='drop'){api.send('drag-end');/* drop lifecycle is sprite-native: main.cjs drag-end plays landing, which chains getup then idle; no old-pack GIF overlay (it drew the previous mascot on top of the new sprite) */}else if(result==='tap'){tapTimes.push(performance.now());tapTimes=tapTimes.filter(t=>performance.now()-t<2000);if(window.AnimEvents&&AnimEvents.isTapCombo(tapTimes,performance.now())){play('swing');tapTimes=[];combo=true;/* tap-combo hit: katana swing sprite (with slash arcs) replaces the old-pack throw GIF, which showed the previous mascot and blue tones */}}if(result==='tap'&&!combo){const region=hitRegion(e);if(region){play('touch-'+region);api.send('pet-event','touch-'+region);$('.pet-image').dataset.touch=region;$('.reaction').textContent=region==='head'?'Hey!':region==='body'?'Oof!':'Whoa!';setTimeout(()=>$('.reaction').textContent='',900);}}behavior.quiet(performance.now());}
+ function release(e,cancel){const result=behavior.up(cancel);if(stage.hasPointerCapture(e.pointerId))stage.releasePointerCapture(e.pointerId);lastInteract=performance.now();let combo=false;if(result==='drop'){api.send('drag-end');/* drop lifecycle is sprite-native: main.cjs drag-end plays landing, which chains getup then idle; no old-pack GIF overlay (it drew the previous mascot on top of the new sprite) */}else if(result==='tap'){tapTimes.push(performance.now());tapTimes=tapTimes.filter(t=>performance.now()-t<2000);if(window.AnimEvents&&AnimEvents.isTapCombo(tapTimes,performance.now())){play('swing');api.send('pet-event','tap-combo');tapTimes=[];combo=true;/* tap-combo hit: katana swing sprite (with slash arcs) replaces the old-pack throw GIF, which showed the previous mascot and blue tones */}}if(result==='tap'&&!combo){const region=hitRegion(e);if(region){api.send('pet-event','touch-'+region);$('.pet-image').dataset.touch=region;if(petMood!=='calm'){play('rage');annoyedBubble();}else{play('touch-'+region);$('.reaction').textContent=region==='head'?'Hey!':region==='body'?'Oof!':'Whoa!';setTimeout(()=>$('.reaction').textContent='',900);}}}behavior.quiet(performance.now());}
  stage.addEventListener('pointerup',e=>release(e,false));stage.addEventListener('pointercancel',e=>release(e,true));stage.addEventListener('lostpointercapture',e=>{if(behavior.press)release(e,true);});
  stage.addEventListener('contextmenu',e=>{e.preventDefault();behavior.up(true);api.send('pet-event','dock');api.send('dock');});
  returnPetKeys();function returnPetKeys(){document.addEventListener('keydown',e=>{if(e.key==='Escape'){api.send('pet-event','dock');api.send('dock');}});}

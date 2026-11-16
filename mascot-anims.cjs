@@ -44,7 +44,74 @@
     if (has('dex-' + name)) return 'dex-' + name;
     return 'dex-idle';
   }
-  const api = { DEX_FALLBACK, resolveSprite };
+
+  // Semantic event wiring (Dexter-style, Nov 16 2026): callers ask for a
+  // MEANING - an ambient beat, a thinking pose, a one-shot reaction - and
+  // this table picks the sprite. Mappings were chosen from contact
+  // sheets of the actual dex art, not from the file names:
+  //   dex-emote      is a chin-stroke ponder that ends in a lightbulb,
+  //                  so it carries thinking-long and react-idea
+  //   dex-scan       is a worried head-scratch, so it carries
+  //                  thinking-question, react-confused and react-sad
+  //                  (the sheet has no sad-ears equivalent)
+  //   dex-side-listen is the ear-cupped side profile already used for
+  //                  voice-call transcribing; text-chat thinking reuses
+  //                  it (voice phases own the pet during calls, and
+  //                  chat-thinking is suppressed then, so no clash)
+  //   dex-gesture    ends in a thumbs-up: react-success + ambient beat
+  //   dex-coffee     is a full coffee-making ritual: signature ambient
+  //   dex-rage       red face + steam: react-error (and the annoyance
+  //                  system in annoyance.cjs, via the plain 'rage' state)
+  // Rex entries exist only where Rex already has an equivalent sprite
+  // ('scan' is Rex's established brain-work sprite - power-run and
+  // listening-start already use it). There is deliberately NO Rex
+  // 'ambient-coffee': Rex has no coffee art, so resolveEvent returns
+  // null and the ambient slot is a quiet idle beat for him.
+  const DEX_EVENTS = {
+    'ambient-coffee': 'dex-coffee',
+    'ambient-scan': 'dex-scan',
+    'ambient-emote': 'dex-emote',
+    'ambient-gesture': 'dex-gesture',
+    'ambient-sit': 'dex-sit',
+    'thinking': 'dex-side-listen',
+    'thinking-long': 'dex-emote',
+    'thinking-question': 'dex-scan',
+    'react-success': 'dex-gesture',
+    'react-error': 'dex-rage',
+    'react-sad': 'dex-scan',
+    'react-confused': 'dex-scan',
+    'react-idea': 'dex-emote',
+  };
+  const REX_EVENTS = {
+    'ambient-scan': 'scan',
+    'ambient-emote': 'emote',
+    'ambient-gesture': 'gesture',
+    'ambient-sit': 'sit',
+    'thinking': 'scan',
+    'thinking-long': 'scan',
+    'thinking-question': 'scan',
+    'react-success': 'gesture',
+    'react-error': 'rage',
+    'react-sad': 'emote',
+    'react-confused': 'scan',
+    'react-idea': 'emote',
+  };
+  // event: semantic name ('thinking', 'react-success', ...). Returns the
+  // sprite to play, or null when the name is not a known event or this
+  // mascot has no sprite for it (callers then fall back to state
+  // resolution / a plain idle beat).
+  function resolveEvent(event, mascot, has) {
+    if (typeof event !== 'string') return null;
+    const table = mascot === 'dex' ? DEX_EVENTS : mascot === 'rex' ? REX_EVENTS : null;
+    if (!table) return null;
+    const sprite = table[event];
+    if (!sprite) return null;
+    if (typeof has === 'function' && !has(sprite)) {
+      return mascot === 'dex' && has('dex-idle') ? 'dex-idle' : null;
+    }
+    return sprite;
+  }
+  const api = { DEX_FALLBACK, resolveSprite, DEX_EVENTS, REX_EVENTS, resolveEvent };
   if (typeof module === 'object') module.exports = api;
   else root.MascotAnims = api;
 })(globalThis);
