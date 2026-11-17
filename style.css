@@ -4,6 +4,7 @@
 #wake-dot{position:absolute;right:6px;top:3px;font-size:11px;color:#9AA8FF;text-shadow:0 1px 3px black;animation:wakePulse 1.6s ease-in-out infinite}
 @keyframes wakePulse{0%,100%{opacity:1}50%{opacity:.35}}
 .pet-stage .reaction.offer{cursor:pointer;text-decoration:underline dotted}
+.pet-stage .tap-burst{position:absolute;width:36px;height:36px;margin:-18px 0 0 -18px;pointer-events:none;z-index:5}
 .wake-live{position:absolute;left:2px;top:3px;font-size:10px;color:#9AA8FF;text-shadow:0 1px 3px black;animation:wakePulse 1.6s ease-in-out infinite}
 
 /* Last-mile pack: animation-pack GIF overlay on the pet (anim-events.cjs). */
