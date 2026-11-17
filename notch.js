@@ -263,18 +263,21 @@ document.addEventListener('keydown', (e) => {
 
 // --- pointer behaviour: peek raise, hover, click-through --------------------------------
 $('#peek').addEventListener('mouseenter', () => { machine.hoverIn(); render(); });
-$('#peek').addEventListener('click', () => { machine.toggleOpen(); render(); if (machine.state !== 'open') api.send('notch-set-ignore', { ignore: true }); });
+$('#peek').addEventListener('click', () => { if (Date.now() < suppressClickUntil) return; machine.toggleOpen(); render(); if (machine.state !== 'open') api.send('notch-set-ignore', { ignore: true }); });
 $('#panel').addEventListener('mouseenter', () => { machine.hoverIn(); render(); });
 $('#panel').addEventListener('mouseleave', () => {
+  if (drag) return; // mid drag-out: never collapse under the pointer
   if ($('#panel').contains(document.activeElement)) return; // typing in chat: stay
   machine.hoverOut();
   render();
 });
 document.addEventListener('mousemove', (e) => {
+  if (drag) return; // mid drag-out: keep the window interactive for capture
   const hit = !!(e.target && e.target.closest && e.target.closest('[data-hit]'));
   api.send('notch-set-ignore', { ignore: !hit });
 });
 document.addEventListener('mouseleave', () => {
+  if (drag) return; // mid drag-out: leaving the window is the whole point
   machine.pointerAway();
   api.send('notch-set-ignore', { ignore: true });
   render();
@@ -282,29 +285,49 @@ document.addEventListener('mouseleave', () => {
 $('#dock-btn').addEventListener('click', () => api.send('notch-dock'));
 
 // --- cat drag-out: tilt while dragging, summon on a real drop ------------------------------
-const cat = $('#cat');
+// Wired on BOTH cat faces: the panel cat (#cat) and the peek cat (#peek-cat).
+// The peek is the notch's resting state, so a drag that starts there must
+// work too - previously only the open panel's cat had handlers and a drag
+// from the collapsed notch silently did nothing. While a drag is active the
+// hover/click-through handlers below must not collapse the panel, re-render,
+// or re-enable mouse-ignore: any of those can drop the pointer capture and
+// the pointerup (and with it the drag-out) is lost.
 let drag = null;
-cat.addEventListener('pointerdown', (e) => {
-  drag = { x: e.screenX, y: e.screenY, moved: false };
-  cat.setPointerCapture(e.pointerId);
-});
-cat.addEventListener('pointermove', (e) => {
+let suppressClickUntil = 0;
+function finishDrag(e) {
   if (!drag) return;
-  const dx = e.screenX - drag.x, dy = e.screenY - drag.y;
-  if (Math.abs(dx) + Math.abs(dy) > 30) drag.moved = true;
-  if (drag.moved) {
-    // The dragged feel from the reference photos: the cat leans into the drag.
-    const tilt = Math.max(-16, Math.min(16, dx / 6));
-    cat.style.transform = `rotate(${tilt}deg) scale(1.06)`;
-  }
-});
-cat.addEventListener('pointerup', (e) => {
   const was = drag;
   drag = null;
-  cat.style.transform = '';
-  if (was && was.moved) api.send('notch-drag-out', { x: e.screenX, y: e.screenY });
-});
-cat.addEventListener('pointercancel', () => { drag = null; cat.style.transform = ''; });
+  if (was.el) was.el.style.transform = '';
+  if (was.moved && e) {
+    suppressClickUntil = Date.now() + 350;
+    api.send('notch-drag-out', { x: e.screenX, y: e.screenY });
+  }
+}
+function wireDragOut(el) {
+  if (!el) return;
+  el.addEventListener('pointerdown', (e) => {
+    drag = { x: e.screenX, y: e.screenY, moved: false, el };
+    try { el.setPointerCapture(e.pointerId); } catch {}
+  });
+  el.addEventListener('pointermove', (e) => {
+    if (!drag || drag.el !== el) return;
+    const dx = e.screenX - drag.x, dy = e.screenY - drag.y;
+    if (Math.abs(dx) + Math.abs(dy) > 30) drag.moved = true;
+    if (drag.moved) {
+      // The dragged feel from the reference photos: the cat leans into the drag.
+      const tilt = Math.max(-16, Math.min(16, dx / 6));
+      el.style.transform = `rotate(${tilt}deg) scale(1.06)`;
+    }
+  });
+  el.addEventListener('pointerup', finishDrag);
+  el.addEventListener('pointercancel', () => finishDrag(null));
+}
+wireDragOut($('#cat'));
+wireDragOut($('#peek-cat'));
+// Backstop: if the element handler is ever lost mid-drag (capture dropped by
+// a re-render), a window-level pointerup still completes the drop.
+window.addEventListener('pointerup', (e) => { if (drag) finishDrag(e); });
 
 // Battery for the stats pill + battery info tile (renderer-side, per spec).
 if (navigator.getBattery) {
