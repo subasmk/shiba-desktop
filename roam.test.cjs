@@ -2,11 +2,11 @@ const { test } = require('node:test'), a = require('node:assert/strict');
 const { RoamController } = require('./roam.cjs');
 const area = { x: 0, y: 0, width: 1280, height: 800 };
 const groundY = 800 - 130;
-function drive(ctl, from, to, x0 = 100) {
+function drive(ctl, from, to, x0 = 100, extra = {}) {
   const out = [];
   let x = x0;
   for (let now = from; now <= to; now += 50) {
-    const r = ctl.step({ now, x, y: groundY, area, paused: false });
+    const r = ctl.step({ now, x, y: groundY, area, paused: false, ...extra });
     if (r.move) x = r.move.x;
     out.push(r);
   }
@@ -77,6 +77,19 @@ test('perch: never triggers without a rect or with the toggle off', () => {
 test('walk animation kind: long moves leap, medium run, short walk', () => {
   const ctl = new RoamController(() => 0);
   a.equal(ctl.moveKind(900), 'leap'); a.equal(ctl.moveKind(400), 'run'); a.equal(ctl.moveKind(120), 'walk');
+});
+test('drift mode (Dex): even a long move uses the calm walk gait and drifts slower than normal roam', () => {
+  const mk = () => new RoamController(() => 0.9); // far target near the right edge
+  const drift = mk(), normal = mk();
+  drift.step({ now: 0, x: 100, y: groundY, area, paused: false, drift: true });
+  normal.step({ now: 0, x: 100, y: groundY, area, paused: false });
+  const dStart = drift.step({ now: 23501, x: 100, y: groundY, area, paused: false, drift: true });
+  const nStart = normal.step({ now: 23501, x: 100, y: groundY, area, paused: false });
+  a.equal(dStart.animation, 'walk'); // drift never runs or leaps, whatever the distance
+  a.ok(['run', 'leap'].includes(nStart.animation));
+  const dRun = drive(drift, 23551, 33551, 100, { drift: true });
+  const nRun = drive(normal, 23551, 33551, 100, {});
+  a.ok(dRun.x > 100 && dRun.x < nRun.x, 'drift covers less ground in the same time (' + dRun.x + ' vs ' + nRun.x + ')');
 });
 
 test('placement: pet placed mid-air stays there (user decision: no automatic fall to the bottom)', () => {

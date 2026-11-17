@@ -110,7 +110,9 @@
           let tx = lo + this.random() * Math.max(0, hi - lo);
           if (Math.abs(tx - x) < 90) tx = tx > x ? Math.min(hi, tx + 160) : Math.max(lo, tx - 160);
           this.targetX = Math.round(tx); this.fromX = x;
-          this.moveAnim = this.moveKind(this.targetX - x);
+          // Drift mode (Dex, Dexter-style): one calm gait at any distance -
+          // no run, no leap; the pet floats across slowly (see 'walk').
+          this.moveAnim = input.drift ? 'walk' : this.moveKind(this.targetX - x);
           this.state = 'walk'; this.moveStart = now; this.carry = 0;
           return { move: null, animation: this.moveAnim };
         }
@@ -133,7 +135,7 @@
           const accel = Math.min(1, (now - (this.moveStart || now)) / 300);
           const decel = Math.min(1, (Math.abs(dx) + 8) / 100);
           const f = Math.max(0.35, Math.min(accel || 0.35, decel));
-          const fl = 95 * f * dt / 1000 + this.carry;
+          const fl = (input.drift ? 38 : 95) * f * dt / 1000 + this.carry;
           let stepPx = Math.max(1, Math.round(fl));
           if (stepPx >= Math.abs(dx)) { stepPx = Math.abs(dx); this.carry = 0; }
           else this.carry = fl - stepPx;
