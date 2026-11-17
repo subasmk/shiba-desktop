@@ -302,6 +302,9 @@ function finishDrag(e) {
   if (was.moved && e) {
     suppressClickUntil = Date.now() + 350;
     api.send('notch-drag-out', { x: e.screenX, y: e.screenY });
+  } else if (was.moved && !e && was.started) {
+    // Capture was lost mid-drag: tell main to stop following and land the pet.
+    api.send('notch-drag-cancel');
   }
 }
 function wireDragOut(el) {
@@ -318,6 +321,16 @@ function wireDragOut(el) {
       // The dragged feel from the reference photos: the cat leans into the drag.
       const tilt = Math.max(-16, Math.min(16, dx / 6));
       el.style.transform = `rotate(${tilt}deg) scale(1.06)`;
+      // Dexter-style: the pet comes OUT as soon as the drag is real and
+      // follows the cursor while held - it does not teleport on release.
+      if (!drag.started) {
+        drag.started = true;
+        drag.lastX = e.screenX; drag.lastY = e.screenY;
+        api.send('notch-drag-start', { x: e.screenX, y: e.screenY });
+      } else if (Math.abs(e.screenX - drag.lastX) + Math.abs(e.screenY - drag.lastY) >= 3) {
+        drag.lastX = e.screenX; drag.lastY = e.screenY;
+        api.send('notch-drag-move', { x: e.screenX, y: e.screenY });
+      }
     }
   });
   el.addEventListener('pointerup', finishDrag);
