@@ -29,7 +29,11 @@
  const AMBIENT_CHANCE=0.45;
  class PetBehavior {
   constructor(random=Math.random){this.random=random;this.lastAction='';this.nextAt=0;this.press=null;this.lastAmbient='';this.ambientAt={};}
-  quiet(now){this.nextAt=now+6500+this.random()*5500;}
+  // Cadence (Subash, 2026-11-17: 'oru hit pannale ella animation uh play
+  // aguthu' - one hit set off every animation): idle beats wait 25-45s
+  // between fires, so one tap gets ONE reaction and then a calm pet.
+  // The old 6.5-12s cadence made the pet perform non-stop.
+  quiet(now){this.nextAt=now+25000+this.random()*20000;}
   due(now,animation){if(animation!=='idle'||this.press||now<this.nextAt)return null;const ready=AMBIENT.filter(a=>a.event!==this.lastAmbient&&(this.ambientAt[a.event]||0)<=now);if(ready.length&&this.random()<AMBIENT_CHANCE){const pick=ready[Math.floor(this.random()*ready.length)];this.lastAmbient=pick.event;this.ambientAt[pick.event]=now+pick.cooldownMs;this.quiet(now);return pick.event;}const candidates=actions.filter(x=>x!==this.lastAction);this.lastAction=candidates[Math.floor(this.random()*candidates.length)];this.quiet(now);return this.lastAction;}
   down(x,y,now){this.press={x,y,at:now,dragging:false};}
   move(x,y,now){const p=this.press;if(!p)return false;if(!p.dragging&&now-p.at>=80&&Math.hypot(x-p.x,y-p.y)>=12)p.dragging=true;return p.dragging;}

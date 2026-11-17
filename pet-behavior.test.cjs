@@ -10,7 +10,7 @@ function queueRandom(values) {
 
 test('due: nothing fires before the quiet window or while not idle', () => {
   const b = new PetBehavior(() => 0);
-  b.quiet(0); // nextAt = 6500 with random 0
+  b.quiet(0); // nextAt = 25000 with random 0
   assert.equal(b.due(1000, 'idle'), null);
   assert.equal(b.due(7000, 'walk'), null);
   assert.equal(b.due(7000, 'sleep'), null);
@@ -22,7 +22,7 @@ test('due: classic variety actions still rotate without repeats', () => {
   const seen = new Set();
   let now = 0;
   for (let i = 0; i < 12; i++) {
-    now += 20000;
+    now += 50000;
     const a = b.due(now, 'idle');
     assert.ok(['wave', 'bow', 'scan', 'emote'].includes(a), a);
     assert.ok(!seen.has(a) || i === 0, 'no immediate repeat: ' + a);
@@ -37,12 +37,12 @@ test('ambient: fires from the pool and respects per-event cooldowns', () => {
   assert.equal(first, 'ambient-coffee'); // first pool entry
   // Coffee is now on its 150s cooldown: the next ambient pick (past the
   // quiet window) must be a different event, never coffee again.
-  const second = b.due(20000, 'idle');
+  const second = b.due(30000, 'idle');
   assert.equal(second, 'ambient-sit');
   assert.notEqual(second, first);
   // After coffee's cooldown expires it becomes eligible again.
   let later = null;
-  for (let t = 40000; t <= 200000 && later !== 'ambient-coffee'; t += 20000) {
+  for (let t = 60000; t <= 200000 && later !== 'ambient-coffee'; t += 20000) {
     later = b.due(t, 'idle');
   }
   assert.equal(later, 'ambient-coffee');
