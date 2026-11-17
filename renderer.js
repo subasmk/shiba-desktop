@@ -9,7 +9,7 @@ function close(){window.shibaVoice?.session.stop();api.send('panel',false);}
 if(mode==='pet'){
  root.innerHTML='<div class="pet-stage"><span class="reaction"></span><span class="wake-live hidden" title="Wake word listening">🎙</span><canvas class="pet-image" width="320" height="320" aria-label="Desktop pet"></canvas></div>';
  const atlas=new Image();atlas.src='1-sprites-clean.png';const atlas2=new Image();atlas2.src='2-sprites-new.png';const atlas3=new Image();atlas3.src='3-sprites-dex.png';const atlas4=new Image();atlas4.src='4-sprites-dex2.png';const sheets=[atlas,atlas2,atlas3,atlas4];const SHEET_CELL=[160,160,320,320];function sheetFor(f){const s=sheets[f&&f.a|0];return s||atlas;}function cellFor(f){return SHEET_CELL[f&&f.a|0]||160;}
- let sprites={},seq=[],idx=0,nextAt=0,anim='idle',resolvedAnim='idle',finished=false,blend=null,lastDrawn=null,mascot='dex',wantedMascot='dex',requestedAnim='idle',idleHoldUntil=0,sitForInteract=0,sleepForInteract=0;const behavior=new PetBehavior();behavior.quiet(performance.now());
+ let sprites={},seq=[],idx=0,nextAt=0,anim='idle',resolvedAnim='idle',finished=false,blend=null,lastDrawn=null,mascot='dex',wantedMascot='dex',requestedAnim='idle',idleHoldUntil=0,sleepForInteract=0,sitStart=0;const behavior=new PetBehavior();behavior.quiet(performance.now());
  // Optional second mascot (user-approved Nov 16 2026): when mascot is 'dex',
  // a requested state plays its 'dex-' variant when the dex sheet has it.
  // States the sheet lacks (touch-*, swing, bow, getup) and 'wave' (whose
@@ -40,10 +40,10 @@ if(mode==='pet'){
  const finite=new Set(['landing','getup','fall','wave','click','bow','gesture','rage','sleep','scan','sit','swing','emote','touch-head','touch-body','touch-paws','ambient-coffee','ambient-sit','ambient-scan','ambient-emote','ambient-gesture','ambient-glasses','ambient-laptop','ambient-phone','ambient-reading','ambient-waiting','react-success','react-error','react-sad','react-confused','react-idea','dex-click','dex-scan','dex-emote','dex-gesture','dex-sad-ears','dex-glasses','dex-laptop','dex-phone','dex-reading','dex-waiting','dex-rage']);const chain={landing:'getup',fall:'getup'};
  fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;buildDexFit();setMascot(wantedMascot);play('idle');});
  let resting=false;
- function play(name){requestedAnim=name;idleHoldUntil=0;const isRest=(name==='sit'||name==='sleep');if(isRest!==resting){resting=isRest;api.send('pet-rest',resting);}const resolved=resolveAnim(name);if(resolved!==resolvedAnim&&lastDrawn)blend={frame:lastDrawn.frame,fit:lastDrawn.fit,until:performance.now()+90};anim=name;resolvedAnim=resolved;seq=sprites[resolved]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;} // anim keeps the requested name so finite/chain semantics survive mascot fallbacks
+ function play(name){requestedAnim=name;idleHoldUntil=0;const isRest=(name==='sit'||name==='sleep');if(isRest!==resting){resting=isRest;api.send('pet-rest',resting);}const resolved=resolveAnim(name);if(resolved!==resolvedAnim&&lastDrawn)blend={frame:lastDrawn.frame,fit:lastDrawn.fit,until:performance.now()+90};if(name==='sit'&&anim!=='sit')sitStart=performance.now();anim=name;resolvedAnim=resolved;seq=sprites[resolved]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;} // anim keeps the requested name so finite/chain semantics survive mascot fallbacks
  function tick(t){
   if(seq.length){
-   if(finished&&t>=nextAt){let next=chain[anim];if(anim==='sit'&&t-lastInteract>=30000&&t-lastInteract<60000)next='sit';else if(anim==='sit'&&t-lastInteract>=60000)next=(window.AnimEvents?AnimEvents.forEvent('long-idle').sprite:'sleep');else if(anim==='sleep'&&t-lastInteract>=60000)next='sleep';play(next||'idle');if(!next)behavior.quiet(t);} /* sit clip finishing past the 60s mark goes straight to sleep: replaying to idle there stranded the pet awake (verification run Nov 17 2026) */
+   if(finished&&t>=nextAt){let next=chain[anim];if(anim==='sit'&&t-sitStart<30000)next='sit';else if(anim==='sit'&&t-sitStart>=30000)next=(window.AnimEvents?AnimEvents.forEvent('long-idle').sprite:'sleep');else if(anim==='sleep'&&lastInteract<=sitStart)next='sleep';play(next||'idle');if(!next)behavior.quiet(t);} /* sit clip finishing past the 60s mark goes straight to sleep: replaying to idle there stranded the pet awake (verification run Nov 17 2026) */
    const frame=seq[idx];const blending=blend&&t<blend.until;
    if((t>=nextAt||blending)){const img=sheetFor(frame);if(img.complete&&img.naturalWidth){
     const canvas=$('.pet-image');canvas.dataset.frame=frame.file;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);const fit=fitFor(resolvedAnim,idx);
@@ -54,10 +54,13 @@ if(mode==='pet'){
    if(t>=nextAt){nextAt=t+frame.ms;if(!(anim==='idle'&&t<idleHoldUntil)){idx++;if(idx>=seq.length){if(finite.has(anim))finished=true;else{idx=0;if(anim==='idle')idleHoldUntil=t+1400+Math.random()*2000;}}}}
   }
   // Idle progression (Subash's Dexter spec, 2026-11-17): 30s untouched ->
-  // sit; 30s more sitting -> sleep. Both persist while untouched (the chain
-  // step above replays them); any poke resets lastInteract and breaks out.
-  if(anim==='idle'&&t-lastInteract>=30000&&sitForInteract!==lastInteract){sitForInteract=lastInteract;play('sit');}
-  else if(anim==='sit'&&t-lastInteract>=60000&&sleepForInteract!==lastInteract){sleepForInteract=lastInteract;play(window.AnimEvents?AnimEvents.forEvent('long-idle').sprite:'sleep');}
+  // sit; a FULL 30s of actual sitting -> sleep, keyed to sitStart (when sit
+  // really began), so a sit delayed by roam or an ambient clip still gets
+  // its 30s instead of sleep firing 60s after the last touch mid-sit. Both
+  // persist while untouched (the chain step above replays them); any poke
+  // resets lastInteract and breaks out.
+  if(anim==='idle'&&t-lastInteract>=30000)play('sit'); /* no one-shot latch: if a non-interaction clip (roam arrival, ambient, event) interrupts sit, sit must re-enter on the next idle tick - latching on lastInteract here stranded the pet awake forever without a poke (edge verification Nov 17 2026) */
+  else if(anim==='sit'&&t-sitStart>=30000&&sleepForInteract!==sitStart){sleepForInteract=sitStart;play(window.AnimEvents?AnimEvents.forEvent('long-idle').sprite:'sleep');}
   const action=behavior.due(t,anim);if(action)play(action);if(window.AnimEvents&&anim==='idle'&&!sleepFired&&AnimEvents.isLongIdle(lastInteract,t)){sleepFired=true;play(AnimEvents.forEvent('long-idle').sprite);}requestAnimationFrame(tick);
  }requestAnimationFrame(tick);
  let lastInteract=performance.now(),sleepFired=false,tapTimes=[];
