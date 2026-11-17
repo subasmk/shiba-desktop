@@ -2893,5 +2893,97 @@
    "y": 2240,
    "a": 3
   }
+ ],
+ "dex-hit-wobble": [
+  {
+   "file": "dex-hit-wobble1.png",
+   "ms": 65,
+   "x": 0,
+   "y": 0,
+   "a": 4
+  },
+  {
+   "file": "dex-hit-wobble2.png",
+   "ms": 140,
+   "x": 320,
+   "y": 0,
+   "a": 4,
+   "star": [
+    205,
+    32
+   ]
+  },
+  {
+   "file": "dex-hit-wobble3.png",
+   "ms": 180,
+   "x": 640,
+   "y": 0,
+   "a": 4,
+   "star": [
+    100,
+    28
+   ]
+  },
+  {
+   "file": "dex-hit-wobble4.png",
+   "ms": 180,
+   "x": 960,
+   "y": 0,
+   "a": 4,
+   "star": [
+    214,
+    34
+   ]
+  },
+  {
+   "file": "dex-hit-wobble5.png",
+   "ms": 180,
+   "x": 1280,
+   "y": 0,
+   "a": 4,
+   "star": [
+    103,
+    28
+   ]
+  },
+  {
+   "file": "dex-hit-wobble6.png",
+   "ms": 155,
+   "x": 1600,
+   "y": 0,
+   "a": 4,
+   "star": [
+    208,
+    35
+   ]
+  },
+  {
+   "file": "dex-hit-wobble7.png",
+   "ms": 120,
+   "x": 1920,
+   "y": 0,
+   "a": 4
+  },
+  {
+   "file": "dex-hit-wobble8.png",
+   "ms": 150,
+   "x": 2240,
+   "y": 0,
+   "a": 4
+  },
+  {
+   "file": "dex-hit-wobble9.png",
+   "ms": 160,
+   "x": 2560,
+   "y": 0,
+   "a": 4
+  },
+  {
+   "file": "dex-hit-wobble10.png",
+   "ms": 170,
+   "x": 2880,
+   "y": 0,
+   "a": 4
+  }
  ]
 }
