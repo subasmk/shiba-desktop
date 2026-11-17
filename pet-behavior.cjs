@@ -17,6 +17,14 @@
   {event:'ambient-emote',cooldownMs:75000},
   {event:'ambient-scan',cooldownMs:75000},
   {event:'ambient-gesture',cooldownMs:60000},
+  // Second dex sheet (user-supplied pack, Nov 17 2026): more distinct
+  // beats so idle life stops looking like a short robotic loop. Rex has
+  // no equivalents - resolveEvent returns null and he gets a quiet beat.
+  {event:'ambient-glasses',cooldownMs:150000},
+  {event:'ambient-laptop',cooldownMs:120000},
+  {event:'ambient-phone',cooldownMs:120000},
+  {event:'ambient-reading',cooldownMs:120000},
+  {event:'ambient-waiting',cooldownMs:100000},
  ];
  const AMBIENT_CHANCE=0.45;
  class PetBehavior {

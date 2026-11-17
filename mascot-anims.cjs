@@ -34,6 +34,15 @@
     'wave': 'dex-gesture',
     'getup': 'dex-idle',
   };
+  // Poke variety (user report Nov 17 2026: same reaction every tap reads
+  // 'robotic'). Each tap region rotates through distinct existing dex
+  // reactions instead of replaying one clip. Every entry is a concrete
+  // atlas sprite; the renderer cycles per region.
+  const DEX_TOUCH_ROTATION = {
+    'touch-head': ['dex-click', 'dex-scan'],
+    'touch-body': ['dex-emote', 'dex-gesture'],
+    'touch-paws': ['dex-gesture', 'dex-sad-ears'],
+  };
   // name: requested state ('idle', 'touch-head', 'dex-wave', ...).
   // mascot: 'dex' | 'rex'. has: (spriteName) => boolean.
   function resolveSprite(name, mascot, has) {
@@ -73,12 +82,17 @@
     'ambient-emote': 'dex-emote',
     'ambient-gesture': 'dex-gesture',
     'ambient-sit': 'dex-sit',
+    'ambient-glasses': 'dex-glasses',
+    'ambient-laptop': 'dex-laptop',
+    'ambient-phone': 'dex-phone',
+    'ambient-reading': 'dex-reading',
+    'ambient-waiting': 'dex-waiting',
     'thinking': 'dex-side-listen',
     'thinking-long': 'dex-emote',
     'thinking-question': 'dex-scan',
     'react-success': 'dex-gesture',
     'react-error': 'dex-rage',
-    'react-sad': 'dex-scan',
+    'react-sad': 'dex-sad-ears',
     'react-confused': 'dex-scan',
     'react-idea': 'dex-emote',
   };
@@ -111,7 +125,7 @@
     }
     return sprite;
   }
-  const api = { DEX_FALLBACK, resolveSprite, DEX_EVENTS, REX_EVENTS, resolveEvent };
+  const api = { DEX_FALLBACK, DEX_TOUCH_ROTATION, resolveSprite, DEX_EVENTS, REX_EVENTS, resolveEvent };
   if (typeof module === 'object') module.exports = api;
   else root.MascotAnims = api;
 })(globalThis);
