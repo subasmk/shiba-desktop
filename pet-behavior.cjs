@@ -26,7 +26,7 @@
   {event:'ambient-reading',cooldownMs:120000},
   {event:'ambient-waiting',cooldownMs:100000},
  ];
- const AMBIENT_CHANCE=0.45;
+ const AMBIENT_CHANCE=0.65;
  class PetBehavior {
   constructor(random=Math.random){this.random=random;this.lastAction='';this.nextAt=0;this.press=null;this.lastAmbient='';this.ambientAt={};}
   // Cadence (Subash, 2026-11-17: 'oru hit pannale ella animation uh play
