@@ -9,7 +9,7 @@ function close(){window.shibaVoice?.session.stop();api.send('panel',false);}
 if(mode==='pet'){
  root.innerHTML='<div class="pet-stage"><span class="reaction"></span><span class="wake-live hidden" title="Wake word listening">🎙</span><canvas class="pet-image" width="320" height="320" aria-label="Desktop pet"></canvas></div>';
  const atlas=new Image();atlas.src='1-sprites-clean.png';const atlas2=new Image();atlas2.src='2-sprites-new.png';const atlas3=new Image();atlas3.src='3-sprites-dex.png';const sheets=[atlas,atlas2,atlas3];const SHEET_CELL=[160,160,320];function sheetFor(f){const s=sheets[f&&f.a|0];return s||atlas;}function cellFor(f){return SHEET_CELL[f&&f.a|0]||160;}
- let sprites={},seq=[],idx=0,nextAt=0,anim='idle',resolvedAnim='idle',finished=false,blend=null,lastDrawn=null,mascot='dex',wantedMascot='dex',requestedAnim='idle',idleHoldUntil=0;const behavior=new PetBehavior();behavior.quiet(performance.now());
+ let sprites={},seq=[],idx=0,nextAt=0,anim='idle',resolvedAnim='idle',finished=false,blend=null,lastDrawn=null,mascot='dex',wantedMascot='dex',requestedAnim='idle',idleHoldUntil=0,sitForInteract=0,sleepForInteract=0;const behavior=new PetBehavior();behavior.quiet(performance.now());
  // Optional second mascot (user-approved Nov 16 2026): when mascot is 'dex',
  // a requested state plays its 'dex-' variant when the dex sheet has it.
  // States the sheet lacks (touch-*, swing, bow, getup) and 'wave' (whose
@@ -42,7 +42,7 @@ if(mode==='pet'){
  function play(name){requestedAnim=name;idleHoldUntil=0;const resolved=resolveAnim(name);if(resolved!==resolvedAnim&&lastDrawn)blend={frame:lastDrawn.frame,fit:lastDrawn.fit,until:performance.now()+90};anim=name;resolvedAnim=resolved;seq=sprites[resolved]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;} // anim keeps the requested name so finite/chain semantics survive mascot fallbacks
  function tick(t){
   if(seq.length){
-   if(finished&&t>=nextAt){const next=chain[anim];play(next||'idle');if(!next)behavior.quiet(t);}
+   if(finished&&t>=nextAt){let next=chain[anim];if(anim==='sit'&&t-lastInteract>=30000&&t-lastInteract<60000)next='sit';else if(anim==='sleep'&&t-lastInteract>=60000)next='sleep';play(next||'idle');if(!next)behavior.quiet(t);}
    const frame=seq[idx];const blending=blend&&t<blend.until;
    if((t>=nextAt||blending)){const img=sheetFor(frame);if(img.complete&&img.naturalWidth){
     const canvas=$('.pet-image');canvas.dataset.frame=frame.file;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);const fit=fitFor(resolvedAnim,idx);
@@ -52,6 +52,11 @@ if(mode==='pet'){
    }}
    if(t>=nextAt){nextAt=t+frame.ms;if(!(anim==='idle'&&t<idleHoldUntil)){idx++;if(idx>=seq.length){if(finite.has(anim))finished=true;else{idx=0;if(anim==='idle')idleHoldUntil=t+1400+Math.random()*2000;}}}}
   }
+  // Idle progression (Subash's Dexter spec, 2026-11-17): 30s untouched ->
+  // sit; 30s more sitting -> sleep. Both persist while untouched (the chain
+  // step above replays them); any poke resets lastInteract and breaks out.
+  if(anim==='idle'&&t-lastInteract>=30000&&sitForInteract!==lastInteract){sitForInteract=lastInteract;play('sit');}
+  else if(anim==='sit'&&t-lastInteract>=60000&&sleepForInteract!==lastInteract){sleepForInteract=lastInteract;play(window.AnimEvents?AnimEvents.forEvent('long-idle').sprite:'sleep');}
   const action=behavior.due(t,anim);if(action)play(action);if(window.AnimEvents&&anim==='idle'&&!sleepFired&&AnimEvents.isLongIdle(lastInteract,t)){sleepFired=true;play(AnimEvents.forEvent('long-idle').sprite);}requestAnimationFrame(tick);
  }requestAnimationFrame(tick);
  let lastInteract=performance.now(),sleepFired=false,tapTimes=[];
@@ -61,8 +66,11 @@ if(mode==='pet'){
  // Annoyance mood (annoyance.cjs): main owns the leaky bucket and
  // pushes the level after every hit; while annoyed/furious, taps play
  // rage with a mood bubble instead of the per-region reaction.
- let petMood='calm',bubbleToken=0;
- function annoyedBubble(){const e=document.querySelector('.reaction');if(!e)return;const line=window.Annoyance?Annoyance.lineFor(petMood,Math.random):'Podhum bro 😤';e.textContent=line;const tk=++bubbleToken;setTimeout(()=>{if(bubbleToken===tk&&e.textContent===line)e.textContent='';},2400);}
+ let petMood='calm',petCtx=null;
+ // Spoken lines in the pet window (Subash, 2026-11-17: poke reactions must
+ // be VOICE, never a text bubble). Main sends 'pet-speak' here when no voice
+ // call is live; during a call the panel's gated handler speaks instead.
+ api.on('pet-speak',async(text)=>{if(typeof text!=='string'||!text)return;try{const a=await api.call('voice-synthesize',text);if(a&&a.system){speechSynthesis.speak(new SpeechSynthesisUtterance(text));return;}if(!a||!a.samples||!a.samples.length)throw new Error('no audio');petCtx=petCtx||new AudioContext();await petCtx.resume();const buffer=petCtx.createBuffer(1,a.samples.length,a.sampleRate);buffer.copyToChannel(Float32Array.from(a.samples),0);const src=petCtx.createBufferSource();src.buffer=buffer;src.connect(petCtx.destination);src.start();}catch{try{speechSynthesis.speak(new SpeechSynthesisUtterance(text));}catch{}}});
  api.on('pet-mood',d=>{petMood=(d&&d.mood)||'calm';});
  api.on('pet-state',name=>{behavior.quiet(performance.now());play(name);});api.on('pet-face',d=>{const cv=$('.pet-image');if(cv)cv.style.transform='translateX(-50%)'+(Number(d)<0?' scaleX(-1)':'');});api.on('pet-mascot',m=>setMascot(m));api.on('pet-size',s=>applyPetSize(s));api.call('get-state').then(x=>{setMascot((x&&x.mascot)||'dex');applyPetSize(x&&x.size);}).catch(()=>{});api.on('pet-say',line=>{const e=document.querySelector('.reaction');if(e){e.textContent=line;setTimeout(()=>{if(e.textContent===line)e.textContent='';},6000);}});
  let offerShown=false,offerTimer;api.on('pet-offer',d=>{const e=document.querySelector('.reaction');if(!e||!d||typeof d.text!=='string')return;offerShown=true;e.textContent=d.text+' (opens '+d.host+' - nothing else runs)';e.classList.add('offer');clearTimeout(offerTimer);offerTimer=setTimeout(()=>{offerShown=false;e.classList.remove('offer');if(e.textContent.startsWith(d.text))e.textContent='';},120000);});
@@ -81,7 +89,7 @@ if(mode==='pet'){
  // the current frame (with a small margin) is enough to call it a hit.
  function inPet(e,pad){if(!silBox)return false;const c=$('.pet-image'),r=c.getBoundingClientRect();const x=(e.clientX-r.left)*c.width/r.width,y=(e.clientY-r.top)*c.height/r.height;return x>=silBox.l-pad&&x<=silBox.r+pad&&y>=silBox.t-pad&&y<=silBox.b+pad;}
  function regionFromBox(e){if(!silBox)return null;const c=$('.pet-image'),r=c.getBoundingClientRect();const y=(e.clientY-r.top)*c.height/r.height;const p=(y-silBox.t)/Math.max(1,silBox.b-silBox.t);return p<.47?'head':p>.82?'paws':'body';}
- function release(e,cancel){const result=behavior.up(cancel);if(stage.hasPointerCapture(e.pointerId))stage.releasePointerCapture(e.pointerId);lastInteract=performance.now();let combo=false;if(result==='drop'){api.send('drag-end');/* drop lifecycle is sprite-native: main.cjs drag-end plays landing, which chains getup then idle; no old-pack GIF overlay (it drew the previous mascot on top of the new sprite) */}else if(result==='tap'){tapTimes.push(performance.now());tapTimes=tapTimes.filter(t=>performance.now()-t<2000);if(window.AnimEvents&&AnimEvents.isTapCombo(tapTimes,performance.now())){play('swing');api.send('pet-event','tap-combo');tapTimes=[];combo=true;/* tap-combo hit: katana swing sprite (with slash arcs) replaces the old-pack throw GIF, which showed the previous mascot and blue tones */}}if(result==='tap'&&!combo){const region=hitRegion(e)||regionFromBox(e);if(region){api.send('pet-event','touch-'+region);$('.pet-image').dataset.touch=region;if(petMood!=='calm'){play('rage');annoyedBubble();}else{play('touch-'+region);$('.reaction').textContent=region==='head'?'Hey!':region==='body'?'Oof!':'Whoa!';setTimeout(()=>$('.reaction').textContent='',900);}}}behavior.quiet(performance.now());}
+ function release(e,cancel){const result=behavior.up(cancel);if(stage.hasPointerCapture(e.pointerId))stage.releasePointerCapture(e.pointerId);lastInteract=performance.now();let combo=false;if(result==='drop'){api.send('drag-end');/* drop lifecycle is sprite-native: main.cjs drag-end plays landing, which chains getup then idle; no old-pack GIF overlay (it drew the previous mascot on top of the new sprite) */}else if(result==='tap'){tapTimes.push(performance.now());tapTimes=tapTimes.filter(t=>performance.now()-t<2000);if(window.AnimEvents&&AnimEvents.isTapCombo(tapTimes,performance.now())){play('swing');api.send('pet-event','tap-combo');tapTimes=[];combo=true;/* tap-combo hit: katana swing sprite (with slash arcs) replaces the old-pack throw GIF, which showed the previous mascot and blue tones */}}if(result==='tap'&&!combo){const region=hitRegion(e)||regionFromBox(e);if(region){api.send('pet-event','touch-'+region);$('.pet-image').dataset.touch=region;if(petMood!=='calm'){play('rage');}else{play('touch-'+region);}}}behavior.quiet(performance.now());}
  stage.addEventListener('pointerup',e=>release(e,false));stage.addEventListener('pointercancel',e=>release(e,true));stage.addEventListener('lostpointercapture',e=>{if(behavior.press)release(e,true);});
  stage.addEventListener('contextmenu',e=>{e.preventDefault();behavior.up(true);api.send('pet-event','dock');api.send('dock');});
  returnPetKeys();function returnPetKeys(){document.addEventListener('keydown',e=>{if(e.key==='Escape'){api.send('pet-event','dock');api.send('dock');}});}

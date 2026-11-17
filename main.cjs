@@ -45,7 +45,7 @@ function petAnim(name){const ev=animEvents.forEvent(name);if(!ev)return;try{pet?
 function petEvent(name){try{pet?.webContents.send('pet-state',name);}catch{}}
 // Annoyance mood (annoyance.cjs): session-only leaky bucket fed by the
 // pet-event hit path below. Never saved to settings or pet memory.
-const annoyance=new annoyanceLib.Annoyance();
+const annoyance=new annoyanceLib.Annoyance();let lastAnnoySpeakAt=0;
 function pushPetMood(){try{pet?.webContents.send('pet-mood',{level:annoyance.level(Date.now()),mood:annoyance.mood(Date.now())});}catch{}}
 // Chat-thinking driver: while a text-chat brain call is in flight the
 // pet holds the thinking pose; past ~6s it escalates to thinking-long;
@@ -213,7 +213,7 @@ app.whenReady().then(()=>{savePath=path.join(app.getPath('userData'),'settings.j
  ipcMain.handle('save-routine',(_,data)=>{const r=routinesLib.saveRoutine(settings,data?.name,data?.apps);save();return r;});
  ipcMain.handle('delete-routine',(_,name)=>{const ok=routinesLib.deleteRoutine(settings,name);save();return ok;});
  ipcMain.handle('run-routine',async(_,name)=>{const r=await routinesLib.runRoutine(settings,name);for(const _ of r.launched||[])history.record('app-open');save();return r;});
- ipcMain.on('pet-event',(_,event)=>{if(typeof event==='string'&&(event.startsWith('touch-')||event==='tap-combo')){const before=annoyance.mood(Date.now());const mood=annoyance.hit(Date.now());pushPetMood();if(mood!==before&&mood!=='calm'){try{pet?.webContents.send('pet-say',annoyanceLib.lineFor(mood,Math.random));}catch{}}}if(event==='timer-start'){timerState.running=true;timerState.startedAt=Date.now();}if(event==='timer-finish'){timerState.running=false;timerState.finishedAt=Date.now();}if(history.record(event)){save();const line=history.roast();if(line){pet?.webContents.send('pet-say',line);panel?.webContents.send('pet-say',line);}}});
+ ipcMain.on('pet-event',(_,event)=>{if(typeof event==='string'&&(event.startsWith('touch-')||event==='tap-combo')){const nowA=Date.now();const before=annoyance.mood(nowA);const mood=annoyance.hit(nowA);pushPetMood();if(mood!=='calm'&&(mood!==before||nowA-lastAnnoySpeakAt>=7000)){lastAnnoySpeakAt=nowA;const line=annoyanceLib.lineFor(mood,Math.random);try{if(voiceActive)panel?.webContents.send('pet-speak',line);else pet?.webContents.send('pet-speak',line);}catch{}}}if(event==='timer-start'){timerState.running=true;timerState.startedAt=Date.now();}if(event==='timer-finish'){timerState.running=false;timerState.finishedAt=Date.now();}if(history.record(event)){save();const line=history.roast();if(line){pet?.webContents.send('pet-say',line);panel?.webContents.send('pet-say',line);}}});
  function setupProgress(stage,pct){try{panel?.webContents.send('setup-progress',{stage,pct:pct??null});}catch{}try{dash?.webContents.send('setup-progress',{stage,pct:pct??null});}catch{}}
  ipcMain.handle('setup-download-check',()=>setupLib.downloadSizes());
  ipcMain.handle('setup-status',async()=>{const sizes=await setupLib.downloadSizes().catch(()=>null);return {hardware:await setupLib.hardware(),ollama:await setupLib.ollamaStatus(),voice:setupLib.voiceModelsStatus(voiceBackend.models),model:settings.ollamaModel||null,sizes};});
