@@ -218,15 +218,21 @@ test('machine: edit mode pins the panel, forces the deck view, and ends on away/
 });
 
 // --- status line -------------------------------------------------------------------------
-test('statusLine: pet out beats everything', () => {
-  assert.equal(N.statusLine({ petOut: true, phase: 'thinking', timerRunning: true }), 'Out on your desktop');
+test('statusLine: voice interaction beats pet out; pet out beats the rest', () => {
+  // Dexter parity (2026-11-17): a live voice phase wins even with the pet
+  // out; without a phase, pet-out still leads timer/music.
+  assert.equal(N.statusLine({ petOut: true, phase: 'thinking', timerRunning: true }), 'Thinking…');
+  assert.equal(N.statusLine({ petOut: true, timerRunning: true, timerEndsAt: 999999 }), 'Out on your desktop');
 });
-test('statusLine: voice phases map to Listening / Thinking / Talking', () => {
+test('statusLine: voice phases map to Listening / Transcribing / Thinking / Speaking; heard words show once transcribed', () => {
   assert.equal(N.statusLine({ phase: 'listening' }), 'Listening…');
-  assert.equal(N.statusLine({ phase: 'transcribing' }), 'Listening…');
+  assert.equal(N.statusLine({ phase: 'listening', heard: 'partial words' }), 'Listening…'); // nothing to show yet
+  assert.equal(N.statusLine({ phase: 'transcribing' }), 'Transcribing…');
+  assert.equal(N.statusLine({ phase: 'transcribing', heard: 'What is your name?' }), '“What is your name?”');
   assert.equal(N.statusLine({ phase: 'thinking' }), 'Thinking…');
-  assert.equal(N.statusLine({ phase: 'speaking' }), 'Talking…');
-  assert.equal(N.statusLine({ phase: 'synthesizing' }), 'Talking…');
+  assert.equal(N.statusLine({ phase: 'thinking', heard: 'What is your name?' }), '“What is your name?”');
+  assert.equal(N.statusLine({ phase: 'speaking' }), 'Speaking…');
+  assert.equal(N.statusLine({ phase: 'synthesizing' }), 'Speaking…');
   assert.equal(N.statusLine({ phase: 'starting' }), 'Starting voice…');
   assert.equal(N.statusLine({ phase: 'off' }), 'Idle'); // 'off' is not a live phase
 });
@@ -256,16 +262,16 @@ test('statusDot: green for any live listening signal, grey otherwise', () => {
 });
 
 // --- status pill ----------------------------------------------------------------------------
-test('statusPill: DND beats everything; phases map to LISTENING / THINKING / TALKING', () => {
+test('statusPill: DND beats everything; phases map to LISTENING / TRANSCRIBING / THINKING / SPEAKING', () => {
   assert.deepEqual(N.statusPill({ dnd: true, phase: 'listening' }), { text: 'DND', tone: 'dnd' });
   assert.deepEqual(N.statusPill({ phase: 'listening' }), { text: 'LISTENING', tone: 'on' });
-  assert.deepEqual(N.statusPill({ phase: 'transcribing' }), { text: 'LISTENING', tone: 'on' });
+  assert.deepEqual(N.statusPill({ phase: 'transcribing' }), { text: 'TRANSCRIBING', tone: 'busy' });
   assert.deepEqual(N.statusPill({ phase: 'starting' }), { text: 'LISTENING', tone: 'on' });
   assert.deepEqual(N.statusPill({ holdActive: true }), { text: 'LISTENING', tone: 'on' });
   assert.deepEqual(N.statusPill({ voiceActive: true }), { text: 'LISTENING', tone: 'on' });
   assert.deepEqual(N.statusPill({ phase: 'thinking' }), { text: 'THINKING', tone: 'busy' });
-  assert.deepEqual(N.statusPill({ phase: 'speaking' }), { text: 'TALKING', tone: 'busy' });
-  assert.deepEqual(N.statusPill({ phase: 'synthesizing' }), { text: 'TALKING', tone: 'busy' });
+  assert.deepEqual(N.statusPill({ phase: 'speaking' }), { text: 'SPEAKING', tone: 'busy' });
+  assert.deepEqual(N.statusPill({ phase: 'synthesizing' }), { text: 'SPEAKING', tone: 'busy' });
 });
 test('statusPill: wake armed is STANDBY, everything else IDLE; never OFFLINE', () => {
   assert.deepEqual(N.statusPill({ wakeListening: true }), { text: 'STANDBY', tone: 'standby' });

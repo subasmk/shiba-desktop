@@ -345,16 +345,24 @@
   const PHASE_LINES = {
     starting: 'Starting voice…',
     listening: 'Listening…',
-    transcribing: 'Listening…',
+    transcribing: 'Transcribing…',
     thinking: 'Thinking…',
-    synthesizing: 'Talking…',
-    speaking: 'Talking…',
+    synthesizing: 'Speaking…',
+    speaking: 'Speaking…',
   };
   function statusLine(s) {
     const sig = s && typeof s === 'object' ? s : {};
+    // Dexter parity (Subash's reference video, 2026-11-17): during a voice
+    // interaction the notch shows the interaction itself - the words the
+    // user just said once they are transcribed - ahead of everything else,
+    // even while the pet is out on the desktop.
+    const phase = String(sig.phase || '');
+    if (PHASE_LINES[phase]) {
+      const heard = clean(sig.heard, 42);
+      if (heard && phase !== 'listening' && phase !== 'starting') return '“' + heard + '”';
+      return PHASE_LINES[phase];
+    }
     if (sig.petOut) return 'Out on your desktop';
-    const ph = PHASE_LINES[String(sig.phase || '')];
-    if (ph) return ph;
     if (sig.holdActive) return 'Listening…';
     if (sig.timerRunning) {
       const left = Number(sig.timerEndsAt || 0) - Number(sig.now != null ? sig.now : Date.now());
@@ -382,11 +390,12 @@
     const sig = s && typeof s === 'object' ? s : {};
     if (sig.dnd) return { text: 'DND', tone: 'dnd' };
     const phase = String(sig.phase || '');
-    if (phase === 'listening' || phase === 'transcribing' || phase === 'starting' || sig.holdActive || sig.voiceActive) {
+    if (phase === 'transcribing') return { text: 'TRANSCRIBING', tone: 'busy' };
+    if (phase === 'listening' || phase === 'starting' || sig.holdActive || sig.voiceActive) {
       return { text: 'LISTENING', tone: 'on' };
     }
     if (phase === 'thinking') return { text: 'THINKING', tone: 'busy' };
-    if (phase === 'speaking' || phase === 'synthesizing') return { text: 'TALKING', tone: 'busy' };
+    if (phase === 'speaking' || phase === 'synthesizing') return { text: 'SPEAKING', tone: 'busy' };
     if (sig.wakeListening) return { text: 'STANDBY', tone: 'standby' };
     return { text: 'IDLE', tone: 'idle' };
   }
