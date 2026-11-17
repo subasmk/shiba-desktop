@@ -40,10 +40,10 @@ if(mode==='pet'){
  const finite=new Set(['landing','getup','fall','wave','click','bow','gesture','rage','sleep','scan','sit','swing','emote','touch-head','touch-body','touch-paws','ambient-coffee','ambient-sit','ambient-scan','ambient-emote','ambient-gesture','ambient-glasses','ambient-laptop','ambient-phone','ambient-reading','ambient-waiting','react-success','react-error','react-sad','react-confused','react-idea','dex-click','dex-scan','dex-emote','dex-gesture','dex-sad-ears','dex-glasses','dex-laptop','dex-phone','dex-reading','dex-waiting','dex-rage']);const chain={landing:'getup',fall:'getup'};
  fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;buildDexFit();setMascot(wantedMascot);play('idle');});
  let resting=false;
- function play(name){requestedAnim=name;idleHoldUntil=0;const isRest=(name==='sit'||name==='sleep');if(isRest!==resting){resting=isRest;api.send('pet-rest',resting);}const resolved=resolveAnim(name);if(resolved!==resolvedAnim&&lastDrawn)blend={frame:lastDrawn.frame,fit:lastDrawn.fit,until:performance.now()+90};if(name==='sit'&&anim!=='sit')sitStart=performance.now();anim=name;resolvedAnim=resolved;seq=sprites[resolved]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;} // anim keeps the requested name so finite/chain semantics survive mascot fallbacks
+ function play(name,fromQueue){if(reactLock&&!fromQueue){reactLock=false;reactQueue=[];api.send('pet-react',false);}requestedAnim=name;idleHoldUntil=0;const isRest=(name==='sit'||name==='sleep');if(isRest!==resting){resting=isRest;api.send('pet-rest',resting);}const resolved=resolveAnim(name);if(resolved!==resolvedAnim&&lastDrawn)blend={frame:lastDrawn.frame,fit:lastDrawn.fit,until:performance.now()+90};if(name==='sit'&&anim!=='sit')sitStart=performance.now();anim=name;resolvedAnim=resolved;seq=sprites[resolved]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;} // anim keeps the requested name so finite/chain semantics survive mascot fallbacks
  function tick(t){
   if(seq.length){
-   if(finished&&t>=nextAt){let next=chain[anim];if(anim==='sit'&&t-sitStart<30000)next='sit';else if(anim==='sit'&&t-sitStart>=30000)next=(window.AnimEvents?AnimEvents.forEvent('long-idle').sprite:'sleep');else if(anim==='sleep'&&lastInteract<=sitStart)next='sleep';play(next||'idle');if(!next)behavior.quiet(t);} /* sit clip finishing past the 60s mark goes straight to sleep: replaying to idle there stranded the pet awake (verification run Nov 17 2026) */
+   if(finished&&t>=nextAt){if(reactLock){if(reactQueue.length)play(reactQueue.shift(),true);else{reactLock=false;api.send('pet-react',false);play('idle');behavior.quiet(t);}}else if(anim==='sit'&&t-sitStart<30000){idx=seq.length?seq.length-1:0;nextAt=t+250;} /* sit once, then HOLD the last seated frame for the dwell - the sit-down clip replayed every cycle (user report Nov 17 2026) */else{let next=chain[anim];if(anim==='sit')next=(window.AnimEvents?AnimEvents.forEvent('long-idle').sprite:'sleep');else if(anim==='sleep'&&lastInteract<=sitStart)next='sleep';play(next||'idle');if(!next)behavior.quiet(t);}} /* sit clip finishing past the 60s mark goes straight to sleep: replaying to idle there stranded the pet awake (verification run Nov 17 2026) */
    const frame=seq[idx];const blending=blend&&t<blend.until;
    if((t>=nextAt||blending)){const img=sheetFor(frame);if(img.complete&&img.naturalWidth){
     const canvas=$('.pet-image');canvas.dataset.frame=frame.file;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);const fit=fitFor(resolvedAnim,idx);
@@ -92,6 +92,25 @@ if(mode==='pet'){
  // reaction is nearly invisible - 'hit animation varla'). A fast scale
  // pulse makes every landed poke read, whatever clip plays.
  function pop(){const cv=$('.pet-image');if(!cv||!cv.animate)return;try{cv.animate([{transform:baseT+' scale(1)'},{transform:baseT+' scale(1.16)',offset:0.35},{transform:baseT+' scale(1)'}],{duration:260,easing:'ease-out'});}catch{}}
+ // Reaction arbitration (user report Nov 17 2026: rapid hits restarted the
+ // angry clip on every tap - 'next hit ku poiruthu' - and a single hit only
+ // ever showed the clip's neutral first frames, reading as 'sound, no
+ // reaction'). Reactions now play to completion under a lock; taps during a
+ // reaction still count (sound + annoyance + pop) and queue instead of
+ // cutting. Many hits run the full anger beat: rage plays out, then
+ // confused, then he falls and gets up.
+ let reactLock=false,reactQueue=[];
+ const ANGER_SEQ=['rage','react-confused','fall','getup'];
+ function startReaction(list){
+  if(reactLock){
+   if(list.length>1&&(anim==='rage'||reactQueue.includes('rage')))return; // anger beat already running or queued - this tap still counted
+   for(const n of list)if(reactQueue.length<5)reactQueue.push(n);
+   return;
+  }
+  const first=list[0];
+  play(first);
+  reactLock=true;reactQueue=list.slice(1,6);api.send('pet-react',true);
+ }
  // Silhouette box of the CURRENT frame, refreshed on every drawn frame so
   // the poke gate stays accurate even before the first opaque-pixel hit
   // (user report Nov 17 2026: taps on a small/moving pet silently missed).
@@ -106,7 +125,7 @@ if(mode==='pet'){
  // the current frame (with a small margin) is enough to call it a hit.
  function inPet(e,pad){if(!silBox)return false;const c=$('.pet-image'),r=c.getBoundingClientRect();const x=(e.clientX-r.left)*c.width/r.width,y=(e.clientY-r.top)*c.height/r.height;return x>=silBox.l-pad&&x<=silBox.r+pad&&y>=silBox.t-pad&&y<=silBox.b+pad;}
  function regionFromBox(e){if(!silBox)return null;const c=$('.pet-image'),r=c.getBoundingClientRect();const y=(e.clientY-r.top)*c.height/r.height;const p=(y-silBox.t)/Math.max(1,silBox.b-silBox.t);return p<.47?'head':p>.82?'paws':'body';}
- function release(e,cancel){const result=behavior.up(cancel);api.send('tap-debug','up result='+result+' cancel='+!!cancel);if(stage.hasPointerCapture(e.pointerId))stage.releasePointerCapture(e.pointerId);lastInteract=performance.now();let combo=false;if(result==='drop'){api.send('drag-end');/* drop lifecycle is sprite-native: main.cjs drag-end plays landing, which chains getup then idle; no old-pack GIF overlay (it drew the previous mascot on top of the new sprite) */}else if(result==='tap'){tapTimes.push(performance.now());tapTimes=tapTimes.filter(t=>performance.now()-t<2000);if(window.AnimEvents&&AnimEvents.isTapCombo(tapTimes,performance.now())){play('swing');playHitSfx(true);api.send('pet-event','tap-combo');tapTimes=[];combo=true;/* tap-combo hit: katana swing sprite (with slash arcs) replaces the old-pack throw GIF, which showed the previous mascot and blue tones */}}if(result==='tap'&&!combo){const region=hitRegion(e)||regionFromBox(e);if(region){api.send('pet-event','touch-'+region);api.send('tap-debug','tap region='+region+' anim='+$('.pet-image').dataset.animation+' resolved='+resolvedAnim);$('.pet-image').dataset.touch=region;pop();if(petMood!=='calm'){play('rage');playHitSfx(true);}else{const rot=(mascot==='dex'&&window.MascotAnims&&MascotAnims.DEX_TOUCH_ROTATION)?MascotAnims.DEX_TOUCH_ROTATION['touch-'+region]:null;if(rot&&rot.length>1){touchRot[region]=((touchRot[region]||0)+1)%rot.length;play(rot[touchRot[region]]);}else{play('touch-'+region);}playHitSfx(false);}}}behavior.quiet(performance.now());}
+ function release(e,cancel){const result=behavior.up(cancel);api.send('tap-debug','up result='+result+' cancel='+!!cancel);if(stage.hasPointerCapture(e.pointerId))stage.releasePointerCapture(e.pointerId);lastInteract=performance.now();let combo=false;if(result==='drop'){api.send('drag-end');/* drop lifecycle is sprite-native: main.cjs drag-end plays landing, which chains getup then idle; no old-pack GIF overlay (it drew the previous mascot on top of the new sprite) */}else if(result==='tap'){tapTimes.push(performance.now());tapTimes=tapTimes.filter(t=>performance.now()-t<2000);if(window.AnimEvents&&AnimEvents.isTapCombo(tapTimes,performance.now())){combo=true;tapTimes=[];playHitSfx(true);api.send('pet-event','tap-combo');pop();startReaction(mascot==='dex'?ANGER_SEQ.slice():['swing']);/* many quick hits = the full angry beat (rage -> confused -> fall), uncuttable; rex keeps his katana swing */}}if(result==='tap'&&!combo){const region=hitRegion(e)||regionFromBox(e);if(region){api.send('pet-event','touch-'+region);api.send('tap-debug','tap region='+region+' anim='+$('.pet-image').dataset.animation+' resolved='+resolvedAnim);$('.pet-image').dataset.touch=region;pop();if(petMood!=='calm'){playHitSfx(true);startReaction(ANGER_SEQ.slice());}else{const rot=(mascot==='dex'&&window.MascotAnims&&MascotAnims.DEX_TOUCH_ROTATION)?MascotAnims.DEX_TOUCH_ROTATION['touch-'+region]:null;let clip='touch-'+region;if(rot&&rot.length>1){touchRot[region]=((touchRot[region]||0)+1)%rot.length;clip=rot[touchRot[region]];}playHitSfx(false);startReaction([clip]);}}}behavior.quiet(performance.now());}
  stage.addEventListener('pointerup',e=>release(e,false));stage.addEventListener('pointercancel',e=>release(e,true));stage.addEventListener('lostpointercapture',e=>{if(behavior.press)release(e,true);});
  stage.addEventListener('contextmenu',e=>{e.preventDefault();behavior.up(true);api.send('pet-event','dock');api.send('dock');});
  returnPetKeys();function returnPetKeys(){document.addEventListener('keydown',e=>{if(e.key==='Escape'){api.send('pet-event','dock');api.send('dock');}});}
