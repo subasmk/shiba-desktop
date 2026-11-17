@@ -43,7 +43,7 @@ if(mode==='pet'){
  function play(name){requestedAnim=name;idleHoldUntil=0;const isRest=(name==='sit'||name==='sleep');if(isRest!==resting){resting=isRest;api.send('pet-rest',resting);}const resolved=resolveAnim(name);if(resolved!==resolvedAnim&&lastDrawn)blend={frame:lastDrawn.frame,fit:lastDrawn.fit,until:performance.now()+90};anim=name;resolvedAnim=resolved;seq=sprites[resolved]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;} // anim keeps the requested name so finite/chain semantics survive mascot fallbacks
  function tick(t){
   if(seq.length){
-   if(finished&&t>=nextAt){let next=chain[anim];if(anim==='sit'&&t-lastInteract>=30000&&t-lastInteract<60000)next='sit';else if(anim==='sleep'&&t-lastInteract>=60000)next='sleep';play(next||'idle');if(!next)behavior.quiet(t);}
+   if(finished&&t>=nextAt){let next=chain[anim];if(anim==='sit'&&t-lastInteract>=30000&&t-lastInteract<60000)next='sit';else if(anim==='sit'&&t-lastInteract>=60000)next=(window.AnimEvents?AnimEvents.forEvent('long-idle').sprite:'sleep');else if(anim==='sleep'&&t-lastInteract>=60000)next='sleep';play(next||'idle');if(!next)behavior.quiet(t);} /* sit clip finishing past the 60s mark goes straight to sleep: replaying to idle there stranded the pet awake (verification run Nov 17 2026) */
    const frame=seq[idx];const blending=blend&&t<blend.until;
    if((t>=nextAt||blending)){const img=sheetFor(frame);if(img.complete&&img.naturalWidth){
     const canvas=$('.pet-image');canvas.dataset.frame=frame.file;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);const fit=fitFor(resolvedAnim,idx);
