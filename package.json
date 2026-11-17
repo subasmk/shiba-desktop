@@ -2,7 +2,7 @@
   "name": "shiba-desktop",
   "version": "0.2.2",
   "private": true,
-  "description": "Standalone small desktop companion",
+  "description": "Relay desktop assistant with Rex and Dex mascots",
   "main": "main.cjs",
   "scripts": {
     "start": "electron .",
@@ -18,7 +18,7 @@
   },
   "build": {
     "appId": "local.shiba.desktop",
-    "productName": "Rex",
+    "productName": "Relay",
     "files": [
       "*.cjs",
       "*.html",

@@ -63,5 +63,5 @@ test('missing power roots warn, never fail (tools just refuse those paths)', () 
 });
 test('formatReport renders a readable summary', () => {
   const txt = formatReport(runSelfTest(good, { now: () => 0 }));
-  a.match(txt, /Rex diagnostics/); a.match(txt, /PASS/);
+  a.match(txt, /Relay diagnostics/); a.match(txt, /PASS/);
 });

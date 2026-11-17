@@ -65,7 +65,7 @@ function requestIcon(name) {
 }
 function renderPicker() {
   $('#pk-tabs').innerHTML = N.PICKER_CATEGORIES.map((c) =>
-    `<button class="pk-tab${c === pkCategory ? ' on' : ''}" data-tab="${esc(c)}">${esc(c)}</button>`).join('');
+    `<button class="pk-tab${c === pkCategory ? ' on' : ''}" data-tab="${esc(c)}">${esc(c === 'Rex' ? 'Relay' : c)}</button>`).join('');
   const candidates = N.pickerCandidates({ apps: appsCache || [], routines: routinesCache || [], deck });
   pkList = N.filterTiles(candidates[pkCategory] || [], pkQuery);
   if (appsCache === null && (pkCategory === 'Desktop' || pkCategory === 'Socials')) {

@@ -1,4 +1,4 @@
-// Rex settings dashboard: a separate normal window for setup and settings.
+// Relay settings dashboard: a separate normal window for setup and settings.
 // Every control maps to a real setting or IPC already used by the top panel;
 // statuses are read live, nothing is simulated.
 const api=window.petAPI;const $=s=>document.querySelector(s);
@@ -28,7 +28,7 @@ function setupSummary(s){
  return t;
 }
 function shell(){
- document.querySelector('#dash').innerHTML='<nav class="side"><h1><span class="dot"></span>Rex</h1>'+TABS.map(([k,n])=>'<button data-tab="'+k+'"'+(k===tab?' class="on"':'')+'>'+n+'</button>').join('')+'<div class="sp"></div><small>Settings live here.<br>The pet stays small.</small></nav><main class="main" id="d-main"></main>';
+ document.querySelector('#dash').innerHTML='<nav class="side"><h1><span class="dot"></span>Relay</h1>'+TABS.map(([k,n])=>'<button data-tab="'+k+'"'+(k===tab?' class="on"':'')+'>'+n+'</button>').join('')+'<div class="sp"></div><small>Settings live here.<br>The pet stays small.</small></nav><main class="main" id="d-main"></main>';
  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();});
 }
 function render(){shell();const m=$('#d-main');
@@ -50,12 +50,12 @@ function renderHome(m){
  +tg('Local model',state.ollamaModel?brainLocal+', runs on this laptop':'picked during setup',(state.ollamaModel?'<span class="pill ok">set</span>':'<span class="pill off">not yet</span>'))
  +tg('Free cloud (OpenRouter)',state.hasCloudKey?'your key is saved on this device':'no key saved',(state.hasCloudKey?'<span class="pill ok">on</span>':'<span class="pill off">off</span>'))
  +'<div class="tg"><button class="linkish" data-go="brain">Open Brain settings</button></div></div>'
- +'<div class="card"><h3>Voice</h3><p class="desc">Rex can talk and listen, mic stays off by default</p>'
+ +'<div class="card"><h3>Voice</h3><p class="desc">Relay can talk and listen, mic stays off by default</p>'
  +tg('Voice replies','reads brain replies aloud',(state.voice?'<span class="pill ok">on</span>':'<span class="pill off">off</span>'))
  +tg('Voice input','push to talk in the top panel','')
  +tg('Wake word "Hey Rex"','off until you enable it',(state.wakeWord?'<span class="pill ok">on</span>':'<span class="pill off">off</span>'))
  +'<div class="tg"><button class="linkish" data-go="voice">Open Voice settings</button></div></div>'
- +'<div class="card"><h3>Pet behavior</h3><p class="desc">How Rex moves and reacts</p>'
+ +'<div class="card"><h3>Pet behavior</h3><p class="desc">How your mascot moves and reacts</p>'
  +tg('Roaming','',sw('h-roam',state.roaming!==false))
  +tg('Perch on windows','',sw('h-perch',state.perch!==false))
  +tg('Cursor play','paused for now - its art is being redrawn for the new mascot',swd('h-cursor'))
@@ -225,7 +225,7 @@ function renderFeatures(m){
 }
 function renderPrivacy(m){
  m.innerHTML='<h2>Data &amp; privacy</h2><div class="sub">What stays here and what can leave.</div>'
- +'<div class="card"><h3>On this laptop</h3><p class="desc">Settings, pet action counts, anything you ask Rex to remember, and your API keys stay on this device. Keys are saved with the operating system secure storage. The app never sends them anywhere except to their own provider when you use that provider.</p>'
+ +'<div class="card"><h3>On this laptop</h3><p class="desc">Settings, pet action counts, anything you ask your mascot to remember, and your API keys stay on this device. Keys are saved with the operating system secure storage. The app never sends them anywhere except to their own provider when you use that provider.</p>'
  +'<div class="row"><button class="act ghost" id="d-clear-history">Clear pet action memory</button></div></div>'
  +'<div class="card"><h3>Leaving this laptop</h3><p class="desc">A chat message leaves only when you pick a cloud brain in the panel and tick consent for that message. Web tools fetch only the address or search you type. News scout downloads public headlines only. Everything else is local.</p></div>'
  +'<div class="card"><h3>Diagnostics</h3><p class="desc">Checks the local brain, voice models and features. The report is saved as diagnostics.json in the app data folder on this laptop.</p><div class="row"><button class="act ghost" id="d-selftest">Run diagnostics</button></div><div class="reply hidden" id="d-selftest-out"></div></div>'
