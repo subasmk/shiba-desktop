@@ -20,6 +20,7 @@
 // audio.
 const { spawn } = require('node:child_process');
 const fs = require('node:fs');
+const { resolveVoice } = require('./assistant-voice.cjs');
 
 const ENGINES = ['kokoro', 'system', 'chatterbox'];
 function resolveEngine(settings) {
@@ -132,15 +133,21 @@ function createVoiceEngine({ getSettings, kokoroSynthesize, sidecarFactory, tami
         if (!sidecar) sidecar = makeSidecar(settings);
         return sidecar.speak(text);
       }
+      // Per-assistant voice: Rex and Dex are separate assistants, so the
+      // Kokoro path speaks with the ACTIVE assistant's own speaker + speed
+      // (settings.voiceByMascot, see assistant-voice.cjs). The Tamil voice
+      // is single-speaker and the system/chatterbox engines speak for
+      // themselves, so the choice applies here only.
+      const voice = resolveVoice(settings, settings.mascot);
       const lang = settings.voiceLang;
       if ((lang === 'ta' || lang === 'tanglish') && typeof tamilSynthesize === 'function') {
         try { return await tamilSynthesize(text); }
         catch (e) {
           if (typeof onTamilFallback === 'function') { try { onTamilFallback(e); } catch { /* notice must never break speech */ } }
-          return kokoroSynthesize(text);
+          return kokoroSynthesize(text, voice);
         }
       }
-      return kokoroSynthesize(text);
+      return kokoroSynthesize(text, voice);
     },
     stopSidecar() { if (sidecar) { sidecar.stop(); sidecar = null; } },
   };
