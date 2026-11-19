@@ -136,3 +136,50 @@ test('events: a missing target sprite degrades (dex -> dex-idle, rex -> null)', 
   assert.equal(resolveEvent('thinking', 'dex', onlyIdle), 'dex-idle');
   assert.equal(resolveEvent('thinking', 'rex', () => false), null);
 });
+
+// --- Vex (hooded horned kid, walk-cycle video + sit art, Nov 19 2026) -----
+const VEX_SPRITES = new Set(['vex-idle', 'vex-walk', 'vex-sit']);
+const hasVex = (n) => VEX_SPRITES.has(n);
+
+test('vex: movement states play the walk loop', () => {
+  for (const n of ['walk', 'run', 'leap', 'drag']) {
+    assert.equal(resolveSprite(n, 'vex', hasVex), 'vex-walk', n);
+  }
+});
+
+test('vex: sit and sleep show the seated pose', () => {
+  assert.equal(resolveSprite('sit', 'vex', hasVex), 'vex-sit');
+  assert.equal(resolveSprite('sleep', 'vex', hasVex), 'vex-sit');
+});
+
+test('vex: reactions and unknown states idle until more art arrives', () => {
+  for (const n of ['idle', 'touch-head', 'touch-body', 'touch-paws', 'rage', 'swing', 'wave', 'bow', 'scan', 'emote', 'click', 'gesture', 'fall', 'landing', 'getup', 'anything']) {
+    assert.equal(resolveSprite(n, 'vex', hasVex), 'vex-idle', n);
+  }
+});
+
+test('vex: direct vex-* requests pass through, missing ones idle', () => {
+  assert.equal(resolveSprite('vex-walk', 'vex', hasVex), 'vex-walk');
+  assert.equal(resolveSprite('vex-nope', 'vex', hasVex), 'vex-idle');
+});
+
+test('vex: walk art missing degrades to vex-idle', () => {
+  const has = (n) => n === 'vex-idle';
+  assert.equal(resolveSprite('walk', 'vex', has), 'vex-idle');
+  assert.equal(resolveSprite('sit', 'vex', has), 'vex-idle');
+});
+
+test('vex: sprites referenced by resolution exist in the real manifest', () => {
+  for (const n of ['idle', 'walk', 'run', 'leap', 'drag', 'sit', 'sleep', 'rage', 'touch-head']) {
+    const sprite = resolveSprite(n, 'vex', hasReal);
+    assert.ok(sprite && hasReal(sprite), n + ' -> ' + sprite);
+  }
+});
+
+test('vex: semantic events resolve through state fallback to real sprites', () => {
+  for (const event of ['thinking', 'thinking-long', 'react-success', 'react-error', 'react-confused', 'ambient-scan']) {
+    assert.equal(resolveEvent(event, 'vex', hasReal), null, event);
+    const sprite = resolveSprite(event, 'vex', hasReal);
+    assert.ok(sprite && hasReal(sprite), event + ' -> ' + sprite);
+  }
+});

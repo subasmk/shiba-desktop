@@ -80,6 +80,7 @@ function groundingCheck(line, snapshot) {
 // personality, honesty rules and safety behavior are identical for both.
 function petIdentity(mascot) {
   if (mascot === 'girl') return { name: 'Ria', look: 'a pixel-art girl with teal hair and a lavender hoodie' };
+  if (mascot === 'vex') return { name: 'Vex', look: 'a small hooded demon kid with horns, big black eyes and a blue tie' };
   if (mascot === 'rex') return { name: 'Rex', look: 'a Shiba dog in looks' };
   return { name: 'Dex', look: 'a small white cat in looks' };
 }

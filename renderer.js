@@ -8,7 +8,7 @@ let tamilSink=null;api.on('tamil-setup-progress',d=>{if(tamilSink)tamilSink(d);}
 function close(){window.shibaVoice?.session.stop();api.send('panel',false);}
 if(mode==='pet'){
  root.innerHTML='<div class="pet-stage"><span class="reaction"></span><span class="wake-live hidden" title="Wake word listening">🎙</span><canvas class="pet-image" width="320" height="320" aria-label="Desktop pet"></canvas><canvas class="pet-rive" width="320" height="320" aria-label="Desktop pet (Ria)" style="display:none"></canvas></div>';
- const atlas=new Image();atlas.src='1-sprites-clean.png';const atlas2=new Image();atlas2.src='2-sprites-new.png';const atlas3=new Image();atlas3.src='3-sprites-dex.png';const atlas4=new Image();atlas4.src='4-sprites-dex2.png';const hitAtlas=new Image();hitAtlas.src='5-sprites-hit.png';const sheets=[atlas,atlas2,atlas3,atlas4,hitAtlas];const SHEET_CELL=[160,160,320,320,320];function sheetFor(f){const s=sheets[f&&f.a|0];return s||atlas;}function cellFor(f){return SHEET_CELL[f&&f.a|0]||160;}
+ const atlas=new Image();atlas.src='1-sprites-clean.png';const atlas2=new Image();atlas2.src='2-sprites-new.png';const atlas3=new Image();atlas3.src='3-sprites-dex.png';const atlas4=new Image();atlas4.src='4-sprites-dex2.png';const hitAtlas=new Image();hitAtlas.src='5-sprites-hit.png';const vexAtlas=new Image();vexAtlas.src='6-sprites-vex.png';const sheets=[atlas,atlas2,atlas3,atlas4,hitAtlas,vexAtlas];const SHEET_CELL=[160,160,320,320,320,320];function sheetFor(f){const s=sheets[f&&f.a|0];return s||atlas;}function cellFor(f){return SHEET_CELL[f&&f.a|0]||160;}
  let sprites={},seq=[],idx=0,nextAt=0,anim='idle',resolvedAnim='idle',finished=false,blend=null,lastDrawn=null,mascot='dex',wantedMascot='dex',requestedAnim='idle',idleHoldUntil=0,sleepForInteract=0,sitStart=0;const behavior=new PetBehavior();behavior.quiet(performance.now());
  // Optional second mascot (user-approved Nov 16 2026): when mascot is 'dex',
  // a requested state plays its 'dex-' variant when the dex sheet has it.
@@ -33,7 +33,7 @@ if(mode==='pet'){
  // pops, flips and facing work for whichever mascot is out.
  function petCanvas(){return (mascot==='girl'&&$('.pet-rive'))||$('.pet-image');}
  function showRive(on){if(!on&&window.RivePet)RivePet.pause();const rc=$('.pet-rive'),ac=$('.pet-image');if(!rc||!ac)return;ac.style.display=on?'none':'';rc.style.display=on?'':'none';if(on&&window.RivePet)RivePet.init(rc).then(ok=>{if(ok){RivePet.resume();RivePet.setState(requestedAnim);RivePet.resize();}else status('Ria could not load her animation file.');});}
- function setMascot(m){wantedMascot=(m==='dex'||m==='girl')?m:'rex';let next=wantedMascot;if(next==='dex'&&!sprites['dex-idle'])next='rex';const cv=$('.pet-image');if(cv)cv.style.imageRendering=next==='rex'?'':'auto';if(next===mascot){showRive(next==='girl');return;}mascot=next;if(reactLock)api.send('pet-react',false);reactLock=false;reactQueue=[];beatRunning=false;silBox=null;showRive(next==='girl');play(requestedAnim);}
+ function setMascot(m){wantedMascot=(m==='dex'||m==='girl'||m==='vex')?m:'rex';let next=wantedMascot;if(next==='dex'&&!sprites['dex-idle'])next='rex';if(next==='vex'&&!sprites['vex-idle'])next='rex';const cv=$('.pet-image');if(cv)cv.style.imageRendering=next==='rex'?'':'auto';if(next===mascot){showRive(next==='girl');return;}mascot=next;if(reactLock)api.send('pet-react',false);reactLock=false;reactQueue=[];beatRunning=false;silBox=null;showRive(next==='girl');play(requestedAnim);}
  // 'leap' deliberately NOT finite: it loops for the whole flight and the
  // roam driver switches the state when the flight ends. Re-sending a
  // finite leap mid-flight restarted it from frame 0 every 1.2s (the
@@ -179,7 +179,7 @@ if(mode==='pet'){
  root.addEventListener('click',e=>{const b=e.target.closest('[data-drawer],[data-tool]');if(!b)return;if(b.dataset.drawer)drawer(b.dataset.drawer);else task(()=>api.call('open-tool',b.dataset.tool));});
  let deltaSink=null;api.on('chat-delta',d=>{if(deltaSink)deltaSink(d);});
 
- function panelMascot(m){state.mascot=m;const src=m==='girl'?'ria-head.png':m==='rex'?'2-head.png':'cat-head.png';for(const el of document.querySelectorAll('.head,.handle img'))el.src=src;}api.on('pet-mascot',panelMascot);api.call('get-state').then(x=>{state=x;panelMascot(x.mascot);});
+ function panelMascot(m){state.mascot=m;const src=m==='girl'?'ria-head.png':m==='rex'?'2-head.png':m==='vex'?'vex-head.png':'cat-head.png';for(const el of document.querySelectorAll('.head,.handle img'))el.src=src;}api.on('pet-mascot',panelMascot);api.call('get-state').then(x=>{state=x;panelMascot(x.mascot);});
 }
 function drawer(name){if(name!=='voice-call')window.shibaVoice?.session.stop();api.send('drawer-size');currentDrawer=name;const el=$('#drawer');el.classList.remove('hidden');let body='';
  if(name==='tools')body='<h2>Tools</h2><input id="search" placeholder="Search local actions" aria-label="Search actions"><div class="list" id="actions"></div>';
