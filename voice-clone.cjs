@@ -6,6 +6,10 @@
 //   'chatterbox'- the optional cloned voice, via a LOCAL Chatterbox sidecar
 //                 the user installs and configures himself. Nothing is
 //                 bundled and nothing is downloaded by this app.
+//   'fish'      - Fish Audio's cloud S2.1 voices (fish-voice.cjs): the
+//                 user clones one voice per assistant on fish.audio and
+//                 saves his own API key in the dashboard. Opt-in only -
+//                 reply text leaves the laptop to be spoken.
 //
 // The sidecar protocol is Viktor's, unchanged (voice/chatterbox_server.py):
 // spawn the configured command once; the first stdout line must be
@@ -21,8 +25,9 @@
 const { spawn } = require('node:child_process');
 const fs = require('node:fs');
 const { resolveVoice } = require('./assistant-voice.cjs');
+const { fishSpeak, resolveFishVoice, resolveFishModel } = require('./fish-voice.cjs');
 
-const ENGINES = ['kokoro', 'system', 'chatterbox'];
+const ENGINES = ['kokoro', 'system', 'chatterbox', 'fish'];
 function resolveEngine(settings) {
   const e = settings && settings.voiceEngine;
   return ENGINES.includes(e) ? e : 'kokoro';
@@ -121,7 +126,7 @@ class ChatterboxSidecar {
 // not prepared, worker error), we fall back to Kokoro for this reply and
 // call onTamilFallback(err) so main can surface an honest notice - the
 // fallback is never silent and the audio is never faked.
-function createVoiceEngine({ getSettings, kokoroSynthesize, sidecarFactory, tamilSynthesize, onTamilFallback } = {}) {
+function createVoiceEngine({ getSettings, kokoroSynthesize, sidecarFactory, tamilSynthesize, onTamilFallback, getFishKey } = {}) {
   let sidecar = null;
   const makeSidecar = sidecarFactory || ((s) => new ChatterboxSidecar({ command: s.chatterboxCommand, args: s.chatterboxArgs }));
   return {
@@ -132,6 +137,15 @@ function createVoiceEngine({ getSettings, kokoroSynthesize, sidecarFactory, tami
       if (engine === 'chatterbox') {
         if (!sidecar) sidecar = makeSidecar(settings);
         return sidecar.speak(text);
+      }
+      if (engine === 'fish') {
+        // Cloud cloned voice: the ACTIVE assistant's own Fish voice ID
+        // (settings.fishVoiceByMascot) and the key main decrypted at
+        // boot. An explicit engine choice, so it wins over the Tamil
+        // branch below exactly like system/chatterbox do.
+        const key = typeof getFishKey === 'function' ? getFishKey() : '';
+        const buf = await fishSpeak({ apiKey: key, text, referenceId: resolveFishVoice(settings, settings.mascot), model: resolveFishModel(settings) });
+        try { return decodeWav(buf); } catch { throw Error('Fish Audio returned unreadable audio.'); }
       }
       // Per-assistant voice: Rex and Dex are separate assistants, so the
       // Kokoro path speaks with the ACTIVE assistant's own speaker + speed
