@@ -38,6 +38,13 @@ if(mode==='pet'){
  // they must hold (loop) until the brain's reply lands and main sends
  // the reaction.
  const finite=new Set(['landing','getup','fall','wave','click','bow','gesture','rage','sleep','scan','sit','swing','emote','touch-head','touch-body','touch-paws','ambient-coffee','ambient-sit','ambient-scan','ambient-emote','ambient-gesture','ambient-glasses','ambient-laptop','ambient-phone','ambient-reading','ambient-waiting','react-success','react-error','react-sad','react-confused','react-idea','dex-click','dex-scan','dex-emote','dex-gesture','dex-sad-ears','dex-glasses','dex-laptop','dex-phone','dex-reading','dex-waiting','dex-rage','hit-wobble']);const chain={landing:'getup',fall:'getup'};
+ // Voice-call listening (user request Nov 19 2026): the dex ear-cup clip
+ // must play ONCE and then hold its last frame until the voice phase
+ // changes, like the sit pose - not loop. Only the voice-phase requests
+ // hold; 'thinking' resolves to the same dex-side-listen art but keeps
+ // looping, since a text-chat reply can take long enough that a frozen
+ // pose would read as a hang.
+ const holdLast=new Set(['listening','side-listen']);
  fetch('manifest.json').then(r=>r.json()).then(data=>{sprites=data;buildDexFit();setMascot(wantedMascot);play('idle');});
  let resting=false;
  function play(name,fromQueue){if(reactLock&&!fromQueue){reactLock=false;reactQueue=[];beatRunning=false;api.send('pet-react',false);}requestedAnim=name;idleHoldUntil=0;const isRest=(name==='sit'||name==='sleep');if(isRest!==resting){resting=isRest;api.send('pet-rest',resting);}const resolved=resolveAnim(name);if(name==='hit-wobble')blend=null;else if(resolved!==resolvedAnim&&lastDrawn)blend={frame:lastDrawn.frame,fit:lastDrawn.fit,until:performance.now()+90};if(name==='sit'&&anim!=='sit')sitStart=performance.now();anim=name;resolvedAnim=resolved;seq=sprites[resolved]||sprites.idle||[];idx=0;nextAt=0;finished=false;$('.pet-image').dataset.animation=name;} // anim keeps the requested name so finite/chain semantics survive mascot fallbacks
@@ -51,7 +58,7 @@ if(mode==='pet'){
     if(blending){const p=1-(blend.until-t)/90;drawFrame(ctx,blend.frame,blend.fit,Math.max(0,1-p));alpha=Math.min(1,p);}else blend=null;
     if(drawFrame(ctx,frame,fit,alpha)){lastDrawn={frame,fit};measureSilhouette(ctx);}
    }}
-   if(t>=nextAt){nextAt=t+frame.ms;if(!(anim==='idle'&&t<idleHoldUntil)){idx++;if(idx>=seq.length){if(finite.has(anim))finished=true;else{idx=0;if(anim==='idle')idleHoldUntil=t+1400+Math.random()*2000;}}}}
+   if(t>=nextAt){nextAt=t+frame.ms;if(!(anim==='idle'&&t<idleHoldUntil)){idx++;if(idx>=seq.length){if(holdLast.has(anim)){idx=seq.length-1;nextAt=t+250;}else if(finite.has(anim))finished=true;else{idx=0;if(anim==='idle')idleHoldUntil=t+1400+Math.random()*2000;}}}}
   }
   // Idle progression (Subash's Dexter spec, 2026-11-17): 30s untouched ->
   // sit; a FULL 30s of actual sitting -> sleep, keyed to sitStart (when sit
