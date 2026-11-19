@@ -45,3 +45,18 @@ Verified 2026-11-04 against the upstream sources listed.
    "Apache 2.0" badge but the repo has NO LICENSE file and training data is
    undocumented. The license claim is the uploader's self-declaration;
    provenance unverified. Personal-prototype use only until clarified.
+
+## Ria and Rive canvas runtime (2026-11-19)
+
+- Ria's source art is original generated art for Relay, not Polymation's sample.
+- `relay-girl.riv` was made using one of Polymation's three free exports.
+  Its terms, section 6, say generated output belongs to the creator and
+  Polymation claims no ownership: https://polymation.stunning.gg/terms.html
+  No subscription was purchased. Two free exports remained after this one.
+- `rive-canvas.js`: @rive-app/canvas-single 2.51.0, MIT, Rive.
+  The package is the single-file variant of the canvas runtime, including
+  inlined wasm so desktop playback does not depend on a CDN.
+  Package: https://www.npmjs.com/package/@rive-app/canvas-single
+  Upstream: https://github.com/rive-app/rive-wasm
+  License text: `licenses/RIVE-MIT.txt`.
+- No Polymation software or worker source is bundled, only the generated asset.

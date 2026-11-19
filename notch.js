@@ -116,7 +116,7 @@ function applyState(d) {
     mascotName = String(d.mascot);
     $('#chat-ask').textContent = `Ask ${mascotName} anything…`;
     $('#chat-input').placeholder = `Message ${mascotName}`;
-    const head = mascotName === 'Rex' ? '2-head.png' : 'cat-head.png';
+    const head = mascotName === 'Ria' ? 'ria-head.png' : mascotName === 'Rex' ? '2-head.png' : 'cat-head.png';
     const peek = $('#peek-cat'), cat = $('#cat');
     if (peek && !peek.src.endsWith(head)) peek.src = head;
     if (cat && !cat.src.endsWith(head)) cat.src = head;

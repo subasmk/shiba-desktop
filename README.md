@@ -85,3 +85,26 @@ Some tests and UI/voice harnesses need models, audio fixtures, a graphical sessi
 ## Third-party notices
 
 See [NOTICES.md](NOTICES.md) and [licenses/](licenses/) for component notices. Do not infer a blanket license for this project or its artwork from a dependency's license.
+
+## Ria, original pixel-girl mascot
+
+Update with `git pull --ff-only`, then `npm start`. Open Settings > Pet behavior >
+Mascot > **Ria - pixel girl**, then drag her out of the notch. Dex stays the default;
+Rex and Dex retain their existing art and behavior. Ria is a provisional name.
+
+Her four Polymation clips run offline in the bundled Rive canvas runtime:
+Idle, Walk (also run/drag movement), Wave (greeting/landing), Cheer
+(success/idea/celebration). The Pet behavior tab has four preview buttons.
+Missing art, including sleep, sit, angry reactions and speech mouth shapes,
+uses idle rather than borrowing Rex or Dex art. She still has drag, facing,
+tap effects and the existing assistant tools. She has separate local memory
+and history, a friendly/curious personality, and her own voice settings.
+No Fish clone is supplied; configure a voice ID yourself if using Fish.
+
+`relay-girl-source.png` is the original input, `relay-girl.riv` is the baked
+asset, and `relay-girl-riv.js` embeds the same bytes for offline file loading.
+Regenerate the embedding with `node tools/embed-riv.cjs`.
+The runtime is @rive-app/canvas-single 2.51.0, a single-file build of Rive's
+canvas renderer with wasm inlined. No CDN or Rive account is needed.
+
+Verified in Electron on Linux, not on a real Windows desktop.

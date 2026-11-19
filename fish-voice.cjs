@@ -38,7 +38,7 @@ function sanitizeVoiceId(v) {
 function sanitizeFishVoices(settings) {
   const all = settings && typeof settings === 'object' ? settings.fishVoiceByMascot : null;
   const src = all && typeof all === 'object' ? all : {};
-  return { rex: sanitizeVoiceId(src.rex), dex: sanitizeVoiceId(src.dex) };
+  return { rex: sanitizeVoiceId(src.rex), dex: sanitizeVoiceId(src.dex), girl: sanitizeVoiceId(src.girl) };
 }
 
 function resolveFishVoice(settings, mascot) {

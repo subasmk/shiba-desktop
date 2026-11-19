@@ -36,10 +36,11 @@ const VOICES = [
 const DEFAULTS = {
   rex: { sid: 16, speed: 1.0 },
   dex: { sid: 7, speed: 1.12 },
+  girl: { sid: 0, speed: 1.0 },
 };
 
 // Same bucketing as main's activeMascot(): anything that is not Rex is Dex.
-function voiceKey(mascot) { return mascot === 'rex' ? 'rex' : 'dex'; }
+function voiceKey(mascot) { return mascot === 'girl' ? 'girl' : mascot === 'rex' ? 'rex' : 'dex'; }
 
 function sanitizePref(pref, fallback) {
   const out = { sid: fallback.sid, speed: fallback.speed };

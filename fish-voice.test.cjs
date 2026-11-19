@@ -31,12 +31,12 @@ test('sanitize: voice IDs accept token shapes and reject everything else', () =>
 });
 
 test('sanitize: per-assistant voices survive garbage settings', () => {
-  assert.deepEqual(sanitizeFishVoices(null), { rex: '', dex: '' });
-  assert.deepEqual(sanitizeFishVoices({}), { rex: '', dex: '' });
-  assert.deepEqual(sanitizeFishVoices({ fishVoiceByMascot: 'nope' }), { rex: '', dex: '' });
+  assert.deepEqual(sanitizeFishVoices(null), { rex: '', dex: '', girl: '' });
+  assert.deepEqual(sanitizeFishVoices({}), { rex: '', dex: '', girl: '' });
+  assert.deepEqual(sanitizeFishVoices({ fishVoiceByMascot: 'nope' }), { rex: '', dex: '', girl: '' });
   assert.deepEqual(
     sanitizeFishVoices({ fishVoiceByMascot: { rex: 'rexvoice1', dex: 'not a voice id!' } }),
-    { rex: 'rexvoice1', dex: '' });
+    { rex: 'rexvoice1', dex: '', girl: '' });
 });
 
 test('resolve: each assistant gets its own voice, unknown mascots use the Dex bucket', () => {
