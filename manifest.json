@@ -3938,5 +3938,217 @@
    "y": 4480,
    "a": 5
   }
+ ],
+ "vex-landing": [
+  {
+   "file": "vex-landing1.png",
+   "ms": 100,
+   "x": 0,
+   "y": 4800,
+   "a": 5
+  },
+  {
+   "file": "vex-landing2.png",
+   "ms": 100,
+   "x": 320,
+   "y": 4800,
+   "a": 5
+  },
+  {
+   "file": "vex-landing3.png",
+   "ms": 100,
+   "x": 640,
+   "y": 4800,
+   "a": 5
+  },
+  {
+   "file": "vex-landing4.png",
+   "ms": 100,
+   "x": 960,
+   "y": 4800,
+   "a": 5
+  },
+  {
+   "file": "vex-landing5.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 4800,
+   "a": 5
+  },
+  {
+   "file": "vex-landing6.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 4800,
+   "a": 5
+  },
+  {
+   "file": "vex-landing7.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 4800,
+   "a": 5
+  },
+  {
+   "file": "vex-landing8.png",
+   "ms": 100,
+   "x": 0,
+   "y": 5120,
+   "a": 5
+  },
+  {
+   "file": "vex-landing9.png",
+   "ms": 100,
+   "x": 320,
+   "y": 5120,
+   "a": 5
+  },
+  {
+   "file": "vex-landing10.png",
+   "ms": 100,
+   "x": 640,
+   "y": 5120,
+   "a": 5
+  },
+  {
+   "file": "vex-landing11.png",
+   "ms": 100,
+   "x": 960,
+   "y": 5120,
+   "a": 5
+  },
+  {
+   "file": "vex-landing12.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 5120,
+   "a": 5
+  },
+  {
+   "file": "vex-landing13.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 5120,
+   "a": 5
+  },
+  {
+   "file": "vex-landing14.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 5120,
+   "a": 5
+  },
+  {
+   "file": "vex-landing15.png",
+   "ms": 100,
+   "x": 0,
+   "y": 5440,
+   "a": 5
+  },
+  {
+   "file": "vex-landing16.png",
+   "ms": 100,
+   "x": 320,
+   "y": 5440,
+   "a": 5
+  },
+  {
+   "file": "vex-landing17.png",
+   "ms": 100,
+   "x": 640,
+   "y": 5440,
+   "a": 5
+  },
+  {
+   "file": "vex-landing18.png",
+   "ms": 100,
+   "x": 960,
+   "y": 5440,
+   "a": 5
+  },
+  {
+   "file": "vex-landing19.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 5440,
+   "a": 5
+  },
+  {
+   "file": "vex-landing20.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 5440,
+   "a": 5
+  },
+  {
+   "file": "vex-landing21.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 5440,
+   "a": 5
+  },
+  {
+   "file": "vex-landing22.png",
+   "ms": 100,
+   "x": 0,
+   "y": 5760,
+   "a": 5
+  },
+  {
+   "file": "vex-landing23.png",
+   "ms": 100,
+   "x": 320,
+   "y": 5760,
+   "a": 5
+  },
+  {
+   "file": "vex-landing24.png",
+   "ms": 100,
+   "x": 640,
+   "y": 5760,
+   "a": 5
+  },
+  {
+   "file": "vex-landing25.png",
+   "ms": 100,
+   "x": 960,
+   "y": 5760,
+   "a": 5
+  },
+  {
+   "file": "vex-landing26.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 5760,
+   "a": 5
+  },
+  {
+   "file": "vex-landing27.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 5760,
+   "a": 5
+  },
+  {
+   "file": "vex-landing28.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 5760,
+   "a": 5
+  },
+  {
+   "file": "vex-landing29.png",
+   "ms": 100,
+   "x": 0,
+   "y": 6080,
+   "a": 5
+  },
+  {
+   "file": "vex-landing30.png",
+   "ms": 100,
+   "x": 320,
+   "y": 6080,
+   "a": 5
+  }
  ]
 }
