@@ -27,11 +27,12 @@ function setupSummary(s){
  if(s.sizes){const parts=[];if(!s.voice.ready)parts.push('voice models '+mb(s.sizes.whisperBytes)+' + '+mb(s.sizes.kokoroBytes));if(!s.ollama.running&&s.sizes.ollamaInstallerBytes)parts.push('Ollama installer '+mb(s.sizes.ollamaInstallerBytes));const want=s.hardware.recommendedModel;if(s.sizes.brainBytesApprox&&s.sizes.brainBytesApprox[want]&&!(s.ollama.models||[]).some(m=>m===want))parts.push('brain model '+want+' '+mb(s.sizes.brainBytesApprox[want]));if(parts.length)t+=' To download: '+parts.join('; ')+'.';}
  return t;
 }
+const NAV_ICON={home:'◈',brain:'◎',voice:'≋',pet:'◇',notes:'▤',features:'⌘',privacy:'◉'};
 function shell(){
- document.querySelector('#dash').innerHTML='<nav class="side"><h1><span class="dot"></span>Relay</h1>'+TABS.map(([k,n])=>'<button data-tab="'+k+'"'+(k===tab?' class="on"':'')+'>'+n+'</button>').join('')+'<div class="sp"></div><small>Settings live here.<br>The pet stays small.</small></nav><main class="main" id="d-main"></main>';
+ document.querySelector('#dash').innerHTML='<nav class="side" aria-label="Dashboard"><h1><span class="brand-mark">r</span>Relay<span class="brand-tag">DESKTOP</span></h1><div class="nav-label">YOUR SPACE</div>'+TABS.map(([k,n])=>'<button data-tab="'+k+'"'+(k===tab?' class="on" aria-current="page"':'')+'><span class="nav-icon" aria-hidden="true">'+NAV_ICON[k]+'</span>'+n+'</button>').join('')+'<div class="sp"></div><div class="side-companion"><img src="vex-head.png" alt=""><div><strong>Daru</strong><small>Your desktop companion</small></div><span class="companion-dot" title="Local companion"></span></div><small class="side-foot">A little company.<br>A space that is yours.</small></nav><main class="main" id="d-main"><header class="page-top"><span>WORKSPACE <b>/</b> '+esc(TABS.find(t=>t[0]===tab)[1])+'</span><span class="top-label">RELAY + DARU</span></header><div id="page-content"></div></main>';
  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();});
 }
-function render(){shell();const m=$('#d-main');
+function render(){shell();const m=$('#page-content');
  if(tab==='home')return renderHome(m);
  if(tab==='brain')return renderBrain(m);
  if(tab==='voice')return renderVoice(m);
@@ -40,11 +41,13 @@ function render(){shell();const m=$('#d-main');
  if(tab==='features')return renderFeatures(m);
  if(tab==='privacy')return renderPrivacy(m);
 }
-function greet(){const n=(state.userName||'').trim();return '<h2>Hi'+(n?' '+esc(n):'')+'.</h2><div class="sub">Setup, brain, voice and pet settings in one window. The pet stays on top.</div>';}
+function greet(){return '<section class="home-hero"><div class="hero-copy"><div class="eyebrow"><span></span> YOUR DESKTOP, WITH A LITTLE SOUL</div><h2>Your space.<br>A little more alive.</h2><p>Daru brings the company.<br>You make the space your own.</p><div class="hero-actions"><button class="act" data-go="brain">Set up your brain <span aria-hidden="true">↗</span></button><button class="hero-link" data-go="pet">Make it yours →</button></div></div><div class="hero-art" aria-hidden="true"><div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div><img src="dashboard-daru.png" alt=""><span class="art-caption">DARU <i>YOUR LITTLE SIDEKICK</i></span></div></section>';}
+function homeMetrics(s){return '<section class="home-metrics" aria-label="Laptop status"><div><span class="metric-icon">◎</span><div><small>LOCAL BRAIN</small><strong id="metric-brain">'+(s?(s.ollama.running?'Service running':'Not connected'):'Checking…')+'</strong></div></div><div><span class="metric-icon">≋</span><div><small>VOICE MODELS</small><strong id="metric-voice">'+(s?(s.voice.ready?'Ready on device':'Setup needed'):'Checking…')+'</strong></div></div><div><span class="metric-icon">▥</span><div><small>FREE MEMORY</small><strong id="metric-ram">'+(s?esc(gb(s.hardware.freeRamBytes)):'Checking…')+'</strong></div></div></section>';}
+function updateHomeMetrics(){const s=setupStatus;if(!s)return;const values={'metric-brain':s.ollama.running?'Service running':'Not connected','metric-voice':s.voice.ready?'Ready on device':'Setup needed','metric-ram':gb(s.hardware.freeRamBytes)};for(const [id,text] of Object.entries(values)){const el=document.getElementById(id);if(el)el.textContent=text;}}
 function renderHome(m){
  const s=setupStatus;
  const brainLocal=state.ollamaModel?esc(state.ollamaModel):'not set up yet';
- m.innerHTML=greet()+'<div class="grid">'
+ m.innerHTML=greet()+homeMetrics(s)+'<div class="section-heading"><div><span class="eyebrow">THE ESSENTIALS</span><h3>Your control room</h3></div><span>Everything in its place.</span></div><div class="grid home-grid">'
  +'<div class="card"><h3>Setup</h3><p class="desc">One click installs the local brain and voice</p><p class="desc" id="d-setup-sum">'+(s?esc(setupSummary(s)):'Checking this laptop...')+'</p><div class="row"><button class="act" id="d-setup-go">Run setup</button><button class="act ghost hidden" id="d-setup-cancel">Cancel</button></div><div class="bar hidden" id="d-setup-bar"><i></i></div><div class="reply hidden" id="d-setup-prog"></div></div>'
  +'<div class="card"><h3>Brain</h3><p class="desc">Local first, free cloud only if you switch it on</p>'
  +tg('Local model',state.ollamaModel?brainLocal+', runs on this laptop':'picked during setup',(state.ollamaModel?'<span class="pill ok">set</span>':'<span class="pill off">not yet</span>'))
@@ -70,9 +73,9 @@ function renderHome(m){
   setupSink=d=>{prog.textContent=d.stage+(d.pct!=null?' '+d.pct+'%':'');bar.firstElementChild.style.width=(d.pct||0)+'%';};
   cancel.onclick=()=>{api.call('setup-cancel');};
   try{const r=await api.call('setup-run');prog.textContent='Setup complete. Brain: '+r.model+'. Voice models: '+(r.voice.ready?'ready':'missing')+'.';bar.firstElementChild.style.width='100%';}
-  finally{setupSink=null;go.disabled=false;cancel.classList.add('hidden');await refreshSetup();$('#d-setup-sum').textContent=setupSummary(setupStatus);}
+  finally{setupSink=null;go.disabled=false;cancel.classList.add('hidden');await refreshSetup();$('#d-setup-sum').textContent=setupSummary(setupStatus);updateHomeMetrics();}
  });
- if(!s)refreshSetup().then(()=>{const el=$('#d-setup-sum');if(el)el.textContent=setupSummary(setupStatus);});
+ if(!s)refreshSetup().then(()=>{const el=$('#d-setup-sum');if(el)el.textContent=setupSummary(setupStatus);updateHomeMetrics();});
 }
 function renderBrain(m){
  m.innerHTML='<h2>Brain</h2><div class="sub">Local Ollama by default. Cloud replies need your own key and a per-message consent tick in the panel; the key never leaves this device except to its own provider.</div>'
