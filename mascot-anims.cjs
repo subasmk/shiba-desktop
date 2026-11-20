@@ -58,7 +58,10 @@
   // asleep, jerks back awake) is his chosen IDLE - he named it himself
   // ('illa ithu tha idle', 9:14), dozy tail and all, so vex-idle is this
   // standing beat and the seated pose no longer doubles as idle. Sleep
-  // shows the seated pose again until he sends real sleep art. Movement states
+  // shows the seated pose again until he sends real sleep art. He
+  // replaced the original sit GIF minutes later ('Remove old siting
+  // gif', then 'This is New sitting gif' with the 9:17 MP4), so the
+  // seated art is now that calm seated sway from the video. Movement states
   // play the walk loop, drag shows the hanging art, sit and sleep show
   // the seated pose, and every other state idles until more art arrives.
   const VEX_WALK_STATES = new Set(['walk', 'run', 'leap']);
