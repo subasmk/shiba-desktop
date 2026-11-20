@@ -138,7 +138,7 @@ test('events: a missing target sprite degrades (dex -> dex-idle, rex -> null)', 
 });
 
 // --- Vex (hooded horned kid, walk-cycle video + sit art, Nov 19 2026) -----
-const VEX_SPRITES = new Set(['vex-idle', 'vex-walk', 'vex-sit', 'vex-drag', 'vex-landing']);
+const VEX_SPRITES = new Set(['vex-idle', 'vex-walk', 'vex-sit', 'vex-drag', 'vex-landing', 'vex-rage']);
 const hasVex = (n) => VEX_SPRITES.has(n);
 
 test('vex: movement states play the walk loop, drag shows his hanging art', () => {
@@ -160,8 +160,13 @@ test('vex: landing and fall play his drop-and-dazed beat', () => {
   assert.equal(resolveSprite('getup', 'vex', hasVex), 'vex-idle');
 });
 
+test('vex: rage and the tap-combo swing play his anger beat', () => {
+  assert.equal(resolveSprite('rage', 'vex', hasVex), 'vex-rage');
+  assert.equal(resolveSprite('swing', 'vex', hasVex), 'vex-rage');
+});
+
 test('vex: reactions and unknown states idle until more art arrives', () => {
-  for (const n of ['idle', 'touch-head', 'touch-body', 'touch-paws', 'rage', 'swing', 'wave', 'bow', 'scan', 'emote', 'click', 'gesture', 'getup', 'anything']) {
+  for (const n of ['idle', 'touch-head', 'touch-body', 'touch-paws', 'wave', 'bow', 'scan', 'emote', 'click', 'gesture', 'getup', 'anything']) {
     assert.equal(resolveSprite(n, 'vex', hasVex), 'vex-idle', n);
   }
 });
@@ -178,7 +183,7 @@ test('vex: walk art missing degrades to vex-idle', () => {
 });
 
 test('vex: sprites referenced by resolution exist in the real manifest', () => {
-  for (const n of ['idle', 'walk', 'run', 'leap', 'drag', 'sit', 'sleep', 'landing', 'fall', 'rage', 'touch-head']) {
+  for (const n of ['idle', 'walk', 'run', 'leap', 'drag', 'sit', 'sleep', 'landing', 'fall', 'rage', 'swing', 'touch-head']) {
     const sprite = resolveSprite(n, 'vex', hasReal);
     assert.ok(sprite && hasReal(sprite), n + ' -> ' + sprite);
   }

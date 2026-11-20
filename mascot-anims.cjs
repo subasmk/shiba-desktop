@@ -50,9 +50,11 @@
   // he falls cloak-spread, lands and sits dazed with circling stars, then
   // recovers upright, so it carries both landing (the state after a drag
   // release) and fall; the chained getup then just returns to idle since
-  // the clip already ends standing. Movement states play the walk loop,
-  // drag shows the hanging art, sit/sleep show the seated pose and every
-  // other state idles until more art arrives.
+  // the clip already ends standing. His 9:00 GIF is an anger beat (calm,
+  // puffed cheeks, anger mark and steam, back to calm), so it plays rage
+  // and the tap-combo swing like dex-rage does for Dex. Movement states
+  // play the walk loop, drag shows the hanging art, sit/sleep show the
+  // seated pose and every other state idles until more art arrives.
   const VEX_WALK_STATES = new Set(['walk', 'run', 'leap']);
   // name: requested state ('idle', 'touch-head', 'dex-wave', ...).
   // mascot: 'dex' | 'rex' | 'vex'. has: (spriteName) => boolean.
@@ -62,6 +64,7 @@
       if (name.startsWith('vex-')) return has(name) ? name : 'vex-idle';
       if (name === 'drag' && has('vex-drag')) return 'vex-drag';
       if ((name === 'landing' || name === 'fall') && has('vex-landing')) return 'vex-landing';
+      if ((name === 'rage' || name === 'swing') && has('vex-rage')) return 'vex-rage';
       if (VEX_WALK_STATES.has(name) && has('vex-walk')) return 'vex-walk';
       if ((name === 'sit' || name === 'sleep') && has('vex-sit')) return 'vex-sit';
       return 'vex-idle';
