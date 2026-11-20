@@ -33,7 +33,7 @@ const xdo=s=>execSync('xdotool '+s);
   assert(looped,'sleep-down chains into the vex-sleeploop Zzz loop');
   console.log('sleep from standing ->',f,'then',looped);
  }
- for(const [name,prefix,shots] of [['landing','vex-landing',30],['rage','vex-rage',30],['emote','vex-laugh',30],['ambient-coffee','vex-coffee',14]]){
+ for(const [name,prefix,shots] of [['landing','vex-landing',30],['rage','vex-rage',30],['emote','vex-laugh',30]]){
   await send(name);const hashes=new Set();let f=null;
   for(let i=0;i<shots;i++){await sleep(100);const b=await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});hashes.add(crypto.createHash('sha256').update(b).digest('hex'));if(i===3)f=await pet.locator('.pet-image').getAttribute('data-frame');}
   assert(hashes.size>2,name+' must visibly animate');
@@ -64,6 +64,22 @@ const xdo=s=>execSync('xdotool '+s);
   console.log('sleep from sit ->',f,'then',looped);
   await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});
  }
+ // 'fulla play agale' regression: roaming ON, the coffee one-shot must play start to finish
+ await send('idle');await sleep(400);
+ await panel.evaluate(()=>petAPI.call('save-settings',{roaming:true}));
+ await sleep(300);
+ await send('ambient-coffee');
+ {const seen=[];let cut=null;
+  for(let i=0;i<36;i++){await sleep(100);const f=await pet.locator('.pet-image').getAttribute('data-frame');seen.push(f);
+   if(f&&f.startsWith('vex-coffee')){const n=parseInt(f.replace(/\D/g,''),10);if(n>=28)break;}
+   if(f&&!f.startsWith('vex-coffee')&&seen.some(x=>x&&x.startsWith('vex-coffee'))){cut=f;break;}}
+  const maxN=Math.max(0,...seen.filter(f=>f&&f.startsWith('vex-coffee')).map(f=>parseInt(f.replace(/\D/g,''),10)));
+  assert(!cut,'coffee cut by '+cut+' at frame '+maxN);
+  assert(maxN>=28,'coffee must reach its last frames, only reached '+maxN);
+  console.log('coffee full-play: reached frame',maxN);
+  await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});
+ }
+ await panel.evaluate(()=>petAPI.call('save-settings',{roaming:false}));
  await sleep(2500); // settle before the drag
  // Real-cursor drag toward the top-left corner: the window must stay fully
  // inside the work area and show the hanging art while dragged.
