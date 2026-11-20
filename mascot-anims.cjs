@@ -86,6 +86,10 @@
       // sustained wide-mouth flail, then settling back to neutral - wired
       // as his poke reaction (touch-head/body/paws), which had no art.
       if ((name === 'touch-head' || name === 'touch-body' || name === 'touch-paws') && has('vex-shock')) return 'vex-shock';
+      // His 'Talking gif' MP4 (Nov 20 2026): standing talk loop, mouth
+      // cycling open/closed/smile - the speaking state (voice-ui sends
+      // 'talk' while the assistant voice speaks; it loops, not finite).
+      if (name === 'talk' && has('vex-talk')) return 'vex-talk';
       if ((name === 'sit' || name === 'sleep') && has('vex-sit')) return 'vex-sit';
       return 'vex-idle';
     }
