@@ -81,6 +81,7 @@
       if (name === 'sleep-down' && has('vex-sleepdown')) return 'vex-sleepdown';
       if (name === 'sit-sleep' && has('vex-sitsleep')) return 'vex-sitsleep';
       if (name === 'sleep-loop' && has('vex-sleeploop')) return 'vex-sleeploop';
+      if (name === 'ambient-coffee' && has('vex-coffee')) return 'vex-coffee';
       if ((name === 'sit' || name === 'sleep') && has('vex-sit')) return 'vex-sit';
       return 'vex-idle';
     }

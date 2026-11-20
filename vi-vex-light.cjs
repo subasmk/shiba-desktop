@@ -12,7 +12,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
  const send=async name=>app.evaluate(({BrowserWindow},n)=>{BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('mode=pet')).webContents.send('pet-state',n)},name);
  fs.mkdirSync('/downloads/vex-light',{recursive:true});let frame=0;
  const shot=async()=>pet.screenshot({path:'/downloads/vex-light/'+String(frame++).padStart(4,'0')+'.png'});
- for(const [name,shots] of [['idle',10],['walk',10],['drag',10],['landing',10],['rage',10],['emote',10],['thinking',14]]){
+ for(const [name,shots] of [['idle',10],['walk',10],['drag',10],['landing',10],['rage',10],['emote',10],['thinking',14],['ambient-coffee',14]]){
   await send(name);for(let i=0;i<shots;i++){await sleep(110);await shot();}
  }
  await send('sit');for(let i=0;i<14;i++){await sleep(110);await shot();} // sit-down clip
