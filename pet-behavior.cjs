@@ -33,8 +33,8 @@
   // aguthu' - one hit set off every animation): idle beats wait 25-45s
   // between fires, so one tap gets ONE reaction and then a calm pet.
   // The old 6.5-12s cadence made the pet perform non-stop.
-  quiet(now){this.nextAt=now+25000+this.random()*20000;}
-  due(now,animation){if(animation!=='idle'||this.press||now<this.nextAt)return null;const ready=AMBIENT.filter(a=>a.event!==this.lastAmbient&&(this.ambientAt[a.event]||0)<=now);if(ready.length&&this.random()<AMBIENT_CHANCE){const pick=ready[Math.floor(this.random()*ready.length)];this.lastAmbient=pick.event;this.ambientAt[pick.event]=now+pick.cooldownMs;this.quiet(now);return pick.event;}const candidates=actions.filter(x=>x!==this.lastAction);this.lastAction=candidates[Math.floor(this.random()*candidates.length)];this.quiet(now);return this.lastAction;}
+  quiet(now,active){this.nextAt=now+(active?8000+this.random()*4000:25000+this.random()*20000);} /* active (cursor moving, his 14:26 ask '10 sec oruvati play agatum'): a beat about every 10s; idle calm otherwise */
+  due(now,animation,active){if(animation!=='idle'||this.press||now<this.nextAt)return null;const ready=AMBIENT.filter(a=>a.event!==this.lastAmbient&&(this.ambientAt[a.event]||0)<=now);if(ready.length&&this.random()<AMBIENT_CHANCE){const pick=ready[Math.floor(this.random()*ready.length)];this.lastAmbient=pick.event;this.ambientAt[pick.event]=now+pick.cooldownMs;this.quiet(now,active);return pick.event;}const candidates=actions.filter(x=>x!==this.lastAction);this.lastAction=candidates[Math.floor(this.random()*candidates.length)];this.quiet(now,active);return this.lastAction;}
   down(x,y,now){this.press={x,y,at:now,dragging:false};}
   move(x,y,now){const p=this.press;if(!p)return false;if(!p.dragging&&now-p.at>=80&&Math.hypot(x-p.x,y-p.y)>=12)p.dragging=true;return p.dragging;}
   up(cancel=false){const p=this.press;this.press=null;return p?.dragging?'drop':p&&!cancel?'tap':'none';}

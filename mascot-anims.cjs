@@ -74,6 +74,8 @@
       if (name === 'drag' && has('vex-drag')) return 'vex-drag';
       if ((name === 'landing' || name === 'fall') && has('vex-landing')) return 'vex-landing';
       if (name === 'falling' && has('vex-fall')) return 'vex-fall'; /* in-air loop after a throw release, until touchdown (his 13:55 video) */
+      if (name === 'fly' && has('vex-fly')) return 'vex-fly'; /* upward throw: superhero fly loop until touchdown (his 14:20 GIF, 'WHEN I THROW UP ONLY') */
+      if (name === 'drop' && has('vex-drop')) return 'vex-drop'; /* gentle release: hang, glide down, settle standing (his 14:24 GIF, 'Normal ah kita veichu drag ah release panna ithu') */
       if ((name === 'rage' || name === 'swing') && has('vex-rage')) return 'vex-rage';
       if (name === 'emote' && has('vex-laugh')) return 'vex-laugh';
       if (VEX_WALK_STATES.has(name) && has('vex-walk')) return 'vex-walk';
@@ -180,6 +182,7 @@
     'ambient-emote': 'vex-laugh',
     'react-success': 'vex-laugh',
     'react-confused': 'vex-think',
+    'app-open': 'vex-spark', /* hand to temple, cyan spark: the assistant-launched-an-app beat (his 14:12 GIF, 'any app open panna sonna pannraku') */
   };
   // event: semantic name ('thinking', 'react-success', ...). Returns the
   // sprite to play, or null when the name is not a known event or this

@@ -111,8 +111,8 @@ const xdo=s=>execSync('xdotool '+s);
  await sleep(400);
  const lf=await pet.locator('.pet-image').getAttribute('data-frame');
  console.log('after release:',lf);
- assert(lf&&lf.startsWith('vex-landing'),'release plays vex-landing, got '+lf);
+ assert(lf&&(lf.startsWith('vex-drop')||lf.startsWith('vex-landing')||lf.startsWith('vex-fall')||lf.startsWith('vex-fly')),'release plays the drop/landing/fall/fly beat, got '+lf); /* gentle drag release = the 14:24 drop clip (his word); hard throw = falling/fly */
  for(let i=0;i<6;i++){await sleep(400);await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});}
  console.log('errors',errors);assert.deepEqual(errors,[]);
- console.log('PASS: vex idle/walk/sit/sleep/landing animate; real drag clamps inside the work area; release plays the new landing beat.');
+ console.log('PASS: vex idle/walk/sit/sleep/landing animate; real drag clamps inside the work area; release plays the release beat.');
  }finally{await app.close();}})().catch(e=>{console.error(e);process.exit(1)});
