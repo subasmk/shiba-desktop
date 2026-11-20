@@ -31,7 +31,7 @@ function shell(){
  document.querySelector('#dash').innerHTML='<nav class="side" aria-label="Dashboard"><h1>RELAY<span>DESKTOP / DARU</span></h1><div class="nav-label">INDEX</div>'+TABS.map(([k,n],i)=>'<button data-tab="'+k+'"'+(k===tab?' class="on" aria-current="page"':'')+'><span class="nav-index">0'+(i+1)+'</span>'+n+'</button>').join('')+'<div class="sp"></div><div class="side-companion"><img src="vex-head.png" alt=""><strong>DARU</strong><span>LOCAL COMPANION</span></div><small class="side-foot">SETTINGS STAY ON DEVICE</small></nav><main class="main" id="d-main"><header class="page-top"><span>RELAY <b>/</b> '+esc(TABS.find(t=>t[0]===tab)[1])+'</span><span class="top-label">DESKTOP CONTROLS</span></header><div id="page-content"></div></main>';
  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();});
 }
-function render(){shell();const m=$('#page-content');
+function render(){setupSink=null;tamilSink=null;musicSink=null;shell();const m=$('#page-content');
  if(tab==='home')return renderHome(m);
  if(tab==='brain')return renderBrain(m);
  if(tab==='voice')return renderVoice(m);
@@ -118,7 +118,7 @@ function renderVoice(m){
  const fillVoice=(id,pick,def)=>{const sel=$(id);sel.innerHTML=VOICE_OPTS.map(([sid,label])=>'<option value="'+sid+'"'+(sid===pick?' selected':'')+'>'+label+'</option>').join('');if(!VOICE_OPTS.some(([sid])=>sid===pick))sel.value=String(def);};
  fillVoice('#v-voice-vex',(vbm.vex&&Number.isInteger(vbm.vex.sid))?vbm.vex.sid:18,18);
  $('#v-voice-vex').onchange=()=>task(async()=>{const next={...vbm,vex:{...vbm.vex,sid:parseInt($('#v-voice-vex').value,10)}};await save({voiceByMascot:next});status('Daru voice saved.');});
- $('#v-fish-save-key').onclick=()=>task(async()=>{await api.call('fish-key',$('#v-fish-key').value);state=await api.call('get-state');$('#v-fish-key').value='';status(state.hasFishKey?'Fish Audio key saved securely on this device.':'Fish Audio key removed.');render();});
+ $('#v-fish-save-key').onclick=()=>task(async()=>{await api.call('fish-key',$('#v-fish-key').value);state=await api.call('get-state');$('#v-fish-key').value='';render();status(state.hasFishKey?'Fish Audio key saved securely on this device.':'Fish Audio key removed.');});
  $('#v-fish-model').value=state.fishModel||'s2.1-pro-free';
  $('#v-fish-model').onchange=()=>task(async()=>{await save({fishModel:$('#v-fish-model').value});status('Fish model saved.');});
  const ffv=(state.fishVoiceByMascot&&typeof state.fishVoiceByMascot==='object')?state.fishVoiceByMascot:{};
@@ -160,10 +160,10 @@ function renderNotes(m){
  +'<div class="grid"><div class="card"><h3>Your notes</h3><div id="n-list"></div></div>'
  +'<div class="card"><h3>Editor</h3><div class="row"><input type="text" id="n-title" placeholder="Title" aria-label="Note title"></div><textarea id="n-body" rows="12" style="width:100%" placeholder="Write the note here." aria-label="Note body"></textarea><div class="row"><button class="act" id="n-save">Save note</button><button class="act ghost" id="n-new">New</button><button class="act ghost" id="n-pin">Pin / unpin</button><button class="act ghost" id="n-del">Delete</button></div><p class="desc" id="n-meta"></p></div></div>'
  +'<div class="status" id="d-status" role="status"></div>';
- let notes=[],editing=null;
- const paint=()=>{const el=$('#n-list');el.innerHTML=notes.length?notes.map(n=>'<div class="tg"><span class="lab">'+(n.pinned?'&#128204; ':'')+esc(n.title||'Untitled')+'<small>'+esc(new Date(n.updatedAt).toLocaleString())+'</small></span><button class="act ghost" data-nopen="'+n.id+'">Open</button></div>').join(''):'<p class="desc">No notes yet.</p>';
+ let notes=[],editing=null,loadId=0;
+ const paint=()=>{if(!m.isConnected)return;const el=m.querySelector('#n-list');el.innerHTML=notes.length?notes.map(n=>'<div class="tg"><span class="lab">'+(n.pinned?'&#128204; ':'')+esc(n.title||'Untitled')+'<small>'+esc(new Date(n.updatedAt).toLocaleString())+'</small></span><button class="act ghost" data-nopen="'+n.id+'">Open</button></div>').join(''):'<p class="desc">No notes yet.</p>';
   el.querySelectorAll('[data-nopen]').forEach(b=>b.onclick=()=>{const n=notes.find(x=>x.id===b.dataset.nopen);if(!n)return;editing=n.id;$('#n-title').value=n.title;$('#n-body').value=n.body;$('#n-meta').textContent=(n.pinned?'Pinned. ':'')+'Last edited '+new Date(n.updatedAt).toLocaleString();});};
- const load=async()=>{notes=await api.call('notes-list',{q:$('#n-search').value.trim()});paint();};
+ const load=async()=>{if(!m.isConnected)return;const id=++loadId;const rows=await api.call('notes-list',{q:m.querySelector('#n-search').value.trim()});if(!m.isConnected||id!==loadId)return;notes=rows;paint();};
  $('#n-search').oninput=()=>task(load);
  $('#n-new').onclick=()=>{editing=null;$('#n-title').value='';$('#n-body').value='';$('#n-meta').textContent='';};
  $('#n-save').onclick=()=>task(async()=>{const r=await api.call('notes-save',{id:editing||undefined,title:$('#n-title').value,body:$('#n-body').value});editing=r.id;status('Note saved.');await load();});
@@ -208,10 +208,10 @@ function renderFeatures(m){
  bind('#f-context','contextAware');bind('#f-vision','contextVision');bind('#f-vpoint','visionPoint');bind('#f-scout','scout');bind('#f-web','webTools');bind('#f-power','powerMode');
  $('#f-vpoint-go').onclick=()=>task(async()=>{const q=$('#f-vpoint-q').value.trim();if(!q)return status('Type what to find first.');status('Looking at the screen...');const r=await api.call('vision-locate',{target:q});status('Pointed at "'+q+'" ('+r.point.x+', '+r.point.y+' of 1000).');});
  $('#f-vision-model').value=state.visionModel||'moondream';$('#f-vision-model').onchange=()=>task(async()=>{await save({visionModel:$('#f-vision-model').value.trim()||'moondream'});status('Vision model saved.');});
- $('#f-vision-interval').value=state.visionIntervalSec||60;$('#f-vision-interval').onchange=()=>task(async()=>{await save({visionIntervalSec:Math.min(300,Math.max(30,Number($('#f-vision-interval').value)||60))});status('Vision interval saved.');});
+ $('#f-vision-interval').value=state.visionIntervalSec||60;$('#f-vision-interval').onchange=()=>task(async()=>{const input=$('#f-vision-interval'),value=Math.min(300,Math.max(30,Number(input.value)||60));await save({visionIntervalSec:value});input.value=value;status('Vision interval saved.');});
  let musicState=null,linkIdx=-1;
- function paintMusic(){if(!musicState)return;const q=$('#m-queue');if(q){q.innerHTML=musicState.queue.length?musicState.queue.map((it,i)=>'<div class="tg"><span class="lab">'+(i===musicState.index?'&#9654; ':'')+esc(it.title)+'<small>'+esc(it.kind)+(it.needsLink?' - needs link':'')+'</small></span><span>'+(it.needsLink?'<button class="act ghost" data-mlink="'+i+'">Link</button>':'')+'<button class="act ghost" data-mdel="'+i+'">x</button></span></div>').join(''):'<p class="desc">Queue is empty.</p>';
-  q.querySelectorAll('[data-mdel]').forEach(b=>b.onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'remove',index:Number(b.dataset.mdel)});paintMusic();}));
+ function paintMusic(){if(!m.isConnected||!musicState)return;const q=$('#m-queue');if(q){q.innerHTML=musicState.queue.length?musicState.queue.map((it,i)=>'<div class="tg"><span class="lab">'+(i===musicState.index?'&#9654; ':'')+esc(it.title)+'<small>'+esc(it.kind)+(it.needsLink?' - needs link':'')+'</small></span><span>'+(it.needsLink?'<button class="act ghost" data-mlink="'+i+'">Link</button>':'')+'<button class="act ghost" data-mdel="'+i+'">x</button></span></div>').join(''):'<p class="desc">Queue is empty.</p>';
+  q.querySelectorAll('[data-mdel]').forEach(b=>b.onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'remove',index:Number(b.dataset.mdel)});linkIdx=-1;paintMusic();}));
   q.querySelectorAll('[data-mlink]').forEach(b=>b.onclick=()=>{linkIdx=Number(b.dataset.mlink);status('Now paste the YouTube link for "'+musicState.queue[linkIdx].title+'" above and press Add.');$('#m-url').focus();});}
  const pl=$('#m-playlists');if(pl){pl.innerHTML=musicState.playlists.length?musicState.playlists.map(p=>'<div class="tg"><span class="lab">'+esc(p.name)+'<small>'+p.count+' songs</small></span><span><button class="act ghost" data-mplay="'+esc(p.name)+'">Play</button><button class="act ghost" data-mpdel="'+esc(p.name)+'">x</button></span></div>').join(''):'<p class="desc">No playlists yet.</p>';
   pl.querySelectorAll('[data-mplay]').forEach(b=>b.onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'play-playlist',name:b.dataset.mplay});paintMusic();status('Playing playlist: '+b.dataset.mplay);}));
@@ -223,14 +223,14 @@ function renderFeatures(m){
  $('#m-pause').onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'pause'});paintMusic();});
  $('#m-next').onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'next'});paintMusic();});
  $('#m-prev').onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'prev'});paintMusic();});
- $('#m-clear').onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'clear'});paintMusic();status('Queue cleared.');});
+ $('#m-clear').onclick=()=>task(async()=>{musicState=await api.call('music-control',{action:'clear'});linkIdx=-1;paintMusic();status('Queue cleared.');});
  $('#m-vol').onchange=()=>task(async()=>{musicState=await api.call('music-control',{action:'volume',value:Number($('#m-vol').value)});});
  $('#m-pl-save').onclick=()=>task(async()=>{const name=$('#m-pl-name').value.trim();if(!name)return status('Give the playlist a name first.');musicState=await api.call('music-control',{action:'save-playlist',name});$('#m-pl-name').value='';paintMusic();status('Playlist saved: '+name);});
  $('#m-shot').onchange=()=>{const f=$('#m-shot').files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>task(async()=>{status('Reading song titles from the screenshot...');const r=await api.call('music-import-image',{image:String(rd.result).split(',')[1]||''});musicState=r.music;paintMusic();status('Imported '+r.titles.length+' songs into playlist "'+r.playlist+'" - paste a link for each title to make it playable.');});rd.readAsDataURL(f);};
  task(async()=>{musicState=await api.call('music-get-state');paintMusic();});
  let wfRules=[];
  const wfSummary=r=>{const t=r.trigger,a=r.action;const ts=t.type==='at-time'?('at '+t.time):t.type==='app-launch'?('when '+t.app+' opens'):t.type==='idle'?('after '+t.idleMinutes+' min idle'):('hotkey '+t.accelerator);const as=a.type==='say'?('say "'+a.text+'"'):a.type==='launch-app'?('launch '+a.app):a.type==='start-music'?('start music'+(a.playlist?' ('+a.playlist+')':'')):a.type==='add-note'?('add note "'+(a.title||'')+'"'):('post to Discord: "'+a.text+'"');return ts+' -> '+as;};
- async function paintWorkflows(){try{wfRules=await api.call('workflows-list');}catch{wfRules=[];}const el=$('#w-list');if(!el)return;el.innerHTML=wfRules.length?wfRules.map(r=>'<div class="tg"><span class="lab">'+esc(r.name)+'<small>'+esc(wfSummary(r))+'</small></span><span><input type="checkbox" class="sw" data-wen="'+r.id+'"'+(r.enabled?' checked':'')+' aria-label="Enable workflow"><button class="act ghost" data-wdel="'+r.id+'">x</button></span></div>').join(''):'<p class="desc">No workflows yet.</p>';
+ async function paintWorkflows(){try{wfRules=await api.call('workflows-list');}catch{wfRules=[];}if(!m.isConnected)return;const el=m.querySelector('#w-list');if(!el)return;el.innerHTML=wfRules.length?wfRules.map(r=>'<div class="tg"><span class="lab">'+esc(r.name)+'<small>'+esc(wfSummary(r))+'</small></span><span><input type="checkbox" class="sw" data-wen="'+r.id+'"'+(r.enabled?' checked':'')+' aria-label="Enable workflow"><button class="act ghost" data-wdel="'+r.id+'">x</button></span></div>').join(''):'<p class="desc">No workflows yet.</p>';
   el.querySelectorAll('[data-wdel]').forEach(b=>b.onclick=()=>task(async()=>{await api.call('workflows-delete',{id:b.dataset.wdel});paintWorkflows();}));
   el.querySelectorAll('[data-wen]').forEach(c=>c.onchange=()=>task(async()=>{const r=wfRules.find(x=>x.id===c.dataset.wen);if(r)await api.call('workflows-save',{rule:Object.assign({},r,{enabled:c.checked})});}));}
  $('#w-add').onclick=()=>task(async()=>{const tt=$('#w-ttype').value,tv=$('#w-tval').value.trim(),at=$('#w-atype').value,av=$('#w-aval').value.trim();
@@ -238,14 +238,14 @@ function renderFeatures(m){
   const action=at==='say'?{type:at,text:av}:at==='launch-app'?{type:at,app:av}:at==='add-note'?{type:at,title:av}:at==='discord-post'?{type:at,text:av}:{type:at,playlist:av};
   await api.call('workflows-save',{rule:{name:$('#w-name').value.trim()||'Workflow',trigger,action,enabled:true}});status('Workflow saved.');paintWorkflows();});
  task(paintWorkflows);
- $('#dc-save').onclick=()=>task(async()=>{const r=await api.call('discord-webhook',$('#dc-hook').value);state=await api.call('get-state');status(r.configured?'Discord webhook saved securely on this device.':'Discord webhook removed.');render();});
+ $('#dc-save').onclick=()=>task(async()=>{const r=await api.call('discord-webhook',$('#dc-hook').value);state=await api.call('get-state');render();status(r.configured?'Discord webhook saved securely on this device.':'Discord webhook removed.');});
  $('#dc-post').onclick=()=>task(async()=>{const t=$('#dc-text').value.trim();if(!t)return status('Type a test message first.');await api.call('discord-post',{text:t});$('#dc-text').value='';status('Posted to Discord.');});
 }
 function renderPrivacy(m){
  m.innerHTML='<h2>Data &amp; privacy</h2><div class="sub">What stays here and what can leave.</div>'
  +'<div class="card"><h3>On this laptop</h3><p class="desc">Settings, pet action counts, anything you ask your mascot to remember, and your API keys stay on this device. Keys are saved with the operating system secure storage. The app never sends them anywhere except to their own provider when you use that provider.</p>'
  +'<div class="row"><button class="act ghost" id="d-clear-history">Clear pet action memory</button></div></div>'
- +'<div class="card"><h3>Leaving this laptop</h3><p class="desc">A chat message leaves only when you pick a cloud brain in the panel and tick consent for that message. Web tools fetch only the address or search you type. News scout downloads public headlines only. Everything else is local.</p></div>'
+ +'<div class="card"><h3>Leaving this laptop</h3><p class="desc">A chat message leaves only when you pick a cloud brain in the panel and tick consent for that message. Fish Audio sends reply text to Fish Audio when you choose its cloud voice engine. Discord sends the message you submit, including messages from enabled workflows, to your configured webhook. Music uses YouTube. Web tools fetch only the address or search you type. News scout downloads public headlines only. Local brain and local voice processing stay on this device.</p></div>'
  +'<div class="card"><h3>Diagnostics</h3><p class="desc">Checks the local brain, voice models and features. The report is saved as diagnostics.json in the app data folder on this laptop.</p><div class="row"><button class="act ghost" id="d-selftest">Run diagnostics</button></div><div class="reply hidden" id="d-selftest-out"></div></div>'
  +'<div class="status" id="d-status" role="status"></div>';
  $('#d-clear-history').onclick=()=>task(async()=>{await api.call('clear-history');status('Pet action memory cleared.');});
