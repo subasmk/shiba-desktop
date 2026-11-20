@@ -73,6 +73,7 @@
       if (name.startsWith('vex-')) return has(name) ? name : 'vex-idle';
       if (name === 'drag' && has('vex-drag')) return 'vex-drag';
       if ((name === 'landing' || name === 'fall') && has('vex-landing')) return 'vex-landing';
+      if (name === 'falling' && has('vex-fall')) return 'vex-fall'; /* in-air loop after a throw release, until touchdown (his 13:55 video) */
       if ((name === 'rage' || name === 'swing') && has('vex-rage')) return 'vex-rage';
       if (name === 'emote' && has('vex-laugh')) return 'vex-laugh';
       if (VEX_WALK_STATES.has(name) && has('vex-walk')) return 'vex-walk';
@@ -82,6 +83,7 @@
       if (name === 'sit-sleep' && has('vex-sitsleep')) return 'vex-sitsleep';
       if (name === 'sleep-loop' && has('vex-sleeploop')) return 'vex-sleeploop';
       if (name === 'ambient-coffee' && has('vex-coffee')) return 'vex-coffee';
+      if (name === 'ambient-laptop' && has('vex-laptop')) return 'vex-laptop';
       // His uncaptioned startle clip (Nov 20 2026): a sharp startle, a
       // sustained wide-mouth flail, then settling back to neutral - wired
       // as his poke reaction (touch-head/body/paws), which had no art.

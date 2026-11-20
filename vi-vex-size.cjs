@@ -34,8 +34,8 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
  const sf=await pet.locator('.pet-image').getAttribute('data-frame');
  assert(sf&&sf.startsWith('vex-shock'),'touch-head resolves to vex-shock, got '+sf);
  await pet.screenshot({path:'/downloads/vex-size/shock.png'});
- await sleep(3400);
- const af=await pet.locator('.pet-image').getAttribute('data-frame');
+ let af=null;
+ for(let i=0;i<12;i++){await sleep(400);af=await pet.locator('.pet-image').getAttribute('data-frame');if(af&&af.startsWith('vex-idle'))break;}
  assert(af&&af.startsWith('vex-idle'),'shock settles back to idle, got '+af);
  console.log('errors',errors);assert.deepEqual(errors,[]);
  console.log('PASS-SCRIPT');

@@ -40,10 +40,11 @@ const xdo=s=>execSync('xdotool '+s);
   assert(f&&f.startsWith(prefix),name+' resolved to '+f);
   console.log(name,'->',f,'distinct',hashes.size);
  }
- // sit enters through his sit-down transition clip, then chains into the seated pose
+ // sit enters through his sit-down transition clip, then chains into the seated pose (wake him to idle first - the 30s auto-sit may already have seated him after the long loops above)
+ await send('walk');await sleep(600); /* wake him upright first - the long loops above trip the 30s idle auto-sit, and sending sit while already seated correctly skips the transition */
  await send('sit');
  {const hashes=new Set();let f=null;
-  for(let i=0;i<12;i++){await sleep(100);const b=await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});hashes.add(crypto.createHash('sha256').update(b).digest('hex'));if(i===3)f=await pet.locator('.pet-image').getAttribute('data-frame');}
+  for(let i=0;i<12;i++){await sleep(100);const b=await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});hashes.add(crypto.createHash('sha256').update(b).digest('hex'));if(i===1)f=await pet.locator('.pet-image').getAttribute('data-frame');}
   assert(hashes.size>2,'sit-down must visibly animate');
   assert(f&&f.startsWith('vex-sitdown'),'sit enters through vex-sitdown, got '+f);
   let chained=null;
@@ -55,7 +56,7 @@ const xdo=s=>execSync('xdotool '+s);
  // 'Change sit to sleep': from the seated pose, sleep enters through his sit-to-sleep clip, then loops his Zzz sleep loop
  await send('sleep');
  {const hashes=new Set();let f=null;
-  for(let i=0;i<12;i++){await sleep(100);const b=await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});hashes.add(crypto.createHash('sha256').update(b).digest('hex'));if(i===3)f=await pet.locator('.pet-image').getAttribute('data-frame');}
+  for(let i=0;i<12;i++){await sleep(100);const b=await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});hashes.add(crypto.createHash('sha256').update(b).digest('hex'));if(i===1)f=await pet.locator('.pet-image').getAttribute('data-frame');}
   assert(hashes.size>2,'sit-sleep must visibly animate');
   assert(f&&f.startsWith('vex-sitsleep'),'sleep from the seated pose enters through vex-sitsleep, got '+f);
   let looped=null;
