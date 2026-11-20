@@ -18,7 +18,7 @@ function checkOllama(f) {
   return { status: 'pass', detail: 'Ollama is running with ' + (f.ollama.models || []).length + ' model(s) installed.' };
 }
 function checkBrainModel(f) {
-  const want = f.brainModel || 'qwen3:1.7b';
+  const want = f.brainModel || 'qwen3:8b';
   const models = (f.ollama && f.ollama.models) || [];
   if (!f.ollama || !f.ollama.running) return { status: 'warn', detail: 'Cannot check the brain model while Ollama is down.', fix: 'Fix Ollama first, then re-run diagnostics.' };
   const present = models.some((m) => m === want || m.startsWith(want.split(':')[0] + ':'));
