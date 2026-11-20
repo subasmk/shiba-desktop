@@ -2,25 +2,17 @@ const { test } = require('node:test'), a = require('node:assert/strict');
 const fs = require('node:fs'), path = require('node:path');
 const AE = require('./anim-events.cjs');
 
-test('every required event resolves to a GIF and a sprite', () => {
+test('every required event resolves to a sprite state', () => {
   for (const name of ['celebrate', 'wake-trigger', 'listening-start', 'power-run', 'timer-ignored', 'roam-fly', 'roam-fast', 'tap-combo', 'drag-drop', 'proactive-comment', 'chat-reaction', 'long-idle', 'idle', 'scene-change'])
     a.ok(AE.forEvent(name), 'missing event ' + name);
   a.equal(AE.forEvent('nope'), null);
 });
-test('every event GIF asset exists at the repo root', () => {
-  for (const name of AE.eventNames()) {
-    const e = AE.forEvent(name);
-    a.ok(fs.existsSync(path.join(__dirname, e.gif)), e.gif + ' missing');
-  }
-  a.equal(AE.allAssetsExist(__dirname), true);
-  a.equal(AE.allAssetsExist(path.join(__dirname, 'no-such-dir')), false);
-});
-test('every mapped sprite exists in the app atlas manifest', () => {
-  const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
-  for (const name of AE.eventNames()) {
-    const s = AE.forEvent(name).sprite;
-    a.ok(Array.isArray(manifest[s]), 'sprite ' + s + ' not in manifest (event ' + name + ')');
-  }
+test('Vex atlas and event sprites exist',()=>{
+ const {resolveSprite,resolveEvent}=require('./mascot-anims.cjs');
+ const manifest=require('./manifest.json'),has=n=>!!manifest[n];
+ a.equal(AE.allAssetsExist(__dirname),true);
+ a.equal(AE.allAssetsExist('/no-such-dir'),false);
+ for(const n of AE.eventNames()){const e=AE.forEvent(n);a.ok(has(resolveEvent(e.sprite,'vex',has)||resolveSprite(e.sprite,'vex',has)),n);a.equal(e.gif,undefined);}
 });
 test('tap combo trigger: 3 taps inside the window, not spread out', () => {
   a.equal(AE.isTapCombo([1000, 1500, 2000], 2100), true);
@@ -76,10 +68,4 @@ test('each event sprite matches its intended visible behavior', () => {
   a.notEqual(AE.forEvent('roam-fast').sprite, 'swing', 'fast roam shows the katana attack while merely moving');
   a.notEqual(AE.forEvent('roam-fly').sprite, 'swing', 'long roam shows the katana attack while merely moving');
 });
-test('run animation exists and is a faster walk cycle', () => {
-  const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
-  a.ok(Array.isArray(manifest.run) && manifest.run.length >= 3, 'run missing from manifest');
-  const runMs = manifest.run.reduce((t, f) => t + f.ms, 0);
-  const walkMs = manifest.walk.reduce((t, f) => t + f.ms, 0);
-  a.ok(runMs < walkMs, 'run must play faster than walk to read as hurrying');
-});
+test('Vex run requests reuse his walk art',()=>{const {resolveSprite}=require('./mascot-anims.cjs');const m=require('./manifest.json');a.equal(resolveSprite('run','vex',n=>!!m[n]),'vex-walk');});

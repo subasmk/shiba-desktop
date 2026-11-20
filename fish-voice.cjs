@@ -8,7 +8,7 @@
 // it to a renderer, and this module only ever receives it as an
 // argument. Nothing is bundled and no key or voice is invented here.
 //
-// Rex and Dex are separate assistants, so each speaks with its OWN
+// Vex speaks with his own
 // cloned voice: settings.fishVoiceByMascot = { rex: '<voice id>',
 // dex: '<voice id>' }, resolved for the ACTIVE assistant at speak time.
 //
@@ -38,7 +38,7 @@ function sanitizeVoiceId(v) {
 function sanitizeFishVoices(settings) {
   const all = settings && typeof settings === 'object' ? settings.fishVoiceByMascot : null;
   const src = all && typeof all === 'object' ? all : {};
-  return { rex: sanitizeVoiceId(src.rex), dex: sanitizeVoiceId(src.dex), girl: sanitizeVoiceId(src.girl) };
+  return { vex: sanitizeVoiceId(src.vex) };
 }
 
 function resolveFishVoice(settings, mascot) {

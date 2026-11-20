@@ -30,21 +30,12 @@ test('sanitize: voice IDs accept token shapes and reject everything else', () =>
   assert.equal(sanitizeVoiceId(42), '');
 });
 
-test('sanitize: per-assistant voices survive garbage settings', () => {
-  assert.deepEqual(sanitizeFishVoices(null), { rex: '', dex: '', girl: '' });
-  assert.deepEqual(sanitizeFishVoices({}), { rex: '', dex: '', girl: '' });
-  assert.deepEqual(sanitizeFishVoices({ fishVoiceByMascot: 'nope' }), { rex: '', dex: '', girl: '' });
-  assert.deepEqual(
-    sanitizeFishVoices({ fishVoiceByMascot: { rex: 'rexvoice1', dex: 'not a voice id!' } }),
-    { rex: 'rexvoice1', dex: '', girl: '' });
-});
-
-test('resolve: each assistant gets its own voice, unknown mascots use the Dex bucket', () => {
-  const s = { fishVoiceByMascot: { rex: 'rexvoice1', dex: 'dexvoice1' } };
-  assert.equal(resolveFishVoice(s, 'rex'), 'rexvoice1');
-  assert.equal(resolveFishVoice(s, 'dex'), 'dexvoice1');
-  assert.equal(resolveFishVoice(s, undefined), 'dexvoice1');
-  assert.equal(resolveFishVoice({}, 'rex'), '');
+test('Vex Fish preferences sanitize garbage and keep only his voice',()=>{
+ assert.deepEqual(sanitizeFishVoices(null),{vex:''});
+ assert.deepEqual(sanitizeFishVoices({fishVoiceByMascot:'bad'}),{vex:''});
+ assert.deepEqual(sanitizeFishVoices({fishVoiceByMascot:{vex:'vexvoice1',rex:'oldvoice'}}),{vex:'vexvoice1'});
+ assert.equal(resolveFishVoice({fishVoiceByMascot:{vex:'vexvoice1'}},'vex'),'vexvoice1');
+ assert.equal(resolveFishVoice({},'vex'),'');
 });
 
 test('resolve: model defaults to the free S2.1 Pro and rejects unknown models', () => {
@@ -65,14 +56,14 @@ test('speak: missing key, missing voice and empty text are honest errors', async
 test('speak: posts to the Fish API with the key, model header and the assistant voice', async () => {
   const wav = makeWav();
   const seen = {};
-  const buf = await fishSpeak({ apiKey: 'TESTKEY', text: 'Vanakkam', referenceId: 'dexvoice1', fetchFn: okFetch(wav, seen) });
+  const buf = await fishSpeak({ apiKey: 'TESTKEY', text: 'Vanakkam', referenceId: 'vexvoice1', fetchFn: okFetch(wav, seen) });
   assert.equal(seen.url, API_URL);
   assert.equal(seen.opts.method, 'POST');
   assert.equal(seen.opts.headers.Authorization, 'Bearer TESTKEY');
   assert.equal(seen.opts.headers.model, 's2.1-pro-free');
   const body = JSON.parse(seen.opts.body);
   assert.equal(body.text, 'Vanakkam');
-  assert.equal(body.reference_id, 'dexvoice1');
+  assert.equal(body.reference_id, 'vexvoice1');
   assert.equal(body.format, 'wav');
   assert.ok(buf.equals(wav));
 });
@@ -93,14 +84,14 @@ test('engine: fish is a valid engine and dispatch speaks with the ACTIVE assista
   globalThis.fetch = okFetch(wav, seen);
   try {
     const engine = createVoiceEngine({
-      getSettings: () => ({ voiceEngine: 'fish', mascot: 'dex', fishModel: 's2.1-pro', fishVoiceByMascot: { rex: 'rexvoice1', dex: 'dexvoice1' } }),
+      getSettings: () => ({ voiceEngine: 'fish', mascot: 'vex', fishModel: 's2.1-pro', fishVoiceByMascot: { vex: 'vexvoice1' } }),
       getFishKey: () => 'TESTKEY',
       kokoroSynthesize: async () => { throw Error('kokoro must not run on the fish engine'); },
     });
-    const out = await engine.synthesize('Hello from Dex');
+    const out = await engine.synthesize('Hello from Vex');
     assert.equal(out.sampleRate, 22050);
     assert.equal(out.samples.length, 4);
-    assert.equal(JSON.parse(seen.opts.body).reference_id, 'dexvoice1');
+    assert.equal(JSON.parse(seen.opts.body).reference_id, 'vexvoice1');
     assert.equal(seen.opts.headers.model, 's2.1-pro');
     assert.equal(seen.opts.headers.Authorization, 'Bearer TESTKEY');
   } finally { globalThis.fetch = realFetch; }

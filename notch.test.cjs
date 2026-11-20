@@ -242,7 +242,7 @@ test('statusLine: hold-to-talk, then timer, then music, then wake, then call, th
   assert.equal(N.statusLine({ timerRunning: true, timerEndsAt: now + 754000, now, musicPlaying: true, musicTitle: 'Song' }), '⏱ 12:34 left');
   assert.equal(N.statusLine({ musicPlaying: true, musicTitle: 'Lo-fi beats', wakeListening: true }), '🎵 Lo-fi beats');
   assert.equal(N.statusLine({ musicPlaying: true, musicTitle: '  ' }), '🎵 Music playing');
-  assert.equal(N.statusLine({ wakeListening: true, voiceActive: true }), 'Say "Hey Rex"');
+  assert.equal(N.statusLine({ wakeListening: true, voiceActive: true }), 'Say "Hey Vex"');
   assert.equal(N.statusLine({ voiceActive: true }), 'Voice call on');
   assert.equal(N.statusLine({}), 'Idle');
   assert.equal(N.statusLine(null), 'Idle');

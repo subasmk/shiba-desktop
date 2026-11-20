@@ -372,7 +372,7 @@
       const t = clean(sig.musicTitle, 30);
       return t ? '🎵 ' + t : '🎵 Music playing';
     }
-    if (sig.wakeListening) return 'Say "Hey Rex"';
+    if (sig.wakeListening) return 'Say "Hey Vex"';
     if (sig.voiceActive) return 'Voice call on';
     return 'Idle';
   }

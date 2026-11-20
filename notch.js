@@ -13,7 +13,7 @@ const letterColor = (name) => { let h = 0; for (const ch of String(name || '')) 
 
 const machine = new N.NotchMachine({});
 let deck = N.saneDeck(undefined); // replaced by the pushed state (scan default or saved deck)
-let mascotName = 'Dex';
+let mascotName = 'Vex';
 let pillState = { text: 'IDLE', tone: 'idle' };
 let statusLine = 'Idle';
 let dnd = false;
@@ -116,7 +116,7 @@ function applyState(d) {
     mascotName = String(d.mascot);
     $('#chat-ask').textContent = `Ask ${mascotName} anything…`;
     $('#chat-input').placeholder = `Message ${mascotName}`;
-    const head = mascotName === 'Ria' ? 'ria-head.png' : mascotName === 'Rex' ? '2-head.png' : 'cat-head.png';
+    const head = 'vex-head.png'; // Vex-only build
     const peek = $('#peek-cat'), cat = $('#cat');
     if (peek && !peek.src.endsWith(head)) peek.src = head;
     if (cat && !cat.src.endsWith(head)) cat.src = head;

@@ -44,3 +44,5 @@ test('state machine: disable during cooldown returns to off', () => {
   assert.equal(d.feed('hey rex', 999999), null);
   d.enable(); assert.equal(d.state, 'listening');
 });
+
+test('Vex wake phrase with and without a command',()=>{assert.deepEqual(matchWakePhrase('Hey Vex'),{command:null});assert.deepEqual(matchWakePhrase('Hey Vex, hello'),{command:'hello'});});
