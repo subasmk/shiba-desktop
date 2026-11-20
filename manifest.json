@@ -3198,1490 +3198,6 @@
    "a": 5
   }
  ],
- "vex-sit": [
-  {
-   "file": "vex-sit1.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 8000,
-   "a": 5
-  },
-  {
-   "file": "vex-sit2.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 8000,
-   "a": 5
-  },
-  {
-   "file": "vex-sit3.png",
-   "ms": 100,
-   "x": 0,
-   "y": 8320,
-   "a": 5
-  },
-  {
-   "file": "vex-sit4.png",
-   "ms": 100,
-   "x": 320,
-   "y": 8320,
-   "a": 5
-  },
-  {
-   "file": "vex-sit5.png",
-   "ms": 100,
-   "x": 640,
-   "y": 8320,
-   "a": 5
-  },
-  {
-   "file": "vex-sit6.png",
-   "ms": 100,
-   "x": 960,
-   "y": 8320,
-   "a": 5
-  },
-  {
-   "file": "vex-sit7.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 8320,
-   "a": 5
-  },
-  {
-   "file": "vex-sit8.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 8320,
-   "a": 5
-  },
-  {
-   "file": "vex-sit9.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 8320,
-   "a": 5
-  },
-  {
-   "file": "vex-sit10.png",
-   "ms": 100,
-   "x": 0,
-   "y": 8640,
-   "a": 5
-  },
-  {
-   "file": "vex-sit11.png",
-   "ms": 100,
-   "x": 320,
-   "y": 8640,
-   "a": 5
-  },
-  {
-   "file": "vex-sit12.png",
-   "ms": 100,
-   "x": 640,
-   "y": 8640,
-   "a": 5
-  },
-  {
-   "file": "vex-sit13.png",
-   "ms": 100,
-   "x": 960,
-   "y": 8640,
-   "a": 5
-  },
-  {
-   "file": "vex-sit14.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 8640,
-   "a": 5
-  },
-  {
-   "file": "vex-sit15.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 8640,
-   "a": 5
-  },
-  {
-   "file": "vex-sit16.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 8640,
-   "a": 5
-  },
-  {
-   "file": "vex-sit17.png",
-   "ms": 100,
-   "x": 0,
-   "y": 8960,
-   "a": 5
-  },
-  {
-   "file": "vex-sit18.png",
-   "ms": 100,
-   "x": 320,
-   "y": 8960,
-   "a": 5
-  },
-  {
-   "file": "vex-sit19.png",
-   "ms": 100,
-   "x": 640,
-   "y": 8960,
-   "a": 5
-  },
-  {
-   "file": "vex-sit20.png",
-   "ms": 100,
-   "x": 960,
-   "y": 8960,
-   "a": 5
-  },
-  {
-   "file": "vex-sit21.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 8960,
-   "a": 5
-  },
-  {
-   "file": "vex-sit22.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 8960,
-   "a": 5
-  },
-  {
-   "file": "vex-sit23.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 8960,
-   "a": 5
-  },
-  {
-   "file": "vex-sit24.png",
-   "ms": 100,
-   "x": 0,
-   "y": 9280,
-   "a": 5
-  },
-  {
-   "file": "vex-sit25.png",
-   "ms": 100,
-   "x": 320,
-   "y": 9280,
-   "a": 5
-  },
-  {
-   "file": "vex-sit26.png",
-   "ms": 100,
-   "x": 640,
-   "y": 9280,
-   "a": 5
-  },
-  {
-   "file": "vex-sit27.png",
-   "ms": 100,
-   "x": 960,
-   "y": 9280,
-   "a": 5
-  },
-  {
-   "file": "vex-sit28.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 9280,
-   "a": 5
-  },
-  {
-   "file": "vex-sit29.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 9280,
-   "a": 5
-  },
-  {
-   "file": "vex-sit30.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 9280,
-   "a": 5
-  }
- ],
- "vex-sitdown": [
-  {
-   "file": "vex-sitdown1.png",
-   "ms": 100,
-   "x": 0,
-   "y": 9600,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown2.png",
-   "ms": 100,
-   "x": 320,
-   "y": 9600,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown3.png",
-   "ms": 100,
-   "x": 640,
-   "y": 9600,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown4.png",
-   "ms": 100,
-   "x": 960,
-   "y": 9600,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown5.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 9600,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown6.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 9600,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown7.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 9600,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown8.png",
-   "ms": 100,
-   "x": 0,
-   "y": 9920,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown9.png",
-   "ms": 100,
-   "x": 320,
-   "y": 9920,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown10.png",
-   "ms": 100,
-   "x": 640,
-   "y": 9920,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown11.png",
-   "ms": 100,
-   "x": 960,
-   "y": 9920,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown12.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 9920,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown13.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 9920,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown14.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 9920,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown15.png",
-   "ms": 100,
-   "x": 0,
-   "y": 10240,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown16.png",
-   "ms": 100,
-   "x": 320,
-   "y": 10240,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown17.png",
-   "ms": 100,
-   "x": 640,
-   "y": 10240,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown18.png",
-   "ms": 100,
-   "x": 960,
-   "y": 10240,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown19.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 10240,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown20.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 10240,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown21.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 10240,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown22.png",
-   "ms": 100,
-   "x": 0,
-   "y": 10560,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown23.png",
-   "ms": 100,
-   "x": 320,
-   "y": 10560,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown24.png",
-   "ms": 100,
-   "x": 640,
-   "y": 10560,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown25.png",
-   "ms": 100,
-   "x": 960,
-   "y": 10560,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown26.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 10560,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown27.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 10560,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown28.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 10560,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown29.png",
-   "ms": 100,
-   "x": 0,
-   "y": 10880,
-   "a": 5
-  },
-  {
-   "file": "vex-sitdown30.png",
-   "ms": 100,
-   "x": 320,
-   "y": 10880,
-   "a": 5
-  }
- ],
- "vex-sleepdown": [
-  {
-   "file": "vex-sleepdown1.png",
-   "ms": 100,
-   "x": 640,
-   "y": 10880,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown2.png",
-   "ms": 100,
-   "x": 960,
-   "y": 10880,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown3.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 10880,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown4.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 10880,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown5.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 10880,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown6.png",
-   "ms": 100,
-   "x": 0,
-   "y": 11200,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown7.png",
-   "ms": 100,
-   "x": 320,
-   "y": 11200,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown8.png",
-   "ms": 100,
-   "x": 640,
-   "y": 11200,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown9.png",
-   "ms": 100,
-   "x": 960,
-   "y": 11200,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown10.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 11200,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown11.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 11200,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown12.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 11200,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown13.png",
-   "ms": 100,
-   "x": 0,
-   "y": 11520,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown14.png",
-   "ms": 100,
-   "x": 320,
-   "y": 11520,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown15.png",
-   "ms": 100,
-   "x": 640,
-   "y": 11520,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown16.png",
-   "ms": 100,
-   "x": 960,
-   "y": 11520,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown17.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 11520,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown18.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 11520,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown19.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 11520,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown20.png",
-   "ms": 100,
-   "x": 0,
-   "y": 11840,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown21.png",
-   "ms": 100,
-   "x": 320,
-   "y": 11840,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown22.png",
-   "ms": 100,
-   "x": 640,
-   "y": 11840,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown23.png",
-   "ms": 100,
-   "x": 960,
-   "y": 11840,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown24.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 11840,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown25.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 11840,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown26.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 11840,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown27.png",
-   "ms": 100,
-   "x": 0,
-   "y": 12160,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown28.png",
-   "ms": 100,
-   "x": 320,
-   "y": 12160,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown29.png",
-   "ms": 100,
-   "x": 640,
-   "y": 12160,
-   "a": 5
-  },
-  {
-   "file": "vex-sleepdown30.png",
-   "ms": 100,
-   "x": 960,
-   "y": 12160,
-   "a": 5
-  }
- ],
- "vex-think": [
-  {
-   "file": "vex-think1.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 12160,
-   "a": 5
-  },
-  {
-   "file": "vex-think2.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 12160,
-   "a": 5
-  },
-  {
-   "file": "vex-think3.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 12160,
-   "a": 5
-  },
-  {
-   "file": "vex-think4.png",
-   "ms": 100,
-   "x": 0,
-   "y": 12480,
-   "a": 5
-  },
-  {
-   "file": "vex-think5.png",
-   "ms": 100,
-   "x": 320,
-   "y": 12480,
-   "a": 5
-  },
-  {
-   "file": "vex-think6.png",
-   "ms": 100,
-   "x": 640,
-   "y": 12480,
-   "a": 5
-  },
-  {
-   "file": "vex-think7.png",
-   "ms": 100,
-   "x": 960,
-   "y": 12480,
-   "a": 5
-  },
-  {
-   "file": "vex-think8.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 12480,
-   "a": 5
-  },
-  {
-   "file": "vex-think9.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 12480,
-   "a": 5
-  },
-  {
-   "file": "vex-think10.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 12480,
-   "a": 5
-  },
-  {
-   "file": "vex-think11.png",
-   "ms": 100,
-   "x": 0,
-   "y": 12800,
-   "a": 5
-  },
-  {
-   "file": "vex-think12.png",
-   "ms": 100,
-   "x": 320,
-   "y": 12800,
-   "a": 5
-  },
-  {
-   "file": "vex-think13.png",
-   "ms": 100,
-   "x": 640,
-   "y": 12800,
-   "a": 5
-  },
-  {
-   "file": "vex-think14.png",
-   "ms": 100,
-   "x": 960,
-   "y": 12800,
-   "a": 5
-  },
-  {
-   "file": "vex-think15.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 12800,
-   "a": 5
-  },
-  {
-   "file": "vex-think16.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 12800,
-   "a": 5
-  },
-  {
-   "file": "vex-think17.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 12800,
-   "a": 5
-  },
-  {
-   "file": "vex-think18.png",
-   "ms": 100,
-   "x": 0,
-   "y": 13120,
-   "a": 5
-  },
-  {
-   "file": "vex-think19.png",
-   "ms": 100,
-   "x": 320,
-   "y": 13120,
-   "a": 5
-  },
-  {
-   "file": "vex-think20.png",
-   "ms": 100,
-   "x": 640,
-   "y": 13120,
-   "a": 5
-  },
-  {
-   "file": "vex-think21.png",
-   "ms": 100,
-   "x": 960,
-   "y": 13120,
-   "a": 5
-  },
-  {
-   "file": "vex-think22.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 13120,
-   "a": 5
-  },
-  {
-   "file": "vex-think23.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 13120,
-   "a": 5
-  },
-  {
-   "file": "vex-think24.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 13120,
-   "a": 5
-  },
-  {
-   "file": "vex-think25.png",
-   "ms": 100,
-   "x": 0,
-   "y": 13440,
-   "a": 5
-  },
-  {
-   "file": "vex-think26.png",
-   "ms": 100,
-   "x": 320,
-   "y": 13440,
-   "a": 5
-  },
-  {
-   "file": "vex-think27.png",
-   "ms": 100,
-   "x": 640,
-   "y": 13440,
-   "a": 5
-  },
-  {
-   "file": "vex-think28.png",
-   "ms": 100,
-   "x": 960,
-   "y": 13440,
-   "a": 5
-  },
-  {
-   "file": "vex-think29.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 13440,
-   "a": 5
-  },
-  {
-   "file": "vex-think30.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 13440,
-   "a": 5
-  }
- ],
- "vex-sitsleep": [
-  {
-   "file": "vex-sitsleep1.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 13440,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep2.png",
-   "ms": 100,
-   "x": 0,
-   "y": 13760,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep3.png",
-   "ms": 100,
-   "x": 320,
-   "y": 13760,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep4.png",
-   "ms": 100,
-   "x": 640,
-   "y": 13760,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep5.png",
-   "ms": 100,
-   "x": 960,
-   "y": 13760,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep6.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 13760,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep7.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 13760,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep8.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 13760,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep9.png",
-   "ms": 100,
-   "x": 0,
-   "y": 14080,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep10.png",
-   "ms": 100,
-   "x": 320,
-   "y": 14080,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep11.png",
-   "ms": 100,
-   "x": 640,
-   "y": 14080,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep12.png",
-   "ms": 100,
-   "x": 960,
-   "y": 14080,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep13.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 14080,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep14.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 14080,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep15.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 14080,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep16.png",
-   "ms": 100,
-   "x": 0,
-   "y": 14400,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep17.png",
-   "ms": 100,
-   "x": 320,
-   "y": 14400,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep18.png",
-   "ms": 100,
-   "x": 640,
-   "y": 14400,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep19.png",
-   "ms": 100,
-   "x": 960,
-   "y": 14400,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep20.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 14400,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep21.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 14400,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep22.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 14400,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep23.png",
-   "ms": 100,
-   "x": 0,
-   "y": 14720,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep24.png",
-   "ms": 100,
-   "x": 320,
-   "y": 14720,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep25.png",
-   "ms": 100,
-   "x": 640,
-   "y": 14720,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep26.png",
-   "ms": 100,
-   "x": 960,
-   "y": 14720,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep27.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 14720,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep28.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 14720,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep29.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 14720,
-   "a": 5
-  },
-  {
-   "file": "vex-sitsleep30.png",
-   "ms": 100,
-   "x": 0,
-   "y": 15040,
-   "a": 5
-  }
- ],
- "vex-sleeploop": [
-  {
-   "file": "vex-sleeploop1.png",
-   "ms": 100,
-   "x": 320,
-   "y": 15040,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop2.png",
-   "ms": 100,
-   "x": 640,
-   "y": 15040,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop3.png",
-   "ms": 100,
-   "x": 960,
-   "y": 15040,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop4.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 15040,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop5.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 15040,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop6.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 15040,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop7.png",
-   "ms": 100,
-   "x": 0,
-   "y": 15360,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop8.png",
-   "ms": 100,
-   "x": 320,
-   "y": 15360,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop9.png",
-   "ms": 100,
-   "x": 640,
-   "y": 15360,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop10.png",
-   "ms": 100,
-   "x": 960,
-   "y": 15360,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop11.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 15360,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop12.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 15360,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop13.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 15360,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop14.png",
-   "ms": 100,
-   "x": 0,
-   "y": 15680,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop15.png",
-   "ms": 100,
-   "x": 320,
-   "y": 15680,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop16.png",
-   "ms": 100,
-   "x": 640,
-   "y": 15680,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop17.png",
-   "ms": 100,
-   "x": 960,
-   "y": 15680,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop18.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 15680,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop19.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 15680,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop20.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 15680,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop21.png",
-   "ms": 100,
-   "x": 0,
-   "y": 16000,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop22.png",
-   "ms": 100,
-   "x": 320,
-   "y": 16000,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop23.png",
-   "ms": 100,
-   "x": 640,
-   "y": 16000,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop24.png",
-   "ms": 100,
-   "x": 960,
-   "y": 16000,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop25.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 16000,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop26.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 16000,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop27.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 16000,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop28.png",
-   "ms": 100,
-   "x": 0,
-   "y": 16320,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop29.png",
-   "ms": 100,
-   "x": 320,
-   "y": 16320,
-   "a": 5
-  },
-  {
-   "file": "vex-sleeploop30.png",
-   "ms": 100,
-   "x": 640,
-   "y": 16320,
-   "a": 5
-  }
- ],
- "vex-coffee": [
-  {
-   "file": "vex-coffee1.png",
-   "ms": 100,
-   "x": 960,
-   "y": 16320,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee2.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 16320,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee3.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 16320,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee4.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 16320,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee5.png",
-   "ms": 100,
-   "x": 0,
-   "y": 16640,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee6.png",
-   "ms": 100,
-   "x": 320,
-   "y": 16640,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee7.png",
-   "ms": 100,
-   "x": 640,
-   "y": 16640,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee8.png",
-   "ms": 100,
-   "x": 960,
-   "y": 16640,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee9.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 16640,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee10.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 16640,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee11.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 16640,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee12.png",
-   "ms": 100,
-   "x": 0,
-   "y": 16960,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee13.png",
-   "ms": 100,
-   "x": 320,
-   "y": 16960,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee14.png",
-   "ms": 100,
-   "x": 640,
-   "y": 16960,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee15.png",
-   "ms": 100,
-   "x": 960,
-   "y": 16960,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee16.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 16960,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee17.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 16960,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee18.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 16960,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee19.png",
-   "ms": 100,
-   "x": 0,
-   "y": 17280,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee20.png",
-   "ms": 100,
-   "x": 320,
-   "y": 17280,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee21.png",
-   "ms": 100,
-   "x": 640,
-   "y": 17280,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee22.png",
-   "ms": 100,
-   "x": 960,
-   "y": 17280,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee23.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 17280,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee24.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 17280,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee25.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 17280,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee26.png",
-   "ms": 100,
-   "x": 0,
-   "y": 17600,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee27.png",
-   "ms": 100,
-   "x": 320,
-   "y": 17600,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee28.png",
-   "ms": 100,
-   "x": 640,
-   "y": 17600,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee29.png",
-   "ms": 100,
-   "x": 960,
-   "y": 17600,
-   "a": 5
-  },
-  {
-   "file": "vex-coffee30.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 17600,
-   "a": 5
-  }
- ],
  "vex-drag": [
   {
    "file": "vex-drag1.png",
@@ -4710,399 +3226,217 @@
    "x": 1600,
    "y": 1280,
    "a": 5
-  },
-  {
-   "file": "vex-drag5.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 1280,
-   "a": 5
-  },
-  {
-   "file": "vex-drag6.png",
-   "ms": 100,
-   "x": 0,
-   "y": 1600,
-   "a": 5
-  },
-  {
-   "file": "vex-drag7.png",
-   "ms": 100,
-   "x": 320,
-   "y": 1600,
-   "a": 5
-  },
-  {
-   "file": "vex-drag8.png",
-   "ms": 100,
-   "x": 640,
-   "y": 1600,
-   "a": 5
-  },
-  {
-   "file": "vex-drag9.png",
-   "ms": 100,
-   "x": 960,
-   "y": 1600,
-   "a": 5
-  },
-  {
-   "file": "vex-drag10.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 1600,
-   "a": 5
-  },
-  {
-   "file": "vex-drag11.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 1600,
-   "a": 5
-  },
-  {
-   "file": "vex-drag12.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 1600,
-   "a": 5
-  },
-  {
-   "file": "vex-drag13.png",
-   "ms": 100,
-   "x": 0,
-   "y": 1920,
-   "a": 5
-  },
-  {
-   "file": "vex-drag14.png",
-   "ms": 100,
-   "x": 320,
-   "y": 1920,
-   "a": 5
-  },
-  {
-   "file": "vex-drag15.png",
-   "ms": 100,
-   "x": 640,
-   "y": 1920,
-   "a": 5
-  },
-  {
-   "file": "vex-drag16.png",
-   "ms": 100,
-   "x": 960,
-   "y": 1920,
-   "a": 5
-  },
-  {
-   "file": "vex-drag17.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 1920,
-   "a": 5
-  },
-  {
-   "file": "vex-drag18.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 1920,
-   "a": 5
-  },
-  {
-   "file": "vex-drag19.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 1920,
-   "a": 5
-  },
-  {
-   "file": "vex-drag20.png",
-   "ms": 100,
-   "x": 0,
-   "y": 2240,
-   "a": 5
-  },
-  {
-   "file": "vex-drag21.png",
-   "ms": 100,
-   "x": 320,
-   "y": 2240,
-   "a": 5
-  },
-  {
-   "file": "vex-drag22.png",
-   "ms": 100,
-   "x": 640,
-   "y": 2240,
-   "a": 5
-  },
-  {
-   "file": "vex-drag23.png",
-   "ms": 100,
-   "x": 960,
-   "y": 2240,
-   "a": 5
-  },
-  {
-   "file": "vex-drag24.png",
-   "ms": 100,
-   "x": 1280,
-   "y": 2240,
-   "a": 5
-  },
-  {
-   "file": "vex-drag25.png",
-   "ms": 100,
-   "x": 1600,
-   "y": 2240,
-   "a": 5
-  },
-  {
-   "file": "vex-drag26.png",
-   "ms": 100,
-   "x": 1920,
-   "y": 2240,
-   "a": 5
-  },
-  {
-   "file": "vex-drag27.png",
-   "ms": 100,
-   "x": 0,
-   "y": 2560,
-   "a": 5
-  },
-  {
-   "file": "vex-drag28.png",
-   "ms": 100,
-   "x": 320,
-   "y": 2560,
-   "a": 5
-  },
-  {
-   "file": "vex-drag29.png",
-   "ms": 100,
-   "x": 640,
-   "y": 2560,
-   "a": 5
-  },
-  {
-   "file": "vex-drag30.png",
-   "ms": 100,
-   "x": 960,
-   "y": 2560,
-   "a": 5
   }
  ],
  "vex-landing": [
   {
    "file": "vex-landing1.png",
    "ms": 100,
-   "x": 1280,
-   "y": 2560,
+   "x": 1920,
+   "y": 1280,
    "a": 5
   },
   {
    "file": "vex-landing2.png",
    "ms": 100,
-   "x": 1600,
-   "y": 2560,
+   "x": 0,
+   "y": 1600,
    "a": 5
   },
   {
    "file": "vex-landing3.png",
    "ms": 100,
-   "x": 1920,
-   "y": 2560,
+   "x": 320,
+   "y": 1600,
    "a": 5
   },
   {
    "file": "vex-landing4.png",
    "ms": 100,
-   "x": 0,
-   "y": 2880,
+   "x": 640,
+   "y": 1600,
    "a": 5
   },
   {
    "file": "vex-landing5.png",
    "ms": 100,
-   "x": 320,
-   "y": 2880,
+   "x": 960,
+   "y": 1600,
    "a": 5
   },
   {
    "file": "vex-landing6.png",
    "ms": 100,
-   "x": 640,
-   "y": 2880,
+   "x": 1280,
+   "y": 1600,
    "a": 5
   },
   {
    "file": "vex-landing7.png",
    "ms": 100,
-   "x": 960,
-   "y": 2880,
+   "x": 1600,
+   "y": 1600,
    "a": 5
   },
   {
    "file": "vex-landing8.png",
    "ms": 100,
-   "x": 1280,
-   "y": 2880,
+   "x": 1920,
+   "y": 1600,
    "a": 5
   },
   {
    "file": "vex-landing9.png",
    "ms": 100,
-   "x": 1600,
-   "y": 2880,
+   "x": 0,
+   "y": 1920,
    "a": 5
   },
   {
    "file": "vex-landing10.png",
    "ms": 100,
-   "x": 1920,
-   "y": 2880,
+   "x": 320,
+   "y": 1920,
    "a": 5
   },
   {
    "file": "vex-landing11.png",
    "ms": 100,
-   "x": 0,
-   "y": 3200,
+   "x": 640,
+   "y": 1920,
    "a": 5
   },
   {
    "file": "vex-landing12.png",
    "ms": 100,
-   "x": 320,
-   "y": 3200,
+   "x": 960,
+   "y": 1920,
    "a": 5
   },
   {
    "file": "vex-landing13.png",
    "ms": 100,
-   "x": 640,
-   "y": 3200,
+   "x": 1280,
+   "y": 1920,
    "a": 5
   },
   {
    "file": "vex-landing14.png",
    "ms": 100,
-   "x": 960,
-   "y": 3200,
+   "x": 1600,
+   "y": 1920,
    "a": 5
   },
   {
    "file": "vex-landing15.png",
    "ms": 100,
-   "x": 1280,
-   "y": 3200,
+   "x": 1920,
+   "y": 1920,
    "a": 5
   },
   {
    "file": "vex-landing16.png",
    "ms": 100,
-   "x": 1600,
-   "y": 3200,
+   "x": 0,
+   "y": 2240,
    "a": 5
   },
   {
    "file": "vex-landing17.png",
    "ms": 100,
-   "x": 1920,
-   "y": 3200,
+   "x": 320,
+   "y": 2240,
    "a": 5
   },
   {
    "file": "vex-landing18.png",
    "ms": 100,
-   "x": 0,
-   "y": 3520,
+   "x": 640,
+   "y": 2240,
    "a": 5
   },
   {
    "file": "vex-landing19.png",
    "ms": 100,
-   "x": 320,
-   "y": 3520,
+   "x": 960,
+   "y": 2240,
    "a": 5
   },
   {
    "file": "vex-landing20.png",
    "ms": 100,
-   "x": 640,
-   "y": 3520,
+   "x": 1280,
+   "y": 2240,
    "a": 5
   },
   {
    "file": "vex-landing21.png",
    "ms": 100,
-   "x": 960,
-   "y": 3520,
+   "x": 1600,
+   "y": 2240,
    "a": 5
   },
   {
    "file": "vex-landing22.png",
    "ms": 100,
-   "x": 1280,
-   "y": 3520,
+   "x": 1920,
+   "y": 2240,
    "a": 5
   },
   {
    "file": "vex-landing23.png",
    "ms": 100,
-   "x": 1600,
-   "y": 3520,
+   "x": 0,
+   "y": 2560,
    "a": 5
   },
   {
    "file": "vex-landing24.png",
    "ms": 100,
-   "x": 1920,
-   "y": 3520,
+   "x": 320,
+   "y": 2560,
    "a": 5
   },
   {
    "file": "vex-landing25.png",
    "ms": 100,
-   "x": 0,
-   "y": 3840,
+   "x": 640,
+   "y": 2560,
    "a": 5
   },
   {
    "file": "vex-landing26.png",
    "ms": 100,
-   "x": 320,
-   "y": 3840,
+   "x": 960,
+   "y": 2560,
    "a": 5
   },
   {
    "file": "vex-landing27.png",
    "ms": 100,
-   "x": 640,
-   "y": 3840,
+   "x": 1280,
+   "y": 2560,
    "a": 5
   },
   {
    "file": "vex-landing28.png",
    "ms": 100,
-   "x": 960,
-   "y": 3840,
+   "x": 1600,
+   "y": 2560,
    "a": 5
   },
   {
    "file": "vex-landing29.png",
    "ms": 100,
-   "x": 1280,
-   "y": 3840,
+   "x": 1920,
+   "y": 2560,
    "a": 5
   },
   {
    "file": "vex-landing30.png",
    "ms": 100,
-   "x": 1600,
-   "y": 3840,
+   "x": 0,
+   "y": 2880,
    "a": 5
   }
  ],
@@ -5110,211 +3444,211 @@
   {
    "file": "vex-rage1.png",
    "ms": 100,
-   "x": 1920,
-   "y": 3840,
+   "x": 320,
+   "y": 2880,
    "a": 5
   },
   {
    "file": "vex-rage2.png",
    "ms": 100,
-   "x": 0,
-   "y": 4160,
+   "x": 640,
+   "y": 2880,
    "a": 5
   },
   {
    "file": "vex-rage3.png",
    "ms": 100,
-   "x": 320,
-   "y": 4160,
+   "x": 960,
+   "y": 2880,
    "a": 5
   },
   {
    "file": "vex-rage4.png",
    "ms": 100,
-   "x": 640,
-   "y": 4160,
+   "x": 1280,
+   "y": 2880,
    "a": 5
   },
   {
    "file": "vex-rage5.png",
    "ms": 100,
-   "x": 960,
-   "y": 4160,
+   "x": 1600,
+   "y": 2880,
    "a": 5
   },
   {
    "file": "vex-rage6.png",
    "ms": 100,
-   "x": 1280,
-   "y": 4160,
+   "x": 1920,
+   "y": 2880,
    "a": 5
   },
   {
    "file": "vex-rage7.png",
    "ms": 100,
-   "x": 1600,
-   "y": 4160,
+   "x": 0,
+   "y": 3200,
    "a": 5
   },
   {
    "file": "vex-rage8.png",
    "ms": 100,
-   "x": 1920,
-   "y": 4160,
+   "x": 320,
+   "y": 3200,
    "a": 5
   },
   {
    "file": "vex-rage9.png",
    "ms": 100,
-   "x": 0,
-   "y": 4480,
+   "x": 640,
+   "y": 3200,
    "a": 5
   },
   {
    "file": "vex-rage10.png",
    "ms": 100,
-   "x": 320,
-   "y": 4480,
+   "x": 960,
+   "y": 3200,
    "a": 5
   },
   {
    "file": "vex-rage11.png",
    "ms": 100,
-   "x": 640,
-   "y": 4480,
+   "x": 1280,
+   "y": 3200,
    "a": 5
   },
   {
    "file": "vex-rage12.png",
    "ms": 100,
-   "x": 960,
-   "y": 4480,
+   "x": 1600,
+   "y": 3200,
    "a": 5
   },
   {
    "file": "vex-rage13.png",
    "ms": 100,
-   "x": 1280,
-   "y": 4480,
+   "x": 1920,
+   "y": 3200,
    "a": 5
   },
   {
    "file": "vex-rage14.png",
    "ms": 100,
-   "x": 1600,
-   "y": 4480,
+   "x": 0,
+   "y": 3520,
    "a": 5
   },
   {
    "file": "vex-rage15.png",
    "ms": 100,
-   "x": 1920,
-   "y": 4480,
+   "x": 320,
+   "y": 3520,
    "a": 5
   },
   {
    "file": "vex-rage16.png",
    "ms": 100,
-   "x": 0,
-   "y": 4800,
+   "x": 640,
+   "y": 3520,
    "a": 5
   },
   {
    "file": "vex-rage17.png",
    "ms": 100,
-   "x": 320,
-   "y": 4800,
+   "x": 960,
+   "y": 3520,
    "a": 5
   },
   {
    "file": "vex-rage18.png",
    "ms": 100,
-   "x": 640,
-   "y": 4800,
+   "x": 1280,
+   "y": 3520,
    "a": 5
   },
   {
    "file": "vex-rage19.png",
    "ms": 100,
-   "x": 960,
-   "y": 4800,
+   "x": 1600,
+   "y": 3520,
    "a": 5
   },
   {
    "file": "vex-rage20.png",
    "ms": 100,
-   "x": 1280,
-   "y": 4800,
+   "x": 1920,
+   "y": 3520,
    "a": 5
   },
   {
    "file": "vex-rage21.png",
    "ms": 100,
-   "x": 1600,
-   "y": 4800,
+   "x": 0,
+   "y": 3840,
    "a": 5
   },
   {
    "file": "vex-rage22.png",
    "ms": 100,
-   "x": 1920,
-   "y": 4800,
+   "x": 320,
+   "y": 3840,
    "a": 5
   },
   {
    "file": "vex-rage23.png",
    "ms": 100,
-   "x": 0,
-   "y": 5120,
+   "x": 640,
+   "y": 3840,
    "a": 5
   },
   {
    "file": "vex-rage24.png",
    "ms": 100,
-   "x": 320,
-   "y": 5120,
+   "x": 960,
+   "y": 3840,
    "a": 5
   },
   {
    "file": "vex-rage25.png",
    "ms": 100,
-   "x": 640,
-   "y": 5120,
+   "x": 1280,
+   "y": 3840,
    "a": 5
   },
   {
    "file": "vex-rage26.png",
    "ms": 100,
-   "x": 960,
-   "y": 5120,
+   "x": 1600,
+   "y": 3840,
    "a": 5
   },
   {
    "file": "vex-rage27.png",
    "ms": 100,
-   "x": 1280,
-   "y": 5120,
+   "x": 1920,
+   "y": 3840,
    "a": 5
   },
   {
    "file": "vex-rage28.png",
    "ms": 100,
-   "x": 1600,
-   "y": 5120,
+   "x": 0,
+   "y": 4160,
    "a": 5
   },
   {
    "file": "vex-rage29.png",
    "ms": 100,
-   "x": 1920,
-   "y": 5120,
+   "x": 320,
+   "y": 4160,
    "a": 5
   },
   {
    "file": "vex-rage30.png",
    "ms": 100,
-   "x": 0,
-   "y": 5440,
+   "x": 640,
+   "y": 4160,
    "a": 5
   }
  ],
@@ -5322,211 +3656,211 @@
   {
    "file": "vex-laugh1.png",
    "ms": 100,
-   "x": 320,
-   "y": 5440,
+   "x": 960,
+   "y": 4160,
    "a": 5
   },
   {
    "file": "vex-laugh2.png",
    "ms": 100,
-   "x": 640,
-   "y": 5440,
+   "x": 1280,
+   "y": 4160,
    "a": 5
   },
   {
    "file": "vex-laugh3.png",
    "ms": 100,
-   "x": 960,
-   "y": 5440,
+   "x": 1600,
+   "y": 4160,
    "a": 5
   },
   {
    "file": "vex-laugh4.png",
    "ms": 100,
-   "x": 1280,
-   "y": 5440,
+   "x": 1920,
+   "y": 4160,
    "a": 5
   },
   {
    "file": "vex-laugh5.png",
    "ms": 100,
-   "x": 1600,
-   "y": 5440,
+   "x": 0,
+   "y": 4480,
    "a": 5
   },
   {
    "file": "vex-laugh6.png",
    "ms": 100,
-   "x": 1920,
-   "y": 5440,
+   "x": 320,
+   "y": 4480,
    "a": 5
   },
   {
    "file": "vex-laugh7.png",
    "ms": 100,
-   "x": 0,
-   "y": 5760,
+   "x": 640,
+   "y": 4480,
    "a": 5
   },
   {
    "file": "vex-laugh8.png",
    "ms": 100,
-   "x": 320,
-   "y": 5760,
+   "x": 960,
+   "y": 4480,
    "a": 5
   },
   {
    "file": "vex-laugh9.png",
    "ms": 100,
-   "x": 640,
-   "y": 5760,
+   "x": 1280,
+   "y": 4480,
    "a": 5
   },
   {
    "file": "vex-laugh10.png",
    "ms": 100,
-   "x": 960,
-   "y": 5760,
+   "x": 1600,
+   "y": 4480,
    "a": 5
   },
   {
    "file": "vex-laugh11.png",
    "ms": 100,
-   "x": 1280,
-   "y": 5760,
+   "x": 1920,
+   "y": 4480,
    "a": 5
   },
   {
    "file": "vex-laugh12.png",
    "ms": 100,
-   "x": 1600,
-   "y": 5760,
+   "x": 0,
+   "y": 4800,
    "a": 5
   },
   {
    "file": "vex-laugh13.png",
    "ms": 100,
-   "x": 1920,
-   "y": 5760,
+   "x": 320,
+   "y": 4800,
    "a": 5
   },
   {
    "file": "vex-laugh14.png",
    "ms": 100,
-   "x": 0,
-   "y": 6080,
+   "x": 640,
+   "y": 4800,
    "a": 5
   },
   {
    "file": "vex-laugh15.png",
    "ms": 100,
-   "x": 320,
-   "y": 6080,
+   "x": 960,
+   "y": 4800,
    "a": 5
   },
   {
    "file": "vex-laugh16.png",
    "ms": 100,
-   "x": 640,
-   "y": 6080,
+   "x": 1280,
+   "y": 4800,
    "a": 5
   },
   {
    "file": "vex-laugh17.png",
    "ms": 100,
-   "x": 960,
-   "y": 6080,
+   "x": 1600,
+   "y": 4800,
    "a": 5
   },
   {
    "file": "vex-laugh18.png",
    "ms": 100,
-   "x": 1280,
-   "y": 6080,
+   "x": 1920,
+   "y": 4800,
    "a": 5
   },
   {
    "file": "vex-laugh19.png",
    "ms": 100,
-   "x": 1600,
-   "y": 6080,
+   "x": 0,
+   "y": 5120,
    "a": 5
   },
   {
    "file": "vex-laugh20.png",
    "ms": 100,
-   "x": 1920,
-   "y": 6080,
+   "x": 320,
+   "y": 5120,
    "a": 5
   },
   {
    "file": "vex-laugh21.png",
    "ms": 100,
-   "x": 0,
-   "y": 6400,
+   "x": 640,
+   "y": 5120,
    "a": 5
   },
   {
    "file": "vex-laugh22.png",
    "ms": 100,
-   "x": 320,
-   "y": 6400,
+   "x": 960,
+   "y": 5120,
    "a": 5
   },
   {
    "file": "vex-laugh23.png",
    "ms": 100,
-   "x": 640,
-   "y": 6400,
+   "x": 1280,
+   "y": 5120,
    "a": 5
   },
   {
    "file": "vex-laugh24.png",
    "ms": 100,
-   "x": 960,
-   "y": 6400,
+   "x": 1600,
+   "y": 5120,
    "a": 5
   },
   {
    "file": "vex-laugh25.png",
    "ms": 100,
-   "x": 1280,
-   "y": 6400,
+   "x": 1920,
+   "y": 5120,
    "a": 5
   },
   {
    "file": "vex-laugh26.png",
    "ms": 100,
-   "x": 1600,
-   "y": 6400,
+   "x": 0,
+   "y": 5440,
    "a": 5
   },
   {
    "file": "vex-laugh27.png",
    "ms": 100,
-   "x": 1920,
-   "y": 6400,
+   "x": 320,
+   "y": 5440,
    "a": 5
   },
   {
    "file": "vex-laugh28.png",
    "ms": 100,
-   "x": 0,
-   "y": 6720,
+   "x": 640,
+   "y": 5440,
    "a": 5
   },
   {
    "file": "vex-laugh29.png",
    "ms": 100,
-   "x": 320,
-   "y": 6720,
+   "x": 960,
+   "y": 5440,
    "a": 5
   },
   {
    "file": "vex-laugh30.png",
    "ms": 100,
-   "x": 640,
-   "y": 6720,
+   "x": 1280,
+   "y": 5440,
    "a": 5
   }
  ],
@@ -5534,211 +3868,1695 @@
   {
    "file": "vex-idle1.png",
    "ms": 100,
-   "x": 960,
-   "y": 6720,
+   "x": 1600,
+   "y": 5440,
    "a": 5
   },
   {
    "file": "vex-idle2.png",
    "ms": 100,
-   "x": 1280,
-   "y": 6720,
+   "x": 1920,
+   "y": 5440,
    "a": 5
   },
   {
    "file": "vex-idle3.png",
    "ms": 100,
-   "x": 1600,
-   "y": 6720,
+   "x": 0,
+   "y": 5760,
    "a": 5
   },
   {
    "file": "vex-idle4.png",
    "ms": 100,
-   "x": 1920,
-   "y": 6720,
+   "x": 320,
+   "y": 5760,
    "a": 5
   },
   {
    "file": "vex-idle5.png",
    "ms": 100,
-   "x": 0,
-   "y": 7040,
+   "x": 640,
+   "y": 5760,
    "a": 5
   },
   {
    "file": "vex-idle6.png",
    "ms": 100,
-   "x": 320,
-   "y": 7040,
+   "x": 960,
+   "y": 5760,
    "a": 5
   },
   {
    "file": "vex-idle7.png",
    "ms": 100,
-   "x": 640,
-   "y": 7040,
+   "x": 1280,
+   "y": 5760,
    "a": 5
   },
   {
    "file": "vex-idle8.png",
    "ms": 100,
-   "x": 960,
-   "y": 7040,
+   "x": 1600,
+   "y": 5760,
    "a": 5
   },
   {
    "file": "vex-idle9.png",
    "ms": 100,
-   "x": 1280,
-   "y": 7040,
+   "x": 1920,
+   "y": 5760,
    "a": 5
   },
   {
    "file": "vex-idle10.png",
    "ms": 100,
-   "x": 1600,
-   "y": 7040,
+   "x": 0,
+   "y": 6080,
    "a": 5
   },
   {
    "file": "vex-idle11.png",
    "ms": 100,
-   "x": 1920,
-   "y": 7040,
+   "x": 320,
+   "y": 6080,
    "a": 5
   },
   {
    "file": "vex-idle12.png",
    "ms": 100,
-   "x": 0,
-   "y": 7360,
+   "x": 640,
+   "y": 6080,
    "a": 5
   },
   {
    "file": "vex-idle13.png",
    "ms": 100,
-   "x": 320,
-   "y": 7360,
+   "x": 960,
+   "y": 6080,
    "a": 5
   },
   {
    "file": "vex-idle14.png",
    "ms": 100,
-   "x": 640,
-   "y": 7360,
+   "x": 1280,
+   "y": 6080,
    "a": 5
   },
   {
    "file": "vex-idle15.png",
    "ms": 100,
-   "x": 960,
-   "y": 7360,
+   "x": 1600,
+   "y": 6080,
    "a": 5
   },
   {
    "file": "vex-idle16.png",
    "ms": 100,
-   "x": 1280,
-   "y": 7360,
+   "x": 1920,
+   "y": 6080,
    "a": 5
   },
   {
    "file": "vex-idle17.png",
    "ms": 100,
-   "x": 1600,
-   "y": 7360,
+   "x": 0,
+   "y": 6400,
    "a": 5
   },
   {
    "file": "vex-idle18.png",
    "ms": 100,
+   "x": 320,
+   "y": 6400,
+   "a": 5
+  },
+  {
+   "file": "vex-idle19.png",
+   "ms": 100,
+   "x": 640,
+   "y": 6400,
+   "a": 5
+  },
+  {
+   "file": "vex-idle20.png",
+   "ms": 100,
+   "x": 960,
+   "y": 6400,
+   "a": 5
+  },
+  {
+   "file": "vex-idle21.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 6400,
+   "a": 5
+  },
+  {
+   "file": "vex-idle22.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 6400,
+   "a": 5
+  },
+  {
+   "file": "vex-idle23.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 6400,
+   "a": 5
+  },
+  {
+   "file": "vex-idle24.png",
+   "ms": 100,
+   "x": 0,
+   "y": 6720,
+   "a": 5
+  },
+  {
+   "file": "vex-idle25.png",
+   "ms": 100,
+   "x": 320,
+   "y": 6720,
+   "a": 5
+  },
+  {
+   "file": "vex-idle26.png",
+   "ms": 100,
+   "x": 640,
+   "y": 6720,
+   "a": 5
+  },
+  {
+   "file": "vex-idle27.png",
+   "ms": 100,
+   "x": 960,
+   "y": 6720,
+   "a": 5
+  },
+  {
+   "file": "vex-idle28.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 6720,
+   "a": 5
+  },
+  {
+   "file": "vex-idle29.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 6720,
+   "a": 5
+  },
+  {
+   "file": "vex-idle30.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 6720,
+   "a": 5
+  }
+ ],
+ "vex-sit": [
+  {
+   "file": "vex-sit1.png",
+   "ms": 100,
+   "x": 0,
+   "y": 7040,
+   "a": 5
+  },
+  {
+   "file": "vex-sit2.png",
+   "ms": 100,
+   "x": 320,
+   "y": 7040,
+   "a": 5
+  },
+  {
+   "file": "vex-sit3.png",
+   "ms": 100,
+   "x": 640,
+   "y": 7040,
+   "a": 5
+  },
+  {
+   "file": "vex-sit4.png",
+   "ms": 100,
+   "x": 960,
+   "y": 7040,
+   "a": 5
+  },
+  {
+   "file": "vex-sit5.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 7040,
+   "a": 5
+  },
+  {
+   "file": "vex-sit6.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 7040,
+   "a": 5
+  },
+  {
+   "file": "vex-sit7.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 7040,
+   "a": 5
+  },
+  {
+   "file": "vex-sit8.png",
+   "ms": 100,
+   "x": 0,
+   "y": 7360,
+   "a": 5
+  },
+  {
+   "file": "vex-sit9.png",
+   "ms": 100,
+   "x": 320,
+   "y": 7360,
+   "a": 5
+  },
+  {
+   "file": "vex-sit10.png",
+   "ms": 100,
+   "x": 640,
+   "y": 7360,
+   "a": 5
+  },
+  {
+   "file": "vex-sit11.png",
+   "ms": 100,
+   "x": 960,
+   "y": 7360,
+   "a": 5
+  },
+  {
+   "file": "vex-sit12.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 7360,
+   "a": 5
+  },
+  {
+   "file": "vex-sit13.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 7360,
+   "a": 5
+  },
+  {
+   "file": "vex-sit14.png",
+   "ms": 100,
    "x": 1920,
    "y": 7360,
    "a": 5
   },
   {
-   "file": "vex-idle19.png",
+   "file": "vex-sit15.png",
    "ms": 100,
    "x": 0,
    "y": 7680,
    "a": 5
   },
   {
-   "file": "vex-idle20.png",
+   "file": "vex-sit16.png",
    "ms": 100,
    "x": 320,
    "y": 7680,
    "a": 5
   },
   {
-   "file": "vex-idle21.png",
+   "file": "vex-sit17.png",
    "ms": 100,
    "x": 640,
    "y": 7680,
    "a": 5
   },
   {
-   "file": "vex-idle22.png",
+   "file": "vex-sit18.png",
    "ms": 100,
    "x": 960,
    "y": 7680,
    "a": 5
   },
   {
-   "file": "vex-idle23.png",
+   "file": "vex-sit19.png",
    "ms": 100,
    "x": 1280,
    "y": 7680,
    "a": 5
   },
   {
-   "file": "vex-idle24.png",
+   "file": "vex-sit20.png",
    "ms": 100,
    "x": 1600,
    "y": 7680,
    "a": 5
   },
   {
-   "file": "vex-idle25.png",
+   "file": "vex-sit21.png",
    "ms": 100,
    "x": 1920,
    "y": 7680,
    "a": 5
   },
   {
-   "file": "vex-idle26.png",
+   "file": "vex-sit22.png",
    "ms": 100,
    "x": 0,
    "y": 8000,
    "a": 5
   },
   {
-   "file": "vex-idle27.png",
+   "file": "vex-sit23.png",
    "ms": 100,
    "x": 320,
    "y": 8000,
    "a": 5
   },
   {
-   "file": "vex-idle28.png",
+   "file": "vex-sit24.png",
    "ms": 100,
    "x": 640,
    "y": 8000,
    "a": 5
   },
   {
-   "file": "vex-idle29.png",
+   "file": "vex-sit25.png",
    "ms": 100,
    "x": 960,
    "y": 8000,
    "a": 5
   },
   {
-   "file": "vex-idle30.png",
+   "file": "vex-sit26.png",
    "ms": 100,
    "x": 1280,
    "y": 8000,
+   "a": 5
+  },
+  {
+   "file": "vex-sit27.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 8000,
+   "a": 5
+  },
+  {
+   "file": "vex-sit28.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 8000,
+   "a": 5
+  },
+  {
+   "file": "vex-sit29.png",
+   "ms": 100,
+   "x": 0,
+   "y": 8320,
+   "a": 5
+  },
+  {
+   "file": "vex-sit30.png",
+   "ms": 100,
+   "x": 320,
+   "y": 8320,
+   "a": 5
+  }
+ ],
+ "vex-sitdown": [
+  {
+   "file": "vex-sitdown1.png",
+   "ms": 100,
+   "x": 640,
+   "y": 8320,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown2.png",
+   "ms": 100,
+   "x": 960,
+   "y": 8320,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown3.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 8320,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown4.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 8320,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown5.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 8320,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown6.png",
+   "ms": 100,
+   "x": 0,
+   "y": 8640,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown7.png",
+   "ms": 100,
+   "x": 320,
+   "y": 8640,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown8.png",
+   "ms": 100,
+   "x": 640,
+   "y": 8640,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown9.png",
+   "ms": 100,
+   "x": 960,
+   "y": 8640,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown10.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 8640,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown11.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 8640,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown12.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 8640,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown13.png",
+   "ms": 100,
+   "x": 0,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown14.png",
+   "ms": 100,
+   "x": 320,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown15.png",
+   "ms": 100,
+   "x": 640,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown16.png",
+   "ms": 100,
+   "x": 960,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown17.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown18.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown19.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown20.png",
+   "ms": 100,
+   "x": 0,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown21.png",
+   "ms": 100,
+   "x": 320,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown22.png",
+   "ms": 100,
+   "x": 640,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown23.png",
+   "ms": 100,
+   "x": 960,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown24.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown25.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown26.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown27.png",
+   "ms": 100,
+   "x": 0,
+   "y": 9600,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown28.png",
+   "ms": 100,
+   "x": 320,
+   "y": 9600,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown29.png",
+   "ms": 100,
+   "x": 640,
+   "y": 9600,
+   "a": 5
+  },
+  {
+   "file": "vex-sitdown30.png",
+   "ms": 100,
+   "x": 960,
+   "y": 9600,
+   "a": 5
+  }
+ ],
+ "vex-sleepdown": [
+  {
+   "file": "vex-sleepdown1.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 9600,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown2.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 9600,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown3.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 9600,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown4.png",
+   "ms": 100,
+   "x": 0,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown5.png",
+   "ms": 100,
+   "x": 320,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown6.png",
+   "ms": 100,
+   "x": 640,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown7.png",
+   "ms": 100,
+   "x": 960,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown8.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown9.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown10.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown11.png",
+   "ms": 100,
+   "x": 0,
+   "y": 10240,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown12.png",
+   "ms": 100,
+   "x": 320,
+   "y": 10240,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown13.png",
+   "ms": 100,
+   "x": 640,
+   "y": 10240,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown14.png",
+   "ms": 100,
+   "x": 960,
+   "y": 10240,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown15.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 10240,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown16.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 10240,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown17.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 10240,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown18.png",
+   "ms": 100,
+   "x": 0,
+   "y": 10560,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown19.png",
+   "ms": 100,
+   "x": 320,
+   "y": 10560,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown20.png",
+   "ms": 100,
+   "x": 640,
+   "y": 10560,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown21.png",
+   "ms": 100,
+   "x": 960,
+   "y": 10560,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown22.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 10560,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown23.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 10560,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown24.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 10560,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown25.png",
+   "ms": 100,
+   "x": 0,
+   "y": 10880,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown26.png",
+   "ms": 100,
+   "x": 320,
+   "y": 10880,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown27.png",
+   "ms": 100,
+   "x": 640,
+   "y": 10880,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown28.png",
+   "ms": 100,
+   "x": 960,
+   "y": 10880,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown29.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 10880,
+   "a": 5
+  },
+  {
+   "file": "vex-sleepdown30.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 10880,
+   "a": 5
+  }
+ ],
+ "vex-think": [
+  {
+   "file": "vex-think1.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 10880,
+   "a": 5
+  },
+  {
+   "file": "vex-think2.png",
+   "ms": 100,
+   "x": 0,
+   "y": 11200,
+   "a": 5
+  },
+  {
+   "file": "vex-think3.png",
+   "ms": 100,
+   "x": 320,
+   "y": 11200,
+   "a": 5
+  },
+  {
+   "file": "vex-think4.png",
+   "ms": 100,
+   "x": 640,
+   "y": 11200,
+   "a": 5
+  },
+  {
+   "file": "vex-think5.png",
+   "ms": 100,
+   "x": 960,
+   "y": 11200,
+   "a": 5
+  },
+  {
+   "file": "vex-think6.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 11200,
+   "a": 5
+  },
+  {
+   "file": "vex-think7.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 11200,
+   "a": 5
+  },
+  {
+   "file": "vex-think8.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 11200,
+   "a": 5
+  },
+  {
+   "file": "vex-think9.png",
+   "ms": 100,
+   "x": 0,
+   "y": 11520,
+   "a": 5
+  },
+  {
+   "file": "vex-think10.png",
+   "ms": 100,
+   "x": 320,
+   "y": 11520,
+   "a": 5
+  },
+  {
+   "file": "vex-think11.png",
+   "ms": 100,
+   "x": 640,
+   "y": 11520,
+   "a": 5
+  },
+  {
+   "file": "vex-think12.png",
+   "ms": 100,
+   "x": 960,
+   "y": 11520,
+   "a": 5
+  },
+  {
+   "file": "vex-think13.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 11520,
+   "a": 5
+  },
+  {
+   "file": "vex-think14.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 11520,
+   "a": 5
+  },
+  {
+   "file": "vex-think15.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 11520,
+   "a": 5
+  },
+  {
+   "file": "vex-think16.png",
+   "ms": 100,
+   "x": 0,
+   "y": 11840,
+   "a": 5
+  },
+  {
+   "file": "vex-think17.png",
+   "ms": 100,
+   "x": 320,
+   "y": 11840,
+   "a": 5
+  },
+  {
+   "file": "vex-think18.png",
+   "ms": 100,
+   "x": 640,
+   "y": 11840,
+   "a": 5
+  },
+  {
+   "file": "vex-think19.png",
+   "ms": 100,
+   "x": 960,
+   "y": 11840,
+   "a": 5
+  },
+  {
+   "file": "vex-think20.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 11840,
+   "a": 5
+  },
+  {
+   "file": "vex-think21.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 11840,
+   "a": 5
+  },
+  {
+   "file": "vex-think22.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 11840,
+   "a": 5
+  },
+  {
+   "file": "vex-think23.png",
+   "ms": 100,
+   "x": 0,
+   "y": 12160,
+   "a": 5
+  },
+  {
+   "file": "vex-think24.png",
+   "ms": 100,
+   "x": 320,
+   "y": 12160,
+   "a": 5
+  },
+  {
+   "file": "vex-think25.png",
+   "ms": 100,
+   "x": 640,
+   "y": 12160,
+   "a": 5
+  },
+  {
+   "file": "vex-think26.png",
+   "ms": 100,
+   "x": 960,
+   "y": 12160,
+   "a": 5
+  },
+  {
+   "file": "vex-think27.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 12160,
+   "a": 5
+  },
+  {
+   "file": "vex-think28.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 12160,
+   "a": 5
+  },
+  {
+   "file": "vex-think29.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 12160,
+   "a": 5
+  },
+  {
+   "file": "vex-think30.png",
+   "ms": 100,
+   "x": 0,
+   "y": 12480,
+   "a": 5
+  }
+ ],
+ "vex-sitsleep": [
+  {
+   "file": "vex-sitsleep1.png",
+   "ms": 100,
+   "x": 320,
+   "y": 12480,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep2.png",
+   "ms": 100,
+   "x": 640,
+   "y": 12480,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep3.png",
+   "ms": 100,
+   "x": 960,
+   "y": 12480,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep4.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 12480,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep5.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 12480,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep6.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 12480,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep7.png",
+   "ms": 100,
+   "x": 0,
+   "y": 12800,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep8.png",
+   "ms": 100,
+   "x": 320,
+   "y": 12800,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep9.png",
+   "ms": 100,
+   "x": 640,
+   "y": 12800,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep10.png",
+   "ms": 100,
+   "x": 960,
+   "y": 12800,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep11.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 12800,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep12.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 12800,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep13.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 12800,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep14.png",
+   "ms": 100,
+   "x": 0,
+   "y": 13120,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep15.png",
+   "ms": 100,
+   "x": 320,
+   "y": 13120,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep16.png",
+   "ms": 100,
+   "x": 640,
+   "y": 13120,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep17.png",
+   "ms": 100,
+   "x": 960,
+   "y": 13120,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep18.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 13120,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep19.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 13120,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep20.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 13120,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep21.png",
+   "ms": 100,
+   "x": 0,
+   "y": 13440,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep22.png",
+   "ms": 100,
+   "x": 320,
+   "y": 13440,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep23.png",
+   "ms": 100,
+   "x": 640,
+   "y": 13440,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep24.png",
+   "ms": 100,
+   "x": 960,
+   "y": 13440,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep25.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 13440,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep26.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 13440,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep27.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 13440,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep28.png",
+   "ms": 100,
+   "x": 0,
+   "y": 13760,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep29.png",
+   "ms": 100,
+   "x": 320,
+   "y": 13760,
+   "a": 5
+  },
+  {
+   "file": "vex-sitsleep30.png",
+   "ms": 100,
+   "x": 640,
+   "y": 13760,
+   "a": 5
+  }
+ ],
+ "vex-sleeploop": [
+  {
+   "file": "vex-sleeploop1.png",
+   "ms": 100,
+   "x": 960,
+   "y": 13760,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop2.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 13760,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop3.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 13760,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop4.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 13760,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop5.png",
+   "ms": 100,
+   "x": 0,
+   "y": 14080,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop6.png",
+   "ms": 100,
+   "x": 320,
+   "y": 14080,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop7.png",
+   "ms": 100,
+   "x": 640,
+   "y": 14080,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop8.png",
+   "ms": 100,
+   "x": 960,
+   "y": 14080,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop9.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 14080,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop10.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 14080,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop11.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 14080,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop12.png",
+   "ms": 100,
+   "x": 0,
+   "y": 14400,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop13.png",
+   "ms": 100,
+   "x": 320,
+   "y": 14400,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop14.png",
+   "ms": 100,
+   "x": 640,
+   "y": 14400,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop15.png",
+   "ms": 100,
+   "x": 960,
+   "y": 14400,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop16.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 14400,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop17.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 14400,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop18.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 14400,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop19.png",
+   "ms": 100,
+   "x": 0,
+   "y": 14720,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop20.png",
+   "ms": 100,
+   "x": 320,
+   "y": 14720,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop21.png",
+   "ms": 100,
+   "x": 640,
+   "y": 14720,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop22.png",
+   "ms": 100,
+   "x": 960,
+   "y": 14720,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop23.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 14720,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop24.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 14720,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop25.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 14720,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop26.png",
+   "ms": 100,
+   "x": 0,
+   "y": 15040,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop27.png",
+   "ms": 100,
+   "x": 320,
+   "y": 15040,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop28.png",
+   "ms": 100,
+   "x": 640,
+   "y": 15040,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop29.png",
+   "ms": 100,
+   "x": 960,
+   "y": 15040,
+   "a": 5
+  },
+  {
+   "file": "vex-sleeploop30.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 15040,
+   "a": 5
+  }
+ ],
+ "vex-coffee": [
+  {
+   "file": "vex-coffee1.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 15040,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee2.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 15040,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee3.png",
+   "ms": 100,
+   "x": 0,
+   "y": 15360,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee4.png",
+   "ms": 100,
+   "x": 320,
+   "y": 15360,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee5.png",
+   "ms": 100,
+   "x": 640,
+   "y": 15360,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee6.png",
+   "ms": 100,
+   "x": 960,
+   "y": 15360,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee7.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 15360,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee8.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 15360,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee9.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 15360,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee10.png",
+   "ms": 100,
+   "x": 0,
+   "y": 15680,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee11.png",
+   "ms": 100,
+   "x": 320,
+   "y": 15680,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee12.png",
+   "ms": 100,
+   "x": 640,
+   "y": 15680,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee13.png",
+   "ms": 100,
+   "x": 960,
+   "y": 15680,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee14.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 15680,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee15.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 15680,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee16.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 15680,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee17.png",
+   "ms": 100,
+   "x": 0,
+   "y": 16000,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee18.png",
+   "ms": 100,
+   "x": 320,
+   "y": 16000,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee19.png",
+   "ms": 100,
+   "x": 640,
+   "y": 16000,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee20.png",
+   "ms": 100,
+   "x": 960,
+   "y": 16000,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee21.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 16000,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee22.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 16000,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee23.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 16000,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee24.png",
+   "ms": 100,
+   "x": 0,
+   "y": 16320,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee25.png",
+   "ms": 100,
+   "x": 320,
+   "y": 16320,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee26.png",
+   "ms": 100,
+   "x": 640,
+   "y": 16320,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee27.png",
+   "ms": 100,
+   "x": 960,
+   "y": 16320,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee28.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 16320,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee29.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 16320,
+   "a": 5
+  },
+  {
+   "file": "vex-coffee30.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 16320,
    "a": 5
   }
  ]
