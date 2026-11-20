@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Notch</title><style>
+<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Notch</title><style>
 *{box-sizing:border-box;margin:0}html,body{height:100%;background:transparent;overflow:hidden;font:13px/1.45 system-ui,sans-serif;color:#f2eee5;-webkit-user-select:none;user-select:none}
 #stage{display:flex;flex-direction:column;align-items:center}
 .hidden{display:none!important}
@@ -102,7 +102,7 @@ body[data-view="chat"] #view-deck{display:none}
 #chat-input:focus{outline:2px solid #d94f2b}
 #chat-send{width:36px;height:36px;border:0;border-radius:50%;background:#d94f2b;color:#fff;font-weight:800;font-size:16px;cursor:pointer;flex:none}
 #chat-send:disabled{opacity:.5}
-</style></head><body data-state="collapsed" data-view="deck"><div id="stage">
+</style><link rel="stylesheet" href="notch.css"></head><body data-state="collapsed" data-view="deck"><div id="stage">
 <div id="sliver" data-hit></div>
 <div id="peek" data-hit title="Notch - hover to open">
 <img id="peek-cat" src="vex-head.png" draggable="false" alt="Pet peeking from the notch">
@@ -160,17 +160,17 @@ body[data-view="chat"] #view-deck{display:none}
 </div>
 </div>
 <div id="view-chat">
-<p id="chat-ask">Ask Dex anything…</p>
+<p id="chat-ask">What are we working on?</p>
 <div id="chat-status">Idle</div>
 <div id="chat-reply"></div>
 <label id="consent-row"><input type="checkbox" id="chat-consent" style="width:auto"><span id="consent-text">Allow this message to go to the cloud provider</span></label>
-<div id="chat-bar">
+<div id="local-model-row"><label for="local-model">Local model</label><select id="local-model" aria-label="Installed local model"><option value="">Checking models...</option></select><button id="refresh-models" title="Refresh installed models" aria-label="Refresh installed models">↻</button></div><div id="model-status" role="status"></div><div id="chat-bar">
 <select id="provider" aria-label="Brain provider">
 <option value="local">Local</option>
 <option value="cloud">OpenRouter</option>
 <option value="groq">Groq</option>
 </select>
-<input id="chat-input" type="text" maxlength="5000" placeholder="Message Dex" aria-label="Chat message">
+<input id="chat-input" type="text" maxlength="5000" placeholder="Message Daru" aria-label="Chat message">
 <button id="chat-send" title="Send">↑</button>
 </div>
 </div>

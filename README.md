@@ -32,6 +32,10 @@ npm start
 
 Do not enable power mode or add credentials to an untrusted checkout.
 
+### Notch quick start
+
+Hover over Daru at the top edge to open the Soft Cyan deck. The pencil edits your saved deck (up to 12 tiles); category tabs and search find more apps and actions. The chat icon opens text chat. In Local mode, choose an installed Ollama model from the local-model selector; selection saves immediately. Refresh retries model discovery and shows connection errors inline. OpenRouter and Groq still require your own key and consent for each message. The side stats pill shows CPU, RAM and battery, or `--` when a reading is unavailable. Existing timer, music and system-volume controls remain in the deck.
+
 ### Local AI and voice setup
 
 Open the dashboard and choose **Run setup**. Setup checks available RAM, selects a local Ollama model and downloads brain/voice components. Internet access, disk space and time are needed for downloads; inference performance depends on your hardware.

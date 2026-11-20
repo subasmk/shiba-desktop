@@ -33,6 +33,9 @@ let pkList = [];           // candidates currently shown (index-based clicks)
 const iconCache = new Map(); // app name -> data URL | null (null = no icon, letter fallback)
 const iconWanted = new Set();
 
+const ACTION_PATHS={chat:'M4 5h16v11H9l-5 4z',mic:'M9 4a3 3 0 0 1 6 0v7a3 3 0 0 1-6 0zm-3 6v2a6 6 0 0 0 12 0v-2M12 18v4M8 22h8',note:'M5 3h14v18H5zM8 8h8M8 12h8M8 16h5',timer:'M12 7v6l4 2M9 2h6M12 2v3M20 13a8 8 0 1 1-16 0 8 8 0 0 1 16 0',music:'M10 17V5l10-2v12M10 8l10-2M10 17a3 2 0 1 1-3-2 3 2 0 0 1 3 2M20 15a3 2 0 1 1-3-2 3 2 0 0 1 3 2',playlists:'M4 5h13M4 10h13M4 15h7M17 13v7M14 17l3 3 3-3',routines:'M8 5h13M8 12h13M8 19h13M2 5l1 1 2-3M2 12l1 1 2-3M2 19l1 1 2-3',setup:'M12 3v12M7 10l5 5 5-5M4 17v4h16v-4',vision:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zm13 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0',dnd:'M6 8a6 6 0 0 1 12 0c0 8 3 8 3 8H3s3 0 3-8M9 20h6M3 3l18 18',clipboard:'M9 4H5v18h14V4h-4M9 2h6v5H9z',apps:'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z',settings:'M4 6h16M4 12h16M4 18h16M8 3v6M16 9v6M9 15v6',close:'M6 6l12 12M6 18L18 6',volume:'M3 9h4l5-4v14l-5-4H3zM16 8q6 4 0 8',muted:'M3 9h4l5-4v14l-5-4H3zM16 9l6 6M16 15l6-6',battery:'M3 7h16v12H3zM19 11h3v4h-3M6 10v6M10 10v6',edit:'M4 16L16 4l4 4L8 20H4z'};
+function lineIcon(id){const alias={'run-routine':'routines','music-next':'music','discord-post':'chat','vol-up':'volume','vol-down':'volume','vol-mute':'muted','clip-clear':'clipboard'};const p=ACTION_PATHS[alias[id]||id];return p?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+p+'"/></svg>':'';}
+
 // --- rendering -----------------------------------------------------------------
 function tileInner(tile) {
   if (tile.kind === 'app') {
@@ -45,7 +48,7 @@ function tileInner(tile) {
     const v = tile.id === 'cpu' ? stats.cpuPct : tile.id === 'ram' ? stats.ramPct : batteryPct;
     return `<span class="tic"><span class="val">${v == null ? '—' : v + '%'}</span></span>`;
   }
-  return `<span class="tic">${esc(N.tileIcon(tile))}</span>`;
+  return `<span class="tic">${(lineIcon(tile.id)||esc(N.tileIcon(tile)))}</span>`;
 }
 function tileActive(tile) {
   if (tile.kind === 'action' && tile.id === 'dnd') return dnd;
@@ -84,7 +87,7 @@ function renderPicker() {
       const url = iconCache.get(tile.name);
       icon = url ? `<img src="${url}" alt="" style="width:20px;height:20px;border-radius:6px">` : `<span class="letter" style="background:${letterColor(tile.name)}">${esc((tile.name || '?').charAt(0).toUpperCase())}</span>`;
       if (!url) requestIcon(tile.name);
-    } else icon = `<span class="ic">${esc(N.tileIcon(tile))}</span>`;
+    } else icon = `<span class="ic">${(lineIcon(tile.id)||esc(N.tileIcon(tile)))}</span>`;
     return `<button class="cand${t.inDeck ? ' added' : ''}" data-cand="${i}" title="${esc(N.tileLabel(tile))}">${icon}<span>${esc(N.tileLabel(tile))}</span>${t.inDeck ? '<span class="tag">Added</span>' : ''}</button>`;
   }).join('');
 }
@@ -154,7 +157,7 @@ function render() {
   document.querySelector('[data-util="chat"]').classList.toggle('on', machine.view === 'chat');
   document.querySelector('[data-util="deck"]').classList.toggle('on', machine.view === 'deck');
   const muteBtn = document.querySelector('[data-util="mute"]');
-  muteBtn.textContent = muted ? '🔇' : '🔊';
+  muteBtn.innerHTML=lineIcon(muted?'muted':'volume');muteBtn.setAttribute('aria-label',muted?'Unmute wake word':'Mute wake word');
   muteBtn.classList.toggle('on', muted);
   renderQuick();
   renderGrid();
@@ -169,7 +172,7 @@ function applyState(d) {
   if (Array.isArray(d.deck)) deck = N.saneDeck(d.deck);
   if (d.mascot) {
     mascotName = String(d.mascot);
-    $('#chat-ask').textContent = `Ask ${mascotName} anything…`;
+    $('#chat-ask').textContent = 'What are we working on?';
     $('#chat-input').placeholder = `Message ${mascotName}`;
     const head = 'vex-head.png'; // Daru-only build
     const peek = $('#peek-cat'), cat = $('#cat');
@@ -239,7 +242,7 @@ function runTile(tile) {
     return;
   }
   switch (tile.id) {
-    case 'chat': machine.setView('chat'); render(); $('#chat-input').focus(); break;
+    case 'chat': machine.setView('chat'); render(); $('#chat-input').focus();refreshLocalModels(); break;
     case 'vision': machine.setView('chat'); render(); prefill('where is '); break;
     case 'discord-post': machine.setView('chat'); render(); prefill('post to discord: '); break;
     case 'dnd': api.call('notch-action', { action: 'dnd' }).then((r) => { if (r && typeof r.dnd === 'boolean') { dnd = r.dnd; render(); } flash(dnd ? 'Do not disturb ON — the pet stays quiet.' : 'Do not disturb off.'); }).catch(() => flash('Could not toggle Do not disturb.')); break;
@@ -275,7 +278,7 @@ document.querySelectorAll('[data-util]').forEach((btn) => btn.addEventListener('
     render();
   } else if (what === 'dash') { api.send('open-dashboard'); }
   else if (what === 'deck') { machine.setView('deck'); render(); }
-  else if (what === 'chat') { machine.setView('chat'); render(); $('#chat-input').focus(); }
+  else if (what === 'chat') { machine.setView('chat'); render(); $('#chat-input').focus();refreshLocalModels(); }
 }));
 
 // --- chat view -----------------------------------------------------------------------------
@@ -284,13 +287,19 @@ function prefill(text) {
   input.value = text;
   input.focus();
 }
+let modelRefreshId=0,modelSavePending=null;
+async function refreshLocalModels(){const id=++modelRefreshId;const out=$('#model-status'),select=$('#local-model');$('#refresh-models').disabled=true;out.textContent='Checking your local Ollama models...';select.disabled=true;try{const [names,st]=await Promise.all([api.call('models'),api.call('get-state')]);if(id!==modelRefreshId)return;select.replaceChildren();const current=st.ollamaModel||'';if(!current){const blank=document.createElement('option');blank.value='';blank.textContent='Choose a local model';select.append(blank);}const options=[...new Set([current,...names].filter(Boolean))];for(const name of options){const op=document.createElement('option');op.value=name;op.textContent=name+(names.includes(name)?'':' (not installed)');select.append(op);}if(!options.length){const op=document.createElement('option');op.value='';op.textContent='No installed models';select.append(op);}select.value=current||'';out.textContent=names.length?'Choose a model to save it for local chat.':'Ollama returned no installed models.';}catch(e){out.textContent=cleanErr(e);}finally{if(id===modelRefreshId){$('#refresh-models').disabled=false;select.disabled=false;}}}
+$('#local-model').addEventListener('change',()=>{const model=$('#local-model').value;if(!model)return;$('#chat-send').disabled=true;modelSavePending=api.call('save-settings',{ollamaModel:model}).then(()=>{$('#model-status').textContent='Local model saved: '+model;}).catch(e=>{$('#model-status').textContent=cleanErr(e);throw e;}).finally(()=>{modelSavePending=null;$('#chat-send').disabled=false;});modelSavePending.catch(()=>{});});
+$('#refresh-models').addEventListener('click',refreshLocalModels);
+for(const [sel,id] of [['#edit-btn','edit'],['[data-util=dash]','settings'],['[data-util=hide]','close'],['[data-util=deck]','apps'],['[data-util=chat]','chat']])$(sel).innerHTML=lineIcon(id);
 function providerChanged() {
-  const p = $('#provider').value;
+  const p = $('#provider').value;$('#local-model-row').classList.toggle('hidden',p!=='local');$('#model-status').classList.toggle('hidden',p!=='local');if(p==='local')refreshLocalModels();
   $('#consent-row').classList.toggle('show', p !== 'local');
   $('#consent-text').textContent = p === 'groq' ? 'Allow this message to go to Groq' : 'Allow this message to go to the free cloud provider';
 }
 $('#provider').addEventListener('change', providerChanged);
 function sendChat() {
+  if($('#chat-send').disabled||modelSavePending)return;
   const input = $('#chat-input');
   const text = input.value.trim();
   if (!text) return;
@@ -414,3 +423,5 @@ if (navigator.getBattery) {
 // Boot.
 render();
 api.call('notch-get-state').then(applyState).catch(() => {});
+
+refreshLocalModels();
