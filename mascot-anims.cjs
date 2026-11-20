@@ -74,7 +74,7 @@
       if (name === 'drag' && has('vex-drag')) return 'vex-drag';
       if ((name === 'landing' || name === 'fall') && has('vex-landing')) return 'vex-landing';
       if (name === 'falling' && has('vex-fall')) return 'vex-fall'; /* in-air loop after a throw release, until touchdown (his 13:55 video) */
-      if (name === 'fly' && has('vex-fly')) return 'vex-fly'; /* upward throw: superhero fly loop until touchdown (his 14:20 GIF, 'WHEN I THROW UP ONLY') */
+      if (name === 'fly' && has('vex-fly')) return 'vex-fly'; /* unwired since his 15:04 word ('ANTHA FLYING ANIMATION VENDA REMOVE PANNIRU'): throws always play the fall flutter; the art stays in the atlas */
       if (name === 'drop' && has('vex-drop')) return 'vex-drop'; /* gentle release: hang, glide down, settle standing (his 14:24 GIF, 'Normal ah kita veichu drag ah release panna ithu') */
       if (name === 'screenpunch' && has('vex-punch')) return 'vex-punch'; /* fury punch at the cursor before the screen-break overlay (his 14:29 MP4) */
       if ((name === 'rage' || name === 'swing') && has('vex-rage')) return 'vex-rage';
@@ -91,7 +91,7 @@
       // sustained wide-mouth flail, then settling back to neutral - wired
       // as his poke reaction (touch-head/body/paws), which had no art.
       if ((name === 'touch-head' || name === 'touch-body' || name === 'touch-paws') && has('vex-shock')) return 'vex-shock';
-      if (name === 'touch-scare' && has('vex-scare')) return 'vex-scare'; /* his 11:27 boo GIF is the SECOND hit animation (his 14:47 word: '2 HIT ANIMATION ANNUPUNEN ANA ONNU THA PLAY AGUTHU' - only one was playing); alternates with shock per region */
+      if (name === 'touch-scare' && has('vex-scare')) return 'vex-scare'; /* his 11:27 boo GIF, right-click on Vex (his 15:06 word: 'ITHU RIGHT SIDE CICK PANA PLAY AGANUM'); left-click pokes keep vex-shock only */
       // His 'Talking gif' MP4 (Nov 20 2026): standing talk loop, mouth
       // cycling open/closed/smile - the speaking state (voice-ui sends
       // 'talk' while the assistant voice speaks; it loops, not finite).
@@ -201,14 +201,7 @@
     }
     return sprite;
   }
-  // Vex's two hit clips alternate per region (his 14:47 report: of the
-  // two hit animations he sent, only one ever played).
-  const VEX_TOUCH_ROTATION = {
-    'touch-head': ['touch-head', 'touch-scare'],
-    'touch-body': ['touch-body', 'touch-scare'],
-    'touch-paws': ['touch-paws', 'touch-scare'],
-  };
-  const api = { DEX_FALLBACK, DEX_TOUCH_ROTATION, VEX_TOUCH_ROTATION, VEX_WALK_STATES, resolveSprite, DEX_EVENTS, REX_EVENTS, VEX_EVENTS, resolveEvent };
+  const api = { DEX_FALLBACK, DEX_TOUCH_ROTATION, VEX_WALK_STATES, resolveSprite, DEX_EVENTS, REX_EVENTS, VEX_EVENTS, resolveEvent };
   if (typeof module === 'object') module.exports = api;
   else root.MascotAnims = api;
 })(globalThis);
