@@ -97,15 +97,16 @@ function timerClockMs() {
 }
 function renderQuick() {
   $('#t-clock').textContent = N.formatCountdown(timerClockMs());
+  $('#t-clock').classList.toggle('locked', timer.running);
+  $('#t-clock').title = timer.running ? 'Focus timer' : 'Click to change length (15 / 25 / 50 min)';
   $('#t-toggle').textContent = timer.running ? (timer.paused ? 'Resume' : 'Pause') : 'Start';
-  const activeMin = timer.running ? Math.round(timer.durationMs / 60000) : presetMin;
-  document.querySelectorAll('#t-presets .chip').forEach((c) => c.classList.toggle('on', Number(c.dataset.preset) === activeMin));
   const mb = $('#musicbar');
   if (musicNow.title) {
     mb.classList.remove('hidden');
+    $('#musicdiv').style.display = '';
     $('#m-title').textContent = musicNow.title;
     $('#m-toggle').textContent = musicNow.playing ? '⏸' : '▶';
-  } else mb.classList.add('hidden');
+  } else { mb.classList.add('hidden'); $('#musicdiv').style.display = 'none'; }
 }
 setInterval(() => { if (timer.running && !timer.paused && (machine.state === 'open' || machine.state === 'hover')) $('#t-clock').textContent = N.formatCountdown(timerClockMs()); }, 1000);
 function cleanErr(err) { return String((err && err.message) || err).replace(/^Error invoking remote method '[^']+': /, '').replace(/^Error: /, ''); }
@@ -118,11 +119,10 @@ $('#t-toggle').addEventListener('click', () => {
 $('#t-reset').addEventListener('click', () => {
   api.call('notch-action', { action: 'timer-reset' }).then(applyTimer).catch((e) => flash(cleanErr(e)));
 });
-$('#t-presets').addEventListener('click', (e) => {
-  const chip = e.target.closest('[data-preset]');
-  if (!chip) return;
-  if (timer.running) { flash('Reset the timer to change its length.'); return; }
-  presetMin = Number(chip.dataset.preset) || 25;
+$('#t-clock').addEventListener('click', () => {
+  if (timer.running) return; // length is locked while a timer runs
+  const presets = [15, 25, 50];
+  presetMin = presets[(presets.indexOf(presetMin) + 1) % presets.length];
   renderQuick();
 });
 function musicAction(action) {

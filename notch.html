@@ -56,20 +56,21 @@ body.editing .tile .minus{display:flex;align-items:center;justify-content:center
 .slot{border:1.5px dashed #3d3d48;border-radius:14px;min-height:84px;display:none}
 body.editing .slot{display:block}
 #flash{min-height:15px;color:#ffb84d;font-size:11.5px;margin-top:8px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* --- quick bar: pomodoro + music mini-player + volume (deck view) --- */
-.qbar{display:flex;align-items:center;gap:8px;margin-top:8px;padding:6px 10px;border:1px solid #2c2c35;border-radius:12px;background:#141419}
-.qic{font-size:14px;flex:none}
-#t-clock{font-weight:800;font-variant-numeric:tabular-nums;font-size:14px;min-width:47px}
-#t-presets{display:flex;gap:4px}
-.chip{border:1px solid #2c2c35;border-radius:999px;background:#1d1d24;color:#9a97a3;padding:2px 9px;cursor:pointer;font-size:11px;font:inherit}
-.chip.on{background:#f2eee5;color:#101014;font-weight:700}
-.qbtn{border:0;border-radius:999px;padding:4px 12px;background:#d94f2b;color:#fff;font-weight:700;cursor:pointer;font-size:11.5px;font:inherit;flex:none}
-.qbtn.ghost{background:#26262e;color:#f2eee5;font-weight:600}
+/* --- quick bar: ONE slim row (pomodoro / music / volume), no boxes --- */
+#quickbar{display:flex;align-items:center;gap:10px;margin-top:9px;padding-top:9px;border-top:1px solid #23232b}
+.qgroup{display:flex;align-items:center;gap:6px;min-width:0}
+.qdiv{width:1px;height:18px;background:#2c2c35;flex:none}
+.qic{font-size:13px;flex:none}
+#t-clock{font-weight:800;font-variant-numeric:tabular-nums;font-size:13.5px;min-width:42px;cursor:pointer}
+#t-clock.locked{cursor:default}
+.qbtn{border:0;border-radius:999px;padding:3px 11px;background:#d94f2b;color:#fff;font-weight:700;cursor:pointer;font-size:11px;font:inherit;flex:none}
 .qbtn:hover{filter:brightness(1.2)}
-#m-title{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;color:#d8d5dd}
-#musicbar .qbtn{background:#26262e;padding:4px 10px}
-#v-slider{flex:1;accent-color:#d94f2b;cursor:pointer}
-#v-val{min-width:37px;text-align:right;font-variant-numeric:tabular-nums;color:#b9b7c0;font-size:11.5px}
+.qicon{width:24px;height:24px;border:0;border-radius:50%;background:transparent;color:#b9b7c0;cursor:pointer;font-size:12px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.qicon:hover{background:#26262e;color:#f2eee5}
+#musicbar{flex:1}
+#m-title{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;color:#d8d5dd;min-width:0}
+#v-slider{width:96px;accent-color:#d94f2b;cursor:pointer;flex:none}
+#v-val{min-width:34px;font-variant-numeric:tabular-nums;color:#9a97a3;font-size:11px}
 /* --- edit-mode picker --- */
 #picker{display:none;margin-top:10px;border-top:1px solid #2c2c35;padding-top:10px}
 body.editing #picker{display:block}
@@ -129,25 +130,22 @@ body[data-view="chat"] #view-deck{display:none}
 </header>
 <div id="view-deck">
 <div id="quickbar">
-<div id="timerbar" class="qbar">
+<div class="qgroup" id="timerbar">
 <span class="qic">⏱</span>
-<span id="t-clock">25:00</span>
-<span id="t-presets">
-<button class="chip" data-preset="15">15</button>
-<button class="chip on" data-preset="25">25</button>
-<button class="chip" data-preset="50">50</button>
-</span>
+<span id="t-clock" title="Click to change length (15 / 25 / 50 min)">25:00</span>
 <button id="t-toggle" class="qbtn">Start</button>
-<button id="t-reset" class="qbtn ghost">Reset</button>
+<button id="t-reset" class="qicon" title="Reset timer">↺</button>
 </div>
-<div id="musicbar" class="qbar hidden">
+<div class="qdiv"></div>
+<div class="qgroup hidden" id="musicbar">
 <span class="qic">🎵</span>
 <span id="m-title"></span>
-<button class="qbtn" id="m-prev" title="Previous track">⏮</button>
-<button class="qbtn" id="m-toggle" title="Play / pause">⏸</button>
-<button class="qbtn" id="m-next" title="Next track">⏭</button>
+<button class="qicon" id="m-prev" title="Previous track">⏮</button>
+<button class="qicon" id="m-toggle" title="Play / pause">⏸</button>
+<button class="qicon" id="m-next" title="Next track">⏭</button>
 </div>
-<div id="volbar" class="qbar">
+<div class="qdiv" id="musicdiv" style="display:none"></div>
+<div class="qgroup" id="volbar">
 <span class="qic">🔊</span>
 <input id="v-slider" type="range" min="0" max="100" value="50" aria-label="System volume">
 <span id="v-val">50%</span>
