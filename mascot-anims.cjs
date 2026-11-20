@@ -76,6 +76,9 @@
       if ((name === 'rage' || name === 'swing') && has('vex-rage')) return 'vex-rage';
       if (name === 'emote' && has('vex-laugh')) return 'vex-laugh';
       if (VEX_WALK_STATES.has(name) && has('vex-walk')) return 'vex-walk';
+      if (name === 'sit-down' && has('vex-sitdown')) return 'vex-sitdown';
+      if ((name === 'thinking' || name === 'thinking-long' || name === 'confused') && has('vex-think')) return 'vex-think';
+      if (name === 'sleep-down' && has('vex-sleepdown')) return 'vex-sleepdown';
       if ((name === 'sit' || name === 'sleep') && has('vex-sit')) return 'vex-sit';
       return 'vex-idle';
     }
@@ -149,6 +152,7 @@
   const VEX_EVENTS = {
     'ambient-emote': 'vex-laugh',
     'react-success': 'vex-laugh',
+    'react-confused': 'vex-think',
   };
   // event: semantic name ('thinking', 'react-success', ...). Returns the
   // sprite to play, or null when the name is not a known event or this

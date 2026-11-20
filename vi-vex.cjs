@@ -15,13 +15,39 @@ const xdo=s=>execSync('xdotool '+s);
  await sleep(1500);
  const send=async name=>app.evaluate(({BrowserWindow},n)=>{BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('mode=pet')).webContents.send('pet-state',n)},name);
  fs.mkdirSync('/downloads/vex-frames',{recursive:true});let frame=0;
- for(const [name,prefix,shots] of [['idle','vex-idle',30],['walk','vex-walk',16],['sit','vex-sit',30],['landing','vex-landing',30],['rage','vex-rage',30],['emote','vex-laugh',30]]){
+ for(const [name,prefix,shots] of [['idle','vex-idle',30],['walk','vex-walk',16],['landing','vex-landing',30],['rage','vex-rage',30],['emote','vex-laugh',30]]){
   await send(name);const hashes=new Set();let f=null;
   for(let i=0;i<shots;i++){await sleep(100);const b=await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});hashes.add(crypto.createHash('sha256').update(b).digest('hex'));if(i===3)f=await pet.locator('.pet-image').getAttribute('data-frame');}
   assert(hashes.size>2,name+' must visibly animate');
   assert(f&&f.startsWith(prefix),name+' resolved to '+f);
   console.log(name,'->',f,'distinct',hashes.size);
  }
+ // sit enters through his sit-down transition clip, then chains into the seated pose
+ await send('sit');
+ {const hashes=new Set();let f=null;
+  for(let i=0;i<12;i++){await sleep(100);const b=await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});hashes.add(crypto.createHash('sha256').update(b).digest('hex'));if(i===3)f=await pet.locator('.pet-image').getAttribute('data-frame');}
+  assert(hashes.size>2,'sit-down must visibly animate');
+  assert(f&&f.startsWith('vex-sitdown'),'sit enters through vex-sitdown, got '+f);
+  let chained=null;
+  for(let i=0;i<40;i++){await sleep(150);const cur=await pet.locator('.pet-image').getAttribute('data-frame');if(cur&&/^vex-sit\d/.test(cur)){chained=cur;break;}}
+  assert(chained,'sit-down chains into the vex-sit pose');
+  console.log('sit ->',f,'then',chained);
+  await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});
+ }
+ // sleep enters through his sleep-down transition, then HOLDS its final frame (no sleep loop exists for vex yet)
+ await send('sleep');
+ {const hashes=new Set();let f=null;
+  for(let i=0;i<12;i++){await sleep(100);const b=await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});hashes.add(crypto.createHash('sha256').update(b).digest('hex'));if(i===3)f=await pet.locator('.pet-image').getAttribute('data-frame');}
+  assert(hashes.size>2,'sleep-down must visibly animate');
+  assert(f&&f.startsWith('vex-sleepdown'),'sleep enters through vex-sleepdown, got '+f);
+  await sleep(2600);
+  const hA=await pet.locator('.pet-image').getAttribute('data-frame');await sleep(600);const hB=await pet.locator('.pet-image').getAttribute('data-frame');
+  assert(hA&&hA===hB&&hA.startsWith('vex-sleepdown'),'sleep-down holds its final frame, got '+hA+' then '+hB);
+  assert(parseInt(hA.replace(/\D/g,''),10)===30,'held frame is the last sleep-down frame, got '+hA);
+  console.log('sleep ->',f,'holds',hA);
+  await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});
+ }
+ await send('idle');await sleep(500);
  await sleep(2500); // landing beat settles back to idle
  // Real-cursor drag toward the top-left corner: the window must stay fully
  // inside the work area and show the hanging art while dragged.
@@ -55,5 +81,5 @@ const xdo=s=>execSync('xdotool '+s);
  assert(lf&&lf.startsWith('vex-landing'),'release plays vex-landing, got '+lf);
  for(let i=0;i<6;i++){await sleep(400);await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});}
  console.log('errors',errors);assert.deepEqual(errors,[]);
- console.log('PASS: vex idle/walk/sit/landing animate; real drag clamps inside the work area; release plays the new landing beat.');
+ console.log('PASS: vex idle/walk/sit/sleep/landing animate; real drag clamps inside the work area; release plays the new landing beat.');
  }finally{await app.close();}})().catch(e=>{console.error(e);process.exit(1)});

@@ -138,7 +138,7 @@ test('events: a missing target sprite degrades (dex -> dex-idle, rex -> null)', 
 });
 
 // --- Vex (hooded horned kid, walk-cycle video + sit art, Nov 19 2026) -----
-const VEX_SPRITES = new Set(['vex-idle', 'vex-walk', 'vex-sit', 'vex-drag', 'vex-landing', 'vex-rage', 'vex-laugh']);
+const VEX_SPRITES = new Set(['vex-idle', 'vex-walk', 'vex-sit', 'vex-sitdown', 'vex-sleepdown', 'vex-think', 'vex-drag', 'vex-landing', 'vex-rage', 'vex-laugh']);
 const hasVex = (n) => VEX_SPRITES.has(n);
 
 test('vex: movement states play the walk loop, drag shows his hanging art', () => {
@@ -151,6 +151,16 @@ test('vex: movement states play the walk loop, drag shows his hanging art', () =
 test('vex: sit and sleep show the seated pose', () => {
   assert.equal(resolveSprite('sit', 'vex', hasVex), 'vex-sit');
   assert.equal(resolveSprite('sleep', 'vex', hasVex), 'vex-sit');
+});
+
+test('vex: sit-down and sleep-down transitions map to their own clips', () => {
+  assert.equal(resolveSprite('sit-down', 'vex', hasVex), 'vex-sitdown');
+  assert.equal(resolveSprite('sleep-down', 'vex', hasVex), 'vex-sleepdown');
+});
+
+test('vex: chin-stroke with question marks is his thinking / confused beat', () => {
+  assert.equal(resolveSprite('thinking', 'vex', hasVex), 'vex-think');
+  assert.equal(resolveSprite('thinking-long', 'vex', hasVex), 'vex-think');
 });
 
 test('vex: landing and fall play his drop-and-dazed beat', () => {
@@ -196,7 +206,7 @@ test('vex: sprites referenced by resolution exist in the real manifest', () => {
 });
 
 test('vex: semantic events resolve through state fallback to real sprites', () => {
-  for (const event of ['thinking', 'thinking-long', 'react-error', 'react-confused', 'ambient-scan']) {
+  for (const event of ['thinking', 'thinking-long', 'react-error', 'ambient-scan']) { /* react-confused now maps straight to his vex-think clip */
     assert.equal(resolveEvent(event, 'vex', hasReal), null, event);
     const sprite = resolveSprite(event, 'vex', hasReal);
     assert.ok(sprite && hasReal(sprite), event + ' -> ' + sprite);
