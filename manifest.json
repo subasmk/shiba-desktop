@@ -4362,5 +4362,217 @@
    "y": 7360,
    "a": 5
   }
+ ],
+ "vex-laugh": [
+  {
+   "file": "vex-laugh1.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 7360,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh2.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 7360,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh3.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 7360,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh4.png",
+   "ms": 100,
+   "x": 0,
+   "y": 7680,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh5.png",
+   "ms": 100,
+   "x": 320,
+   "y": 7680,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh6.png",
+   "ms": 100,
+   "x": 640,
+   "y": 7680,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh7.png",
+   "ms": 100,
+   "x": 960,
+   "y": 7680,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh8.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 7680,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh9.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 7680,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh10.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 7680,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh11.png",
+   "ms": 100,
+   "x": 0,
+   "y": 8000,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh12.png",
+   "ms": 100,
+   "x": 320,
+   "y": 8000,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh13.png",
+   "ms": 100,
+   "x": 640,
+   "y": 8000,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh14.png",
+   "ms": 100,
+   "x": 960,
+   "y": 8000,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh15.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 8000,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh16.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 8000,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh17.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 8000,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh18.png",
+   "ms": 100,
+   "x": 0,
+   "y": 8320,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh19.png",
+   "ms": 100,
+   "x": 320,
+   "y": 8320,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh20.png",
+   "ms": 100,
+   "x": 640,
+   "y": 8320,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh21.png",
+   "ms": 100,
+   "x": 960,
+   "y": 8320,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh22.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 8320,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh23.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 8320,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh24.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 8320,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh25.png",
+   "ms": 100,
+   "x": 0,
+   "y": 8640,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh26.png",
+   "ms": 100,
+   "x": 320,
+   "y": 8640,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh27.png",
+   "ms": 100,
+   "x": 640,
+   "y": 8640,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh28.png",
+   "ms": 100,
+   "x": 960,
+   "y": 8640,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh29.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 8640,
+   "a": 5
+  },
+  {
+   "file": "vex-laugh30.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 8640,
+   "a": 5
+  }
  ]
 }

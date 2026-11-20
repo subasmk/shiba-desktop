@@ -52,7 +52,9 @@
   // release) and fall; the chained getup then just returns to idle since
   // the clip already ends standing. His 9:00 GIF is an anger beat (calm,
   // puffed cheeks, anger mark and steam, back to calm), so it plays rage
-  // and the tap-combo swing like dex-rage does for Dex. Movement states
+  // and the tap-combo swing like dex-rage does for Dex. His 9:06 GIF is
+  // a belly laugh, wired as emote plus the ambient-emote and react-success
+  // events. Movement states
   // play the walk loop, drag shows the hanging art, sit/sleep show the
   // seated pose and every other state idles until more art arrives.
   const VEX_WALK_STATES = new Set(['walk', 'run', 'leap']);
@@ -65,6 +67,7 @@
       if (name === 'drag' && has('vex-drag')) return 'vex-drag';
       if ((name === 'landing' || name === 'fall') && has('vex-landing')) return 'vex-landing';
       if ((name === 'rage' || name === 'swing') && has('vex-rage')) return 'vex-rage';
+      if (name === 'emote' && has('vex-laugh')) return 'vex-laugh';
       if (VEX_WALK_STATES.has(name) && has('vex-walk')) return 'vex-walk';
       if ((name === 'sit' || name === 'sleep') && has('vex-sit')) return 'vex-sit';
       return 'vex-idle';
@@ -133,13 +136,20 @@
     'react-confused': 'scan',
     'react-idea': 'emote',
   };
+  // Vex (Nov 20 2026): his belly laugh (calm, grin, then shaking with
+  // laugh marks and tears, settling back) is his one expressive beat so
+  // far, so it carries the ambient emote slot and the success reaction.
+  const VEX_EVENTS = {
+    'ambient-emote': 'vex-laugh',
+    'react-success': 'vex-laugh',
+  };
   // event: semantic name ('thinking', 'react-success', ...). Returns the
   // sprite to play, or null when the name is not a known event or this
   // mascot has no sprite for it (callers then fall back to state
   // resolution / a plain idle beat).
   function resolveEvent(event, mascot, has) {
     if (typeof event !== 'string') return null;
-    const table = mascot === 'dex' ? DEX_EVENTS : mascot === 'rex' ? REX_EVENTS : null;
+    const table = mascot === 'dex' ? DEX_EVENTS : mascot === 'rex' ? REX_EVENTS : mascot === 'vex' ? VEX_EVENTS : null;
     if (!table) return null;
     const sprite = table[event];
     if (!sprite) return null;
@@ -148,7 +158,7 @@
     }
     return sprite;
   }
-  const api = { DEX_FALLBACK, DEX_TOUCH_ROTATION, VEX_WALK_STATES, resolveSprite, DEX_EVENTS, REX_EVENTS, resolveEvent };
+  const api = { DEX_FALLBACK, DEX_TOUCH_ROTATION, VEX_WALK_STATES, resolveSprite, DEX_EVENTS, REX_EVENTS, VEX_EVENTS, resolveEvent };
   if (typeof module === 'object') module.exports = api;
   else root.MascotAnims = api;
 })(globalThis);

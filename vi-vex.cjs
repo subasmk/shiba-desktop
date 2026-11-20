@@ -15,7 +15,7 @@ const xdo=s=>execSync('xdotool '+s);
  await sleep(1500);
  const send=async name=>app.evaluate(({BrowserWindow},n)=>{BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('mode=pet')).webContents.send('pet-state',n)},name);
  fs.mkdirSync('/downloads/vex-frames',{recursive:true});let frame=0;
- for(const [name,prefix,shots] of [['idle','vex-idle',10],['walk','vex-walk',16],['sit','vex-sit',10],['landing','vex-landing',30],['rage','vex-rage',30]]){
+ for(const [name,prefix,shots] of [['idle','vex-idle',10],['walk','vex-walk',16],['sit','vex-sit',10],['landing','vex-landing',30],['rage','vex-rage',30],['emote','vex-laugh',30]]){
   await send(name);const hashes=new Set();let f=null;
   for(let i=0;i<shots;i++){await sleep(100);const b=await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});hashes.add(crypto.createHash('sha256').update(b).digest('hex'));if(i===3)f=await pet.locator('.pet-image').getAttribute('data-frame');}
   assert(hashes.size>2,name+' must visibly animate');
