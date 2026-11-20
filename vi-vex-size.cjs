@@ -29,6 +29,14 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
  await send('pet-state','idle');await sleep(400);
  await send('pet-face',1);await sleep(300);await pet.screenshot({path:'/downloads/vex-size/face-right.png'});
  await send('pet-face',-1);await sleep(300);await pet.screenshot({path:'/downloads/vex-size/face-left.png'});
+ // poke reaction: touch-head resolves to vex-shock, plays once, back to idle
+ await send('pet-state','touch-head');await sleep(400);
+ const sf=await pet.locator('.pet-image').getAttribute('data-frame');
+ assert(sf&&sf.startsWith('vex-shock'),'touch-head resolves to vex-shock, got '+sf);
+ await pet.screenshot({path:'/downloads/vex-size/shock.png'});
+ await sleep(3400);
+ const af=await pet.locator('.pet-image').getAttribute('data-frame');
+ assert(af&&af.startsWith('vex-idle'),'shock settles back to idle, got '+af);
  console.log('errors',errors);assert.deepEqual(errors,[]);
  console.log('PASS-SCRIPT');
 }finally{await app.close();}})().catch(e=>{console.error(e);process.exit(1)});
