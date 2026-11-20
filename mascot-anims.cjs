@@ -79,6 +79,8 @@
       if (name === 'sit-down' && has('vex-sitdown')) return 'vex-sitdown';
       if ((name === 'thinking' || name === 'thinking-long' || name === 'confused') && has('vex-think')) return 'vex-think';
       if (name === 'sleep-down' && has('vex-sleepdown')) return 'vex-sleepdown';
+      if (name === 'sit-sleep' && has('vex-sitsleep')) return 'vex-sitsleep';
+      if (name === 'sleep-loop' && has('vex-sleeploop')) return 'vex-sleeploop';
       if ((name === 'sit' || name === 'sleep') && has('vex-sit')) return 'vex-sit';
       return 'vex-idle';
     }

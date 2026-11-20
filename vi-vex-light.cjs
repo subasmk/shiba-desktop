@@ -18,9 +18,10 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
  await send('sit');for(let i=0;i<14;i++){await sleep(110);await shot();} // sit-down clip
  for(let i=0;i<40;i++){await sleep(150);const f=await pet.locator('.pet-image').getAttribute('data-frame');if(f&&/^vex-sit\d/.test(f))break;}
  for(let i=0;i<4;i++){await sleep(150);await shot();} // chained seated pose
- await send('sleep');for(let i=0;i<14;i++){await sleep(110);await shot();} // sleep-down clip
- await sleep(2800);for(let i=0;i<4;i++){await sleep(200);await shot();} // held final frame
+ await send('sleep');for(let i=0;i<14;i++){await sleep(110);await shot();} // sit-to-sleep clip ('Change sit to sleep')
+ for(let i=0;i<40;i++){await sleep(150);const f=await pet.locator('.pet-image').getAttribute('data-frame');if(f&&f.startsWith('vex-sleeploop'))break;}
+ for(let i=0;i<10;i++){await sleep(110);await shot();} // Zzz sleep loop
  const hf=await pet.locator('.pet-image').getAttribute('data-frame');
- console.log('sleep holds',hf);
+ console.log('sleep loops at',hf);
  console.log('PASS light capture', frame, 'frames');
  }finally{await app.close();}})().catch(e=>{console.error(e);process.exit(1)});

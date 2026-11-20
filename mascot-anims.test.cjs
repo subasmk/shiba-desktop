@@ -138,7 +138,7 @@ test('events: a missing target sprite degrades (dex -> dex-idle, rex -> null)', 
 });
 
 // --- Vex (hooded horned kid, walk-cycle video + sit art, Nov 19 2026) -----
-const VEX_SPRITES = new Set(['vex-idle', 'vex-walk', 'vex-sit', 'vex-sitdown', 'vex-sleepdown', 'vex-think', 'vex-drag', 'vex-landing', 'vex-rage', 'vex-laugh']);
+const VEX_SPRITES = new Set(['vex-idle', 'vex-walk', 'vex-sit', 'vex-sitdown', 'vex-sleepdown', 'vex-sitsleep', 'vex-sleeploop', 'vex-think', 'vex-drag', 'vex-landing', 'vex-rage', 'vex-laugh']);
 const hasVex = (n) => VEX_SPRITES.has(n);
 
 test('vex: movement states play the walk loop, drag shows his hanging art', () => {
@@ -156,6 +156,8 @@ test('vex: sit and sleep show the seated pose', () => {
 test('vex: sit-down and sleep-down transitions map to their own clips', () => {
   assert.equal(resolveSprite('sit-down', 'vex', hasVex), 'vex-sitdown');
   assert.equal(resolveSprite('sleep-down', 'vex', hasVex), 'vex-sleepdown');
+  assert.equal(resolveSprite('sit-sleep', 'vex', hasVex), 'vex-sitsleep');
+  assert.equal(resolveSprite('sleep-loop', 'vex', hasVex), 'vex-sleeploop');
 });
 
 test('vex: chin-stroke with question marks is his thinking / confused beat', () => {

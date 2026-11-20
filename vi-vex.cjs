@@ -15,7 +15,25 @@ const xdo=s=>execSync('xdotool '+s);
  await sleep(1500);
  const send=async name=>app.evaluate(({BrowserWindow},n)=>{BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('mode=pet')).webContents.send('pet-state',n)},name);
  fs.mkdirSync('/downloads/vex-frames',{recursive:true});let frame=0;
- for(const [name,prefix,shots] of [['idle','vex-idle',30],['walk','vex-walk',16],['landing','vex-landing',30],['rage','vex-rage',30],['emote','vex-laugh',30]]){
+ for(const [name,prefix,shots] of [['idle','vex-idle',30],['walk','vex-walk',16]]){
+  await send(name);const hashes=new Set();let f=null;
+  for(let i=0;i<shots;i++){await sleep(100);const b=await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});hashes.add(crypto.createHash('sha256').update(b).digest('hex'));if(i===3)f=await pet.locator('.pet-image').getAttribute('data-frame');}
+  assert(hashes.size>2,name+' must visibly animate');
+  assert(f&&f.startsWith(prefix),name+' resolved to '+f);
+  console.log(name,'->',f,'distinct',hashes.size);
+ }
+ // sleep from standing: his idle-to-sleep clip, then the Zzz loop (tested early - the 30s idle auto-sit would otherwise seat him first)
+ await send('sleep');
+ {const hashes=new Set();let f=null;
+  for(let i=0;i<12;i++){await sleep(100);const b=await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});hashes.add(crypto.createHash('sha256').update(b).digest('hex'));if(i===3)f=await pet.locator('.pet-image').getAttribute('data-frame');}
+  assert(hashes.size>2,'sleep-down must visibly animate');
+  assert(f&&f.startsWith('vex-sleepdown'),'sleep from standing enters through vex-sleepdown, got '+f);
+  let looped=null;
+  for(let i=0;i<40;i++){await sleep(150);const cur=await pet.locator('.pet-image').getAttribute('data-frame');if(cur&&cur.startsWith('vex-sleeploop')){looped=cur;break;}}
+  assert(looped,'sleep-down chains into the vex-sleeploop Zzz loop');
+  console.log('sleep from standing ->',f,'then',looped);
+ }
+ for(const [name,prefix,shots] of [['landing','vex-landing',30],['rage','vex-rage',30],['emote','vex-laugh',30]]){
   await send(name);const hashes=new Set();let f=null;
   for(let i=0;i<shots;i++){await sleep(100);const b=await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});hashes.add(crypto.createHash('sha256').update(b).digest('hex'));if(i===3)f=await pet.locator('.pet-image').getAttribute('data-frame');}
   assert(hashes.size>2,name+' must visibly animate');
@@ -34,21 +52,19 @@ const xdo=s=>execSync('xdotool '+s);
   console.log('sit ->',f,'then',chained);
   await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});
  }
- // sleep enters through his sleep-down transition, then HOLDS its final frame (no sleep loop exists for vex yet)
+ // 'Change sit to sleep': from the seated pose, sleep enters through his sit-to-sleep clip, then loops his Zzz sleep loop
  await send('sleep');
  {const hashes=new Set();let f=null;
   for(let i=0;i<12;i++){await sleep(100);const b=await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});hashes.add(crypto.createHash('sha256').update(b).digest('hex'));if(i===3)f=await pet.locator('.pet-image').getAttribute('data-frame');}
-  assert(hashes.size>2,'sleep-down must visibly animate');
-  assert(f&&f.startsWith('vex-sleepdown'),'sleep enters through vex-sleepdown, got '+f);
-  await sleep(2600);
-  const hA=await pet.locator('.pet-image').getAttribute('data-frame');await sleep(600);const hB=await pet.locator('.pet-image').getAttribute('data-frame');
-  assert(hA&&hA===hB&&hA.startsWith('vex-sleepdown'),'sleep-down holds its final frame, got '+hA+' then '+hB);
-  assert(parseInt(hA.replace(/\D/g,''),10)===30,'held frame is the last sleep-down frame, got '+hA);
-  console.log('sleep ->',f,'holds',hA);
+  assert(hashes.size>2,'sit-sleep must visibly animate');
+  assert(f&&f.startsWith('vex-sitsleep'),'sleep from the seated pose enters through vex-sitsleep, got '+f);
+  let looped=null;
+  for(let i=0;i<40;i++){await sleep(150);const cur=await pet.locator('.pet-image').getAttribute('data-frame');if(cur&&cur.startsWith('vex-sleeploop')){looped=cur;break;}}
+  assert(looped,'sit-sleep chains into the vex-sleeploop Zzz loop');
+  console.log('sleep from sit ->',f,'then',looped);
   await pet.screenshot({path:'/downloads/vex-frames/'+String(frame++).padStart(4,'0')+'.png'});
  }
- await send('idle');await sleep(500);
- await sleep(2500); // landing beat settles back to idle
+ await sleep(2500); // settle before the drag
  // Real-cursor drag toward the top-left corner: the window must stay fully
  // inside the work area and show the hanging art while dragged.
  const wb=await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('mode=pet')).getBounds());
