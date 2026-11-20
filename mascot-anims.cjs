@@ -90,6 +90,11 @@
       // cycling open/closed/smile - the speaking state (voice-ui sends
       // 'talk' while the assistant voice speaks; it loops, not finite).
       if (name === 'talk' && has('vex-talk')) return 'vex-talk';
+      // His hello beat (Nov 20 2026: sent 12:27 closer-framed with the
+      // feet cut, re-sent 12:33 full-body in standard framing - the shipped
+      // art is the full-body re-export): arm rises, open-palm wave side to
+      // side. Wired as wave.
+      if (name === 'wave' && has('vex-wave')) return 'vex-wave';
       if ((name === 'sit' || name === 'sleep') && has('vex-sit')) return 'vex-sit';
       return 'vex-idle';
     }
