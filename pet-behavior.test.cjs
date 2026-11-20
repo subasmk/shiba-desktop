@@ -82,3 +82,40 @@ test('press lifecycle: tap vs drag vs cancel is unchanged', () => {
   assert.equal(b.due(999999, 'idle'), null);
   b.up(true);
 });
+
+test('rotation: every beat plays once before any repeat, ~10s apart', () => {
+  const b = new PetBehavior(() => 0.5);
+  b.setRotation(['wave', 'emote', 'ambient-coffee', 'ambient-laptop', 'ambient-think']);
+  const seen = [];
+  let now = 0;
+  for (let i = 0; i < 5; i++) {
+    const a = b.due(now, 'idle');
+    assert.ok(a, 'beat ' + i);
+    seen.push(a);
+    now = b.nextAt;
+  }
+  assert.equal(new Set(seen).size, 5);
+  assert.deepEqual([...seen].sort(), ['ambient-coffee', 'ambient-laptop', 'ambient-think', 'emote', 'wave']);
+  // The ~10s gate: nothing fires early.
+  assert.equal(b.due(now - 1, 'idle'), null);
+  const b2 = new PetBehavior(() => 0);
+  b2.setRotation(['wave']);
+  b2.due(100000, 'idle');
+  assert.ok(b2.nextAt - 100000 >= 9000 && b2.nextAt - 100000 <= 11000, 'spacing ' + (b2.nextAt - 100000));
+});
+
+test('rotation: clearing it restores the generic ambient path', () => {
+  const b = new PetBehavior(() => 0);
+  b.setRotation(['wave']);
+  b.setRotation(null);
+  assert.equal(b.due(0, 'idle'), 'ambient-coffee');
+});
+
+test('rotation: quiet() keeps the ~10s cadence (clip finish cannot stretch it)', () => {
+  const b = new PetBehavior(() => 0);
+  b.setRotation(['wave', 'emote']);
+  assert.equal(b.nextAt, 0); // first beat due immediately, not after the boot window
+  b.due(50000, 'idle');
+  b.quiet(53000); // the renderer calls quiet(now) when the served clip finishes
+  assert.ok(b.nextAt - 53000 >= 9000 && b.nextAt - 53000 <= 11000, 'nextAt ' + b.nextAt);
+});

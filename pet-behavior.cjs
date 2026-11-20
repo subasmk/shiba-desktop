@@ -27,17 +27,26 @@
   {event:'ambient-waiting',cooldownMs:100000},
  ];
  const AMBIENT_CHANCE=0.65;
+ // Vex rotation (Subash, Nov 20 2026: '10 sec ku oru vati remaining
+ // animation play aganum'): the generic ambient table resolves most of
+ // its picks to vex-idle, so while Vex is the mascot the idle pet instead
+ // cycles his own standalone beats - one every ~10s, each beat once
+ // before any repeat (shuffle bag), so every animation gets seen.
+ const VEX_ROTATION=['wave','emote','ambient-coffee','ambient-laptop','ambient-think'];
  class PetBehavior {
-  constructor(random=Math.random){this.random=random;this.lastAction='';this.nextAt=0;this.press=null;this.lastAmbient='';this.ambientAt={};}
+  constructor(random=Math.random){this.random=random;this.lastAction='';this.nextAt=0;this.press=null;this.lastAmbient='';this.ambientAt={};this.rotation=null;this.bag=[];}
+  setRotation(events){this.rotation=Array.isArray(events)&&events.length?events.slice():null;this.bag=[];if(this.rotation)this.nextAt=0; /* first beat is due at once, not after the boot quiet window */}
+  _nextRotation(){if(!this.bag.length){this.bag=this.rotation.slice();for(let i=this.bag.length-1;i>0;i--){const j=Math.floor(this.random()*(i+1));const t=this.bag[i];this.bag[i]=this.bag[j];this.bag[j]=t;}if(this.bag.length>1&&this.bag[this.bag.length-1]===this.lastAction)this.bag.push(this.bag.shift());}const pick=this.bag.pop();this.lastAction=pick;return pick;}
   // Cadence (Subash, 2026-11-17: 'oru hit pannale ella animation uh play
   // aguthu' - one hit set off every animation): idle beats wait 25-45s
   // between fires, so one tap gets ONE reaction and then a calm pet.
   // The old 6.5-12s cadence made the pet perform non-stop.
-  quiet(now,active){this.nextAt=now+(active?8000+this.random()*4000:25000+this.random()*20000);} /* active (cursor moving, his 14:26 ask '10 sec oruvati play agatum'): a beat about every 10s; idle calm otherwise */
-  due(now,animation,active){if(animation!=='idle'||this.press||now<this.nextAt)return null;const ready=AMBIENT.filter(a=>a.event!==this.lastAmbient&&(this.ambientAt[a.event]||0)<=now);if(ready.length&&this.random()<AMBIENT_CHANCE){const pick=ready[Math.floor(this.random()*ready.length)];this.lastAmbient=pick.event;this.ambientAt[pick.event]=now+pick.cooldownMs;this.quiet(now,active);return pick.event;}const candidates=actions.filter(x=>x!==this.lastAction);this.lastAction=candidates[Math.floor(this.random()*candidates.length)];this.quiet(now,active);return this.lastAction;}
+  quiet(now,active){if(this.rotation){this.nextAt=now+9000+this.random()*2000;return;} /* rotation mode: EVERY quiet lands ~10s out - the renderer's clip-finish quiet must not stretch the rotation back to the calm cadence (live-test catch, Nov 20 2026) */this.nextAt=now+(active?8000+this.random()*4000:25000+this.random()*20000);} /* active (cursor moving, his 14:26 ask '10 sec oruvati play agatum'): a beat about every 10s; idle calm otherwise */
+  due(now,animation,active){if(animation!=='idle'||this.press||now<this.nextAt)return null;if(this.rotation){const pick=this._nextRotation();this.quiet(now,active);return pick;} /* rotation beats land every ~10s flat, cursor or not (his ask) */const ready=AMBIENT.filter(a=>a.event!==this.lastAmbient&&(this.ambientAt[a.event]||0)<=now);if(ready.length&&this.random()<AMBIENT_CHANCE){const pick=ready[Math.floor(this.random()*ready.length)];this.lastAmbient=pick.event;this.ambientAt[pick.event]=now+pick.cooldownMs;this.quiet(now,active);return pick.event;}const candidates=actions.filter(x=>x!==this.lastAction);this.lastAction=candidates[Math.floor(this.random()*candidates.length)];this.quiet(now,active);return this.lastAction;}
   down(x,y,now){this.press={x,y,at:now,dragging:false};}
   move(x,y,now){const p=this.press;if(!p)return false;if(!p.dragging&&now-p.at>=80&&Math.hypot(x-p.x,y-p.y)>=12)p.dragging=true;return p.dragging;}
   up(cancel=false){const p=this.press;this.press=null;return p?.dragging?'drop':p&&!cancel?'tap':'none';}
  }
- if(typeof module==='object')module.exports={PetBehavior,AMBIENT,AMBIENT_CHANCE};else root.PetBehavior=PetBehavior;
+ PetBehavior.VEX_ROTATION=VEX_ROTATION;
+ if(typeof module==='object')module.exports={PetBehavior,AMBIENT,AMBIENT_CHANCE,VEX_ROTATION};else root.PetBehavior=PetBehavior;
 })(globalThis);

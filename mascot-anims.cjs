@@ -182,6 +182,7 @@
   // far, so it carries the ambient emote slot and the success reaction.
   const VEX_EVENTS = {
     'ambient-emote': 'vex-laugh',
+    'ambient-think': 'vex-think', /* chin-stroke beat, carried by the 10s idle rotation (pet-behavior.cjs VEX_ROTATION) */
     'react-success': 'vex-laugh',
     'react-confused': 'vex-think',
     'app-open': 'vex-spark', /* hand to temple, cyan spark: the assistant-launched-an-app beat (his 14:12 GIF, 'any app open panna sonna pannraku') */

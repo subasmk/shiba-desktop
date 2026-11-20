@@ -221,3 +221,7 @@ test('vex: semantic events resolve through state fallback to real sprites', () =
     assert.ok(sprite && hasReal(sprite), event + ' -> ' + sprite);
   }
 });
+
+test('vex: ambient-think resolves to vex-think (10s idle rotation)', () => {
+  assert.equal(resolveEvent('ambient-think', 'vex', hasReal), 'vex-think');
+});
