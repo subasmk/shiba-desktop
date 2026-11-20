@@ -2,13 +2,13 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { Annoyance, ANNOYED_LINES, FURIOUS_LINES, lineFor, isCalmDown, moodOf, moodNote } = require('./annoyance.cjs');
 
-test('bucket: hits accumulate and cross the annoyed threshold at 5', () => {
+test('bucket: hits accumulate and cross the annoyed threshold at 4', () => {
   const a = new Annoyance();
   assert.equal(a.hit(1000), 'calm');
   assert.equal(a.hit(1100), 'calm');
   assert.equal(a.level(1200), 2);
   a.hit(1300); a.hit(1400);
-  assert.equal(a.mood(1450), 'calm');
+  assert.equal(a.mood(1450), 'annoyed');
   assert.equal(a.hit(1500), 'annoyed');
   assert.equal(a.mood(1600), 'annoyed');
 });
@@ -60,7 +60,8 @@ test('bucket: custom thresholds and drain are honoured', () => {
 test('moodOf: level bands', () => {
   assert.equal(moodOf(0), 'calm');
   assert.equal(moodOf(2), 'calm');
-  assert.equal(moodOf(4), 'calm');
+  assert.equal(moodOf(3), 'calm');
+  assert.equal(moodOf(4), 'annoyed');
   assert.equal(moodOf(5), 'annoyed');
   assert.equal(moodOf(9), 'annoyed');
   assert.equal(moodOf(10), 'furious');

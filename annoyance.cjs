@@ -30,7 +30,7 @@
   function isCalmDown(text) {
     return typeof text === 'string' && CALM_DOWN.test(text);
   }
-  function moodOf(level, { annoyedAt = 5, furiousAt = 10 } = {}) {
+  function moodOf(level, { annoyedAt = 4, furiousAt = 10 } = {}) {
     if (level >= furiousAt) return 'furious';
     if (level >= annoyedAt) return 'annoyed';
     return 'calm';
@@ -38,7 +38,7 @@
   // The system-prompt mood note. Returns '' unless the level is at least
   // annoyed AND the caller confirms the local brain - cloud/Groq prompts
   // must receive no annoyance note at all.
-  function moodNote(level, { local = false, annoyedAt = 5, furiousAt = 10 } = {}) {
+  function moodNote(level, { local = false, annoyedAt = 4, furiousAt = 10 } = {}) {
     if (!local) return '';
     const mood = moodOf(level, { annoyedAt, furiousAt });
     if (mood === 'calm') return '';
@@ -52,7 +52,7 @@
   // hits (applied lazily from the anchor time of the current fill, so
   // the math is a pure function of the hit history + clock).
   class Annoyance {
-    constructor({ drainMs = 25000, annoyedAt = 5, furiousAt = 10 } = {}) {
+    constructor({ drainMs = 25000, annoyedAt = 4, furiousAt = 10 } = {}) { /* annoyedAt 4: Subash's Nov 20 2026 spec - '4 hit panale angry aganum' (was 5) */
       this.drainMs = drainMs; this.annoyedAt = annoyedAt; this.furiousAt = furiousAt;
       this.count = 0; this.anchor = 0;
     }
