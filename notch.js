@@ -19,6 +19,9 @@ let statusLine = 'Idle';
 let dnd = false;
 let muted = false;
 let musicPlaying = false;
+let timer = { running: false, paused: false, endsAt: 0, remainingMs: 0, durationMs: 25 * 60000 };
+let musicNow = { title: '', playing: false };
+let presetMin = 25;
 let stats = { cpuPct: null, ramPct: null };
 let batteryPct = null;
 // Edit mode data: fetched once per edit session, reused across renders.
@@ -86,6 +89,57 @@ function renderPicker() {
   }).join('');
 }
 function flash(msg) { $('#flash').textContent = msg || ''; }
+// --- quick bar (pomodoro / music mini-player / volume) ---------------------------
+function timerClockMs() {
+  if (timer.running && !timer.paused) return Math.max(0, timer.endsAt - Date.now());
+  if (timer.running && timer.paused) return Math.max(0, timer.remainingMs || 0);
+  return presetMin * 60000;
+}
+function renderQuick() {
+  $('#t-clock').textContent = N.formatCountdown(timerClockMs());
+  $('#t-toggle').textContent = timer.running ? (timer.paused ? 'Resume' : 'Pause') : 'Start';
+  const activeMin = timer.running ? Math.round(timer.durationMs / 60000) : presetMin;
+  document.querySelectorAll('#t-presets .chip').forEach((c) => c.classList.toggle('on', Number(c.dataset.preset) === activeMin));
+  const mb = $('#musicbar');
+  if (musicNow.title) {
+    mb.classList.remove('hidden');
+    $('#m-title').textContent = musicNow.title;
+    $('#m-toggle').textContent = musicNow.playing ? '⏸' : '▶';
+  } else mb.classList.add('hidden');
+}
+setInterval(() => { if (timer.running && !timer.paused && (machine.state === 'open' || machine.state === 'hover')) $('#t-clock').textContent = N.formatCountdown(timerClockMs()); }, 1000);
+function cleanErr(err) { return String((err && err.message) || err).replace(/^Error invoking remote method '[^']+': /, '').replace(/^Error: /, ''); }
+function applyTimer(r) { if (r && r.timer) { timer = { ...timer, ...r.timer }; renderQuick(); } }
+$('#t-toggle').addEventListener('click', () => {
+  const action = !timer.running ? 'timer-start' : timer.paused ? 'timer-resume' : 'timer-pause';
+  const data = action === 'timer-start' ? { action, minutes: presetMin } : { action };
+  api.call('notch-action', data).then(applyTimer).catch((e) => flash(cleanErr(e)));
+});
+$('#t-reset').addEventListener('click', () => {
+  api.call('notch-action', { action: 'timer-reset' }).then(applyTimer).catch((e) => flash(cleanErr(e)));
+});
+$('#t-presets').addEventListener('click', (e) => {
+  const chip = e.target.closest('[data-preset]');
+  if (!chip) return;
+  if (timer.running) { flash('Reset the timer to change its length.'); return; }
+  presetMin = Number(chip.dataset.preset) || 25;
+  renderQuick();
+});
+function musicAction(action) {
+  api.call('notch-action', { action }).then(() => {}).catch((e) => flash(cleanErr(e)));
+}
+$('#m-toggle').addEventListener('click', () => musicAction('music'));
+$('#m-next').addEventListener('click', () => musicAction('music-next'));
+$('#m-prev').addEventListener('click', () => musicAction('music-prev'));
+let volTimer = null;
+$('#v-slider').addEventListener('input', (e) => {
+  const v = Number(e.target.value);
+  $('#v-val').textContent = v + '%';
+  if (volTimer) clearTimeout(volTimer);
+  volTimer = setTimeout(() => {
+    api.call('notch-action', { action: 'vol-set', value: v }).then(() => {}).catch((err) => flash(cleanErr(err)));
+  }, 150);
+});
 function render() {
   document.body.dataset.state = machine.state;
   document.body.dataset.view = machine.view;
@@ -102,6 +156,7 @@ function render() {
   const muteBtn = document.querySelector('[data-util="mute"]');
   muteBtn.textContent = muted ? '🔇' : '🔊';
   muteBtn.classList.toggle('on', muted);
+  renderQuick();
   renderGrid();
   if (machine.editing) renderPicker();
   api.send('notch-ui-state', { state: machine.state });
@@ -126,6 +181,8 @@ function applyState(d) {
   if (typeof d.dnd === 'boolean') dnd = d.dnd;
   if (typeof d.muted === 'boolean') muted = d.muted;
   if (typeof d.musicPlaying === 'boolean') musicPlaying = d.musicPlaying;
+  if (d.timer && typeof d.timer === 'object') timer = { ...timer, ...d.timer };
+  if (d.music && typeof d.music === 'object') musicNow = { title: String(d.music.title || ''), playing: !!d.music.playing };
   if (d.stats && typeof d.stats === 'object') stats = { cpuPct: d.stats.cpuPct ?? null, ramPct: d.stats.ramPct ?? null };
   $('#peek-dot').className = d.statusDot === 'on' ? 'on' : '';
   render();
@@ -190,6 +247,9 @@ function runTile(tile) {
       const launched = (r && r.launched) || [], problems = (r && r.problems) || [];
       flash(problems.length ? `Routine: opened ${launched.length}, ${problems.length} problem(s).` : `Routine running — opened ${launched.length} app(s).`);
     }).catch(() => flash('Could not run that routine.')); break;
+    case 'clipboard': api.call('notch-action', { action: 'clipboard' }).then((r) => { const t = String((r && r.text) || '').replace(/\s+/g, ' ').trim(); flash(t ? '📋 ' + (t.length > 110 ? t.slice(0, 110) + '…' : t) : 'Clipboard is empty.'); }).catch((e) => flash(cleanErr(e))); break;
+    case 'clip-clear': api.call('notch-action', { action: 'clip-clear' }).then(() => flash('Clipboard cleared.')).catch((e) => flash(cleanErr(e))); break;
+    case 'vol-up': case 'vol-down': case 'vol-mute': api.call('notch-action', { action: tile.id }).then(() => {}).catch((e) => flash(cleanErr(e))); break;
     default: // mic, timer, note, music, music-next, playlists, routines
       api.call('notch-action', { action: tile.id }).then((r) => { if (r && r.error) flash(String(r.error)); }).catch(() => {});
   }

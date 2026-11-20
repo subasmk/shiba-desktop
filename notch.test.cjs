@@ -240,6 +240,7 @@ test('statusLine: hold-to-talk, then timer, then music, then wake, then call, th
   assert.equal(N.statusLine({ holdActive: true, timerRunning: true, timerEndsAt: 999999 }), 'Listening…');
   const now = 1000000;
   assert.equal(N.statusLine({ timerRunning: true, timerEndsAt: now + 754000, now, musicPlaying: true, musicTitle: 'Song' }), '⏱ 12:34 left');
+  assert.equal(N.statusLine({ timerPaused: true, timerRemainingMs: 754000, musicPlaying: true }), '⏸ 12:34 paused');
   assert.equal(N.statusLine({ musicPlaying: true, musicTitle: 'Lo-fi beats', wakeListening: true }), '🎵 Lo-fi beats');
   assert.equal(N.statusLine({ musicPlaying: true, musicTitle: '  ' }), '🎵 Music playing');
   assert.equal(N.statusLine({ wakeListening: true, voiceActive: true }), 'Say "Hey Daru"');

@@ -41,3 +41,14 @@ test('execute: refusal, windows-only, confirm gate, and success with a fake runn
   a.equal((await execute('volume-up', null, { execFileFn: fake, platform: 'win32' })).status, 'done');
   a.equal(calls, 2);
 });
+test('volume-set: absolute level builds a Core Audio command; bad levels refused', async () => {
+  const c = buildCommand('volume-set', '50');
+  a.equal(c.file, 'powershell.exe');
+  a.ok(c.args.at(-1).includes('[Vol]::Set(0.50)'));
+  a.ok(buildCommand('volume-set', 0).args.at(-1).includes('[Vol]::Set(0.00)'));
+  a.ok(buildCommand('volume-set', '100').args.at(-1).includes('[Vol]::Set(1.00)'));
+  for (const bad of ['101', '-1', 'abc', '50.5', '', null, undefined]) a.equal(buildCommand('volume-set', bad), null, String(bad));
+  const fake = (file, args, opts, cb) => cb(null);
+  a.equal((await execute('volume-set', '25', { execFileFn: fake, platform: 'win32' })).status, 'done');
+  a.equal((await execute('volume-set', '999', { execFileFn: fake, platform: 'win32' })).status, 'refused');
+});

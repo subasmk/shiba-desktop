@@ -16,6 +16,11 @@ function psQuote(s) { return "'" + String(s).replace(/'/g, "''") + "'"; }
 function validTarget(name) { return typeof name === 'string' && NAME_RE.test(name.trim()); }
 
 const WS = "Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;public class W{[DllImport(\"user32.dll\")]public static extern bool ShowWindow(IntPtr h,int n);[DllImport(\"user32.dll\")]public static extern bool SetForegroundWindow(IntPtr h);[DllImport(\"user32.dll\")]public static extern void keybd_event(byte k,byte s,uint f,UIntPtr e);}' -ErrorAction SilentlyContinue;";
+// Core Audio endpoint stub for absolute master-volume set (the media-key
+// actions above can only step up/down). Same Add-Type pattern as WS;
+// the level is validated to an integer 0-100 before it is interpolated,
+// so the interpolated scalar is always a plain 0.00-1.00 literal.
+const AUDIO = "Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;[ComImport,Guid(\"BCDE0395-E52F-467C-8E3D-C4579291692E\")]public class MMDeviceEnumerator{}[ComImport,Guid(\"A95664D2-9614-4F35-A746-DE8DB63617E6\"),InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]public interface IMMDeviceEnumerator{int EnumAudioEndpoints(int f,int m,out IntPtr d);int GetDefaultAudioEndpoint(int f,int r,out IMMDevice d);}[ComImport,Guid(\"D666063F-1587-4E43-81F1-B948E807363F\"),InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]public interface IMMDevice{int Activate(ref Guid id,int ctx,IntPtr p,[MarshalAs(UnmanagedType.IUnknown)]out object o);}[ComImport,Guid(\"5CDF2C82-841E-4546-9722-0CF74078229A\"),InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]public interface IAudioEndpointVolume{int RegisterControlChangeNotify(IntPtr n);int UnregisterControlChangeNotify(IntPtr n);int GetChannelCount(out uint c);int SetMasterVolumeLevel(float l,ref Guid g);int SetMasterVolumeLevelScalar(float l,ref Guid g);int GetMasterVolumeLevel(out float l);int GetMasterVolumeLevelScalar(out float l);}public class Vol{public static void Set(float v){var e=(IMMDeviceEnumerator)new MMDeviceEnumerator();IMMDevice d;e.GetDefaultAudioEndpoint(0,1,out d);Guid g=typeof(IAudioEndpointVolume).GUID;object o;d.Activate(ref g,23,IntPtr.Zero,out o);Guid ctx=Guid.Empty;((IAudioEndpointVolume)o).SetMasterVolumeLevelScalar(v,ref ctx);}}' -ErrorAction SilentlyContinue;";
 function findProc(name) { return "$p=Get-Process -Name " + psQuote(name.trim().replace(/\.exe$/i, '')) + " -ErrorAction SilentlyContinue | Where-Object {$_.MainWindowHandle -ne 0} | Select-Object -First 1;if(!$p){throw 'app window not found'};"; }
 
 // Builder: (action, target) -> {file, args, confirmFirst} | null (refused).
@@ -29,6 +34,13 @@ function buildCommand(action, target) {
     case 'volume-up': return { file: 'powershell.exe', args: ['-NoProfile', '-NonInteractive', '-Command', WS + '[W]::keybd_event(0xAF,0,0,[UIntPtr]::Zero);'], confirmFirst: false };
     case 'volume-down': return { file: 'powershell.exe', args: ['-NoProfile', '-NonInteractive', '-Command', WS + '[W]::keybd_event(0xAE,0,0,[UIntPtr]::Zero);'], confirmFirst: false };
     case 'volume-mute': return { file: 'powershell.exe', args: ['-NoProfile', '-NonInteractive', '-Command', WS + '[W]::keybd_event(0xAD,0,0,[UIntPtr]::Zero);'], confirmFirst: false };
+    case 'volume-set': {
+      const raw = String(target ?? '').trim();
+      if (!/^\d{1,3}$/.test(raw)) return null;
+      const lvl = Number(raw);
+      if (lvl > 100) return null;
+      return ps(AUDIO + '[Vol]::Set(' + (lvl / 100).toFixed(2) + ');');
+    }
     case 'activate': case 'minimize': case 'close': case 'arrange-left': case 'arrange-right': case 'arrange-max': {
       if (!validTarget(target)) return null;
       const find = findProc(target);
@@ -43,7 +55,7 @@ function buildCommand(action, target) {
   }
 }
 
-const ACTIONS = ['activate', 'minimize', 'close', 'arrange-left', 'arrange-right', 'arrange-max', 'media-play-pause', 'media-next', 'media-prev', 'volume-up', 'volume-down', 'volume-mute'];
+const ACTIONS = ['activate', 'minimize', 'close', 'arrange-left', 'arrange-right', 'arrange-max', 'media-play-pause', 'media-next', 'media-prev', 'volume-up', 'volume-down', 'volume-mute', 'volume-set'];
 const NEEDS_TARGET = new Set(['activate', 'minimize', 'close', 'arrange-left', 'arrange-right', 'arrange-max']);
 
 // A combo is a list of caller-supplied steps, each itself allowlist-checked:

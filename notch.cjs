@@ -42,6 +42,11 @@
     setup: { label: 'Setup', icon: '⬇️' },
     vision: { label: 'Vision', icon: '👁' },
     'discord-post': { label: 'Discord post', icon: '👾' },
+    'vol-up': { label: 'Volume up', icon: '🔊' },
+    'vol-down': { label: 'Volume down', icon: '🔉' },
+    'vol-mute': { label: 'Mute', icon: '🔇' },
+    clipboard: { label: 'Clipboard', icon: '📋' },
+    'clip-clear': { label: 'Clear clipboard', icon: '🧹' },
   };
   const TILE_INFO = {
     cpu: { label: 'CPU', icon: 'CPU' },
@@ -200,6 +205,11 @@
         mark({ kind: 'action', id: 'setup' }),
         mark({ kind: 'action', id: 'vision' }),
         mark({ kind: 'action', id: 'dnd' }),
+        mark({ kind: 'action', id: 'vol-up' }),
+        mark({ kind: 'action', id: 'vol-down' }),
+        mark({ kind: 'action', id: 'vol-mute' }),
+        mark({ kind: 'action', id: 'clipboard' }),
+        mark({ kind: 'action', id: 'clip-clear' }),
         mark({ kind: 'action', id: 'routines' }),
         ...routineTiles.map(mark),
       ],
@@ -364,6 +374,7 @@
     }
     if (sig.petOut) return 'Out on your desktop';
     if (sig.holdActive) return 'Listening…';
+    if (sig.timerPaused) return '⏸ ' + formatCountdown(Number(sig.timerRemainingMs || 0)) + ' paused';
     if (sig.timerRunning) {
       const left = Number(sig.timerEndsAt || 0) - Number(sig.now != null ? sig.now : Date.now());
       return '⏱ ' + formatCountdown(left) + ' left';
