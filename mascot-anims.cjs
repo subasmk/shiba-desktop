@@ -76,6 +76,7 @@
       if (name === 'falling' && has('vex-fall')) return 'vex-fall'; /* in-air loop after a throw release, until touchdown (his 13:55 video) */
       if (name === 'fly' && has('vex-fly')) return 'vex-fly'; /* upward throw: superhero fly loop until touchdown (his 14:20 GIF, 'WHEN I THROW UP ONLY') */
       if (name === 'drop' && has('vex-drop')) return 'vex-drop'; /* gentle release: hang, glide down, settle standing (his 14:24 GIF, 'Normal ah kita veichu drag ah release panna ithu') */
+      if (name === 'screenpunch' && has('vex-punch')) return 'vex-punch'; /* fury punch at the cursor before the screen-break overlay (his 14:29 MP4) */
       if ((name === 'rage' || name === 'swing') && has('vex-rage')) return 'vex-rage';
       if (name === 'emote' && has('vex-laugh')) return 'vex-laugh';
       if (VEX_WALK_STATES.has(name) && has('vex-walk')) return 'vex-walk';
