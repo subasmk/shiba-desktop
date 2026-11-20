@@ -2,7 +2,7 @@
 
 An experimental Windows desktop assistant for chat, voice, notes and everyday tools, with an animated companion on your desktop.
 
-**Vex**, the horned hooded kid, is the only desktop companion. Rex, Dex and Ria animation assets are saved for future reuse in the private `relay-mascots-archive` repository.
+**Daru**, the horned hooded kid, is the only desktop companion. Rex, Dex and Ria animation assets are saved for future reuse in the private `relay-mascots-archive` repository.
 
 This project is under active development. Implemented features are not a promise of reliable end-to-end behavior on every Windows machine.
 
@@ -19,7 +19,7 @@ This project is under active development. Implemented features are not a promise
 - **Optional online tools:** web search, page fetching and headline offers.
 - **Optional power mode:** command execution and file tools. Commands and file writes require confirmation; file access is checked against allowed roots. These checks are guardrails, not a security sandbox.
 
-The existing wake phrase remains **"Hey Vex"** for compatibility. Renaming the app does not change its voice trigger or the mascots' identities.
+The existing wake phrase remains **"Hey Daru"** for compatibility. Renaming the app does not change its voice trigger or the mascots' identities.
 
 ## Run from source
 

@@ -45,4 +45,6 @@ test('state machine: disable during cooldown returns to off', () => {
   d.enable(); assert.equal(d.state, 'listening');
 });
 
-test('Vex wake phrase with and without a command',()=>{assert.deepEqual(matchWakePhrase('Hey Vex'),{command:null});assert.deepEqual(matchWakePhrase('Hey Vex, hello'),{command:'hello'});});
+test('Daru wake phrase with and without a command',()=>{assert.deepEqual(matchWakePhrase('Hey Daru'),{command:null});assert.deepEqual(matchWakePhrase('Hey Daru, hello'),{command:'hello'});});
+
+test('renamed wake phrase keeps compatibility aliases',()=>{for(const name of ['Daru','Vex','Rex']){assert.deepEqual(matchWakePhrase('Hey '+name),{command:null});assert.deepEqual(matchWakePhrase('Hey '+name+', hello'),{command:'hello'});}});

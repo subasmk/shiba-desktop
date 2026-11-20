@@ -1,4 +1,4 @@
-// Vex sprite and semantic-event resolution. Retired mascots live in the private archive.
+// Daru sprite and semantic-event resolution. Retired mascots live in the private archive.
 (function (root) {
   const VEX_WALK_STATES = new Set(['walk', 'run', 'leap']);
   // name: requested state ('idle', 'touch-head', 'vex-wave', ...).
@@ -31,7 +31,7 @@
       // impact star, roar at the peak, wobble back. vex-shock stays in
       // the atlas, unwired.
       if ((name === 'touch-head' || name === 'touch-body' || name === 'touch-paws') && has('vex-hit')) return 'vex-hit';
-      if (name === 'touch-scare' && has('vex-scare')) return 'vex-scare'; /* his 11:27 boo GIF, right-click on Vex (his 15:06 word: 'ITHU RIGHT SIDE CICK PANA PLAY AGANUM'); left-click pokes keep vex-shock only */
+      if (name === 'touch-scare' && has('vex-scare')) return 'vex-scare'; /* his 11:27 boo GIF, right-click on Daru (his 15:06 word: 'ITHU RIGHT SIDE CICK PANA PLAY AGANUM'); left-click pokes keep vex-shock only */
       // His 'Talking gif' MP4 (Nov 20 2026): standing talk loop, mouth
       // cycling open/closed/smile - the speaking state (voice-ui sends
       // 'talk' while the assistant voice speaks; it loops, not finite).

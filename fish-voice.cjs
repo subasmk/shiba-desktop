@@ -8,7 +8,7 @@
 // it to a renderer, and this module only ever receives it as an
 // argument. Nothing is bundled and no key or voice is invented here.
 //
-// Vex speaks with his own
+// Daru speaks with his own
 // cloned voice: settings.fishVoiceByMascot = { rex: '<voice id>',
 // dex: '<voice id>' }, resolved for the ACTIVE assistant at speak time.
 //

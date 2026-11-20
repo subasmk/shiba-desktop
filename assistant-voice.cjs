@@ -1,4 +1,4 @@
-// Local Kokoro voice preferences for Vex.
+// Local Kokoro voice preferences for Daru.
 const MAX_SID = 52;
 const MIN_SPEED = 0.6, MAX_SPEED = 1.5;
 
@@ -15,7 +15,7 @@ const VOICES = [
 
 const DEFAULTS = { vex: { sid: 18, speed: 1.0 } };
 
-// Vex is the only assistant, including when loading stale settings.
+// Daru is the only assistant, including when loading stale settings.
 function voiceKey() { return 'vex'; }
 
 function sanitizePref(pref, fallback) {

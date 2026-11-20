@@ -1,4 +1,4 @@
-// Visual verification for Vex: state art resolves + real-cursor drag clamp.
+// Visual verification for Daru: state art resolves + real-cursor drag clamp.
 // The drag uses xdotool (real X pointer) because move-pet follows the OS
 // cursor; synthetic CDP input does not move it under Xvfb.
 const {_electron:electron}=require('./node_modules/playwright');

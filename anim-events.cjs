@@ -1,4 +1,4 @@
-// Sprite-native event routing. Each state resolves to Vex art in mascot-anims.cjs.
+// Sprite-native event routing. Each state resolves to Daru art in mascot-anims.cjs.
 (function (root) {
   const fs = typeof require === 'function' ? (() => { try { return require('node:fs'); } catch { return null; } })() : null;
   const path = typeof require === 'function' ? (() => { try { return require('node:path'); } catch { return null; } })() : null;
@@ -27,7 +27,7 @@
   }
   function eventNames() { return Object.keys(EVENTS); }
 
-  // True when the sole Vex atlas exists on disk (main/tests).
+  // True when the sole Daru atlas exists on disk (main/tests).
   function assetExists(name, dir) {
     const e = EVENTS[name];
     if (!e || !fs || !path) return false;

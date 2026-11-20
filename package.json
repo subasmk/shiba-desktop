@@ -2,7 +2,7 @@
   "name": "shiba-desktop",
   "version": "0.2.2",
   "private": true,
-  "description": "Relay desktop assistant with Vex",
+  "description": "Relay desktop assistant with Daru",
   "main": "main.cjs",
   "scripts": {
     "start": "electron .",

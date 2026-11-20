@@ -1,4 +1,4 @@
-// Light-backdrop capture for Vex: same states as vi-vex.cjs but on a white
+// Light-backdrop capture for Daru: same states as vi-vex.cjs but on a white
 // window background (SHIBA_CAPTURE_BG) so white remnants cannot hide.
 const {_electron:electron}=require('./node_modules/playwright');
 const fs=require('node:fs');

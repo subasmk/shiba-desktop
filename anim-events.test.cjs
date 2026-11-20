@@ -7,7 +7,7 @@ test('every required event resolves to a sprite state', () => {
     a.ok(AE.forEvent(name), 'missing event ' + name);
   a.equal(AE.forEvent('nope'), null);
 });
-test('Vex atlas and event sprites exist',()=>{
+test('Daru atlas and event sprites exist',()=>{
  const {resolveSprite,resolveEvent}=require('./mascot-anims.cjs');
  const manifest=require('./manifest.json'),has=n=>!!manifest[n];
  a.equal(AE.allAssetsExist(__dirname),true);
@@ -68,4 +68,4 @@ test('each event sprite matches its intended visible behavior', () => {
   a.notEqual(AE.forEvent('roam-fast').sprite, 'swing', 'fast roam shows the katana attack while merely moving');
   a.notEqual(AE.forEvent('roam-fly').sprite, 'swing', 'long roam shows the katana attack while merely moving');
 });
-test('Vex run requests reuse his walk art',()=>{const {resolveSprite}=require('./mascot-anims.cjs');const m=require('./manifest.json');a.equal(resolveSprite('run','vex',n=>!!m[n]),'vex-walk');});
+test('Daru run requests reuse his walk art',()=>{const {resolveSprite}=require('./mascot-anims.cjs');const m=require('./manifest.json');a.equal(resolveSprite('run','vex',n=>!!m[n]),'vex-walk');});

@@ -1,4 +1,4 @@
-// Size consistency across Vex states + facing direction + drag frames.
+// Size consistency across Daru states + facing direction + drag frames.
 // He reported the character changing size between states (per-block atlas
 // normalization made sit/landing render ~2x standing height) and walking
 // reversed (his art faces left by default; rex/dex face right).

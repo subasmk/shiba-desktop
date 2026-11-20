@@ -76,7 +76,7 @@ function groundingCheck(line, snapshot) {
 
 // Pet identity by mascot. Current main mascot (user decision Nov 16 2026)
 function petIdentity() {
-  return { name: 'Vex', look: 'a small hooded demon kid with horns, big black eyes and a blue tie' };
+  return { name: 'Daru', look: 'a small hooded demon kid with horns, big black eyes and a blue tie' };
 }
 
 function buildBanterPrompt(snapshot, personality = 'cheeky', mascot) {

@@ -1,4 +1,4 @@
-// Wake word: "Hey Vex" hands-free start for the voice call.
+// Wake word: "Hey Daru" hands-free start for the voice call.
 // Ported design from Viktor's voice watcher (viktor_voice.py): there is no
 // separate wake model - the app's own local Whisper transcription spots the
 // phrase in short energy-gated windows, exactly like Viktor's faster-whisper
@@ -22,7 +22,7 @@
 // (after an optional greeting) and tolerated ASR mis-hears of the name
 // (viktor|victor|vector). Same here for Rex: rex|wrecks|wrex.
 
-const WAKE_RE = /^(?:hey|hi|ok|okay|a|hey there)?[\s,.!?]*?(vex|rex|wrecks|wrex)\b[\s,.!?]*(.*)$/i;
+const WAKE_RE = /^(?:hey|hi|ok|okay|a|hey there)?[\s,.!?]*?(daru|vex|rex|wrecks|wrex)\b[\s,.!?]*(.*)$/i;
 
 function normalizeTranscript(text) {
   return String(text || '').replace(/\s+/g, ' ').trim();

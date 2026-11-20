@@ -30,7 +30,7 @@ test('sanitize: voice IDs accept token shapes and reject everything else', () =>
   assert.equal(sanitizeVoiceId(42), '');
 });
 
-test('Vex Fish preferences sanitize garbage and keep only his voice',()=>{
+test('Daru Fish preferences sanitize garbage and keep only his voice',()=>{
  assert.deepEqual(sanitizeFishVoices(null),{vex:''});
  assert.deepEqual(sanitizeFishVoices({fishVoiceByMascot:'bad'}),{vex:''});
  assert.deepEqual(sanitizeFishVoices({fishVoiceByMascot:{vex:'vexvoice1',rex:'oldvoice'}}),{vex:'vexvoice1'});
@@ -88,7 +88,7 @@ test('engine: fish is a valid engine and dispatch speaks with the ACTIVE assista
       getFishKey: () => 'TESTKEY',
       kokoroSynthesize: async () => { throw Error('kokoro must not run on the fish engine'); },
     });
-    const out = await engine.synthesize('Hello from Vex');
+    const out = await engine.synthesize('Hello from Daru');
     assert.equal(out.sampleRate, 22050);
     assert.equal(out.samples.length, 4);
     assert.equal(JSON.parse(seen.opts.body).reference_id, 'vexvoice1');

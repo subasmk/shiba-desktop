@@ -27,9 +27,9 @@
   {event:'ambient-waiting',cooldownMs:100000},
  ];
  const AMBIENT_CHANCE=0.65;
- // Vex rotation (Subash, Nov 20 2026: '10 sec ku oru vati remaining
+ // Daru rotation (Subash, Nov 20 2026: '10 sec ku oru vati remaining
  // animation play aganum'): the generic ambient table resolves most of
- // its picks to vex-idle, so while Vex is the mascot the idle pet instead
+ // its picks to vex-idle, so while Daru is the mascot the idle pet instead
  // cycles his own standalone beats - one every ~10s, each beat once
  // before any repeat (shuffle bag), so every animation gets seen.
  const VEX_ROTATION=['wave','emote','ambient-coffee','ambient-laptop','ambient-think'];
