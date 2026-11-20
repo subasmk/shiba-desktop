@@ -136,6 +136,7 @@ if(mode==='pet'){
  function startReaction(list){
   if(mascot==='girl'){play(list[0]);return;} /* Ria has no reaction clips: taps still pop, sound and annoy, but never take the reaction lock - with an empty sprite seq the lock could never release */
   if(reactLock){
+   if(list.length===1&&list[0]==='swing'&&anim.startsWith('touch-')){play('swing',true);reactQueue=[];beatRunning=false;return;} /* combo upgrade: 3 quick pokes escalate the running single-hit clip into the multi-hit clip - without this the combo is swallowed by the first hit's lock and never plays (live-test catch, Nov 20 2026); same upgrade shape as the lone-rage case below. fromQueue=true matters: a plain play() call RELEASES the react lock by design, which let the next poke cut the combo clip after 5 frames */
    if(list.length===1)return; // one hit = one reaction: taps during a reaction still count (sound + annoyance) but never queue extra clips (user report Nov 17 2026: one hit played every animation)
    if(beatRunning)return; // anger beat already running or queued - the tap/combo still counted, but the beat can never stack (same report)
    if(ANGER_SEQ.includes(anim)){ // a lone clip from the beat's own set is playing (annoyed single-tap rage)

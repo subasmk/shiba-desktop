@@ -138,7 +138,7 @@ test('events: a missing target sprite degrades (dex -> dex-idle, rex -> null)', 
 });
 
 // --- Vex (hooded horned kid, walk-cycle video + sit art, Nov 19 2026) -----
-const VEX_SPRITES = new Set(['vex-idle', 'vex-walk', 'vex-sit', 'vex-sitdown', 'vex-sleepdown', 'vex-sitsleep', 'vex-sleeploop', 'vex-think', 'vex-coffee', 'vex-drag', 'vex-landing', 'vex-rage', 'vex-laugh', 'vex-shock']);
+const VEX_SPRITES = new Set(['vex-idle', 'vex-walk', 'vex-sit', 'vex-sitdown', 'vex-sleepdown', 'vex-sitsleep', 'vex-sleeploop', 'vex-think', 'vex-coffee', 'vex-drag', 'vex-landing', 'vex-rage', 'vex-laugh', 'vex-shock', 'vex-hit', 'vex-hitmany']);
 const hasVex = (n) => VEX_SPRITES.has(n);
 
 test('vex: movement states play the walk loop, drag shows his hanging art', () => {
@@ -161,9 +161,9 @@ test('vex: sit-down and sleep-down transitions map to their own clips', () => {
   assert.equal(resolveSprite('ambient-coffee', 'vex', hasVex), 'vex-coffee');
 });
 
-test('vex: a poke startles him into the wide-mouth flail', () => {
+test('vex: a poke plays the composited hit reaction (recoil, star, roar)', () => {
   for (const n of ['touch-head', 'touch-body', 'touch-paws']) {
-    assert.equal(resolveSprite(n, 'vex', hasVex), 'vex-shock', n);
+    assert.equal(resolveSprite(n, 'vex', hasVex), 'vex-hit', n);
   }
 });
 
@@ -179,9 +179,9 @@ test('vex: landing and fall play his drop-and-dazed beat', () => {
   assert.equal(resolveSprite('getup', 'vex', hasVex), 'vex-idle');
 });
 
-test('vex: rage and the tap-combo swing play his anger beat', () => {
+test('vex: rage is his anger beat; the tap-combo swing plays the multi-hit clip', () => {
   assert.equal(resolveSprite('rage', 'vex', hasVex), 'vex-rage');
-  assert.equal(resolveSprite('swing', 'vex', hasVex), 'vex-rage');
+  assert.equal(resolveSprite('swing', 'vex', hasVex), 'vex-hitmany');
 });
 
 test('vex: his belly laugh carries emote and the success beat', () => {

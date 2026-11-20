@@ -77,7 +77,8 @@
       if (name === 'fly' && has('vex-fly')) return 'vex-fly'; /* unwired since his 15:04 word ('ANTHA FLYING ANIMATION VENDA REMOVE PANNIRU'): throws always play the fall flutter; the art stays in the atlas */
       if (name === 'drop' && has('vex-drop')) return 'vex-drop'; /* gentle release: hang, glide down, settle standing (his 14:24 GIF, 'Normal ah kita veichu drag ah release panna ithu') */
       if (name === 'screenpunch' && has('vex-punch')) return 'vex-punch'; /* fury punch at the cursor before the screen-break overlay (his 14:29 MP4) */
-      if ((name === 'rage' || name === 'swing') && has('vex-rage')) return 'vex-rage';
+      if (name === 'rage' && has('vex-rage')) return 'vex-rage';
+      if (name === 'swing' && has('vex-hitmany')) return 'vex-hitmany'; /* tap-combo: the multi-hit clip (rattle -> vein -> roar -> dizzy stars) composited from his own frames, Nov 20 2026 */
       if (name === 'emote' && has('vex-laugh')) return 'vex-laugh';
       if (VEX_WALK_STATES.has(name) && has('vex-walk')) return 'vex-walk';
       if (name === 'sit-down' && has('vex-sitdown')) return 'vex-sitdown';
@@ -87,10 +88,13 @@
       if (name === 'sleep-loop' && has('vex-sleeploop')) return 'vex-sleeploop';
       if (name === 'ambient-coffee' && has('vex-coffee')) return 'vex-coffee';
       if (name === 'ambient-laptop' && has('vex-laptop')) return 'vex-laptop';
-      // His uncaptioned startle clip (Nov 20 2026): a sharp startle, a
-      // sustained wide-mouth flail, then settling back to neutral - wired
-      // as his poke reaction (touch-head/body/paws), which had no art.
-      if ((name === 'touch-head' || name === 'touch-body' || name === 'touch-paws') && has('vex-shock')) return 'vex-shock';
+      // Poke reaction (Nov 20 2026): his sliced startle clip (vex-shock)
+      // measured as a near-static grin, so a poke read as nothing
+      // happening ('hit animation eh work agale'). vex-hit is composited
+      // from his own idle + rage-roar frames instead: recoil tilt,
+      // impact star, roar at the peak, wobble back. vex-shock stays in
+      // the atlas, unwired.
+      if ((name === 'touch-head' || name === 'touch-body' || name === 'touch-paws') && has('vex-hit')) return 'vex-hit';
       if (name === 'touch-scare' && has('vex-scare')) return 'vex-scare'; /* his 11:27 boo GIF, right-click on Vex (his 15:06 word: 'ITHU RIGHT SIDE CICK PANA PLAY AGANUM'); left-click pokes keep vex-shock only */
       // His 'Talking gif' MP4 (Nov 20 2026): standing talk loop, mouth
       // cycling open/closed/smile - the speaking state (voice-ui sends
