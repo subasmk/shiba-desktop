@@ -6589,5 +6589,429 @@
       "y": 23040,
       "a": 5
     }
+  ],
+  "vex-portal-in": [
+    {
+          "file": "vex-portal-in1.png",
+          "ms": 100,
+          "x": 1920,
+          "y": 23040,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in2.png",
+          "ms": 100,
+          "x": 0,
+          "y": 23360,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in3.png",
+          "ms": 100,
+          "x": 320,
+          "y": 23360,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in4.png",
+          "ms": 100,
+          "x": 640,
+          "y": 23360,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in5.png",
+          "ms": 100,
+          "x": 960,
+          "y": 23360,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in6.png",
+          "ms": 100,
+          "x": 1280,
+          "y": 23360,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in7.png",
+          "ms": 100,
+          "x": 1600,
+          "y": 23360,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in8.png",
+          "ms": 100,
+          "x": 1920,
+          "y": 23360,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in9.png",
+          "ms": 100,
+          "x": 0,
+          "y": 23680,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in10.png",
+          "ms": 100,
+          "x": 320,
+          "y": 23680,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in11.png",
+          "ms": 100,
+          "x": 640,
+          "y": 23680,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in12.png",
+          "ms": 100,
+          "x": 960,
+          "y": 23680,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in13.png",
+          "ms": 100,
+          "x": 1280,
+          "y": 23680,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in14.png",
+          "ms": 100,
+          "x": 1600,
+          "y": 23680,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in15.png",
+          "ms": 100,
+          "x": 1920,
+          "y": 23680,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in16.png",
+          "ms": 100,
+          "x": 0,
+          "y": 24000,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in17.png",
+          "ms": 100,
+          "x": 320,
+          "y": 24000,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in18.png",
+          "ms": 100,
+          "x": 640,
+          "y": 24000,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in19.png",
+          "ms": 100,
+          "x": 960,
+          "y": 24000,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in20.png",
+          "ms": 100,
+          "x": 1280,
+          "y": 24000,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in21.png",
+          "ms": 100,
+          "x": 1600,
+          "y": 24000,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in22.png",
+          "ms": 100,
+          "x": 1920,
+          "y": 24000,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in23.png",
+          "ms": 100,
+          "x": 0,
+          "y": 24320,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in24.png",
+          "ms": 100,
+          "x": 320,
+          "y": 24320,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in25.png",
+          "ms": 100,
+          "x": 640,
+          "y": 24320,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in26.png",
+          "ms": 100,
+          "x": 960,
+          "y": 24320,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in27.png",
+          "ms": 100,
+          "x": 1280,
+          "y": 24320,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in28.png",
+          "ms": 100,
+          "x": 1600,
+          "y": 24320,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in29.png",
+          "ms": 100,
+          "x": 1920,
+          "y": 24320,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-in30.png",
+          "ms": 100,
+          "x": 0,
+          "y": 24640,
+          "a": 5
+    }
+  ],
+  "vex-portal-out": [
+    {
+          "file": "vex-portal-out1.png",
+          "ms": 100,
+          "x": 320,
+          "y": 24640,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out2.png",
+          "ms": 100,
+          "x": 640,
+          "y": 24640,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out3.png",
+          "ms": 100,
+          "x": 960,
+          "y": 24640,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out4.png",
+          "ms": 100,
+          "x": 1280,
+          "y": 24640,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out5.png",
+          "ms": 100,
+          "x": 1600,
+          "y": 24640,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out6.png",
+          "ms": 100,
+          "x": 1920,
+          "y": 24640,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out7.png",
+          "ms": 100,
+          "x": 0,
+          "y": 24960,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out8.png",
+          "ms": 100,
+          "x": 320,
+          "y": 24960,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out9.png",
+          "ms": 100,
+          "x": 640,
+          "y": 24960,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out10.png",
+          "ms": 100,
+          "x": 960,
+          "y": 24960,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out11.png",
+          "ms": 100,
+          "x": 1280,
+          "y": 24960,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out12.png",
+          "ms": 100,
+          "x": 1600,
+          "y": 24960,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out13.png",
+          "ms": 100,
+          "x": 1920,
+          "y": 24960,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out14.png",
+          "ms": 100,
+          "x": 0,
+          "y": 25280,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out15.png",
+          "ms": 100,
+          "x": 320,
+          "y": 25280,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out16.png",
+          "ms": 100,
+          "x": 640,
+          "y": 25280,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out17.png",
+          "ms": 100,
+          "x": 960,
+          "y": 25280,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out18.png",
+          "ms": 100,
+          "x": 1280,
+          "y": 25280,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out19.png",
+          "ms": 100,
+          "x": 1600,
+          "y": 25280,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out20.png",
+          "ms": 100,
+          "x": 1920,
+          "y": 25280,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out21.png",
+          "ms": 100,
+          "x": 0,
+          "y": 25600,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out22.png",
+          "ms": 100,
+          "x": 320,
+          "y": 25600,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out23.png",
+          "ms": 100,
+          "x": 640,
+          "y": 25600,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out24.png",
+          "ms": 100,
+          "x": 960,
+          "y": 25600,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out25.png",
+          "ms": 100,
+          "x": 1280,
+          "y": 25600,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out26.png",
+          "ms": 100,
+          "x": 1600,
+          "y": 25600,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out27.png",
+          "ms": 100,
+          "x": 1920,
+          "y": 25600,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out28.png",
+          "ms": 100,
+          "x": 0,
+          "y": 25920,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out29.png",
+          "ms": 100,
+          "x": 320,
+          "y": 25920,
+          "a": 5
+    },
+    {
+          "file": "vex-portal-out30.png",
+          "ms": 100,
+          "x": 640,
+          "y": 25920,
+          "a": 5
+    }
   ]
 }

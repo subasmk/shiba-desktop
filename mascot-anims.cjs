@@ -102,6 +102,8 @@
       // sends 'listening' during the mic-open phase of a voice session;
       // the counterpart 'talk' plays while the assistant speaks.
       if (name === 'listening' && has('vex-listen')) return 'vex-listen';
+      if (name === 'portal-in' && has('vex-portal-in')) return 'vex-portal-in';
+      if (name === 'portal-out' && has('vex-portal-out')) return 'vex-portal-out';
       if ((name === 'sit' || name === 'sleep') && has('vex-sit')) return 'vex-sit';
       return 'vex-idle';
     }
