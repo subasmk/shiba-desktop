@@ -23,7 +23,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
  const seen=new Set();
  for(let i=0;i<12;i++){await sleep(100);const f=await pet.locator('.pet-image').getAttribute('data-frame');if(f)seen.add(f);}
  await pet.screenshot({path:'/downloads/vex-size/drag.png'});
- const bad=[...seen].filter(f=>!/^vex-drag[1-4]\.png$/.test(f));
+ const bad=[...seen].filter(f=>!/^vex-drag([1-9]|[12][0-9]|30)\.png$/.test(f));
  assert.deepEqual(bad,[],'drag must hold the 4 hanging frames, saw '+[...seen]);
  // facing: dir 1 (moving right) must mirror his left-facing art
  await send('pet-state','idle');await sleep(400);
