@@ -23,6 +23,7 @@
       "*.cjs",
       "*.html",
       "*.css",
+      "*.ttf",
       "*.js",
       "*.json",
       "*.png",
