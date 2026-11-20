@@ -1,3 +1,4 @@
+const ollamaConnection=require('./ollama.cjs');
 // First-run setup: local hardware check, Ollama detection, conservative free model pull,
 // voice weights download from fixed k2-fsa URLs. Nothing leaves the laptop except these downloads.
 const os=require('node:os'),fs=require('node:fs'),path=require('node:path'),{execFile}=require('node:child_process');
@@ -12,10 +13,10 @@ async function hardware(){
  function app_path(){try{return require('electron').app.getPath('userData');}catch{return os.tmpdir();}}
 }
 async function ollamaStatus(){
- try{const r=await fetch('http://127.0.0.1:11434/api/tags',{signal:AbortSignal.timeout(3000)});if(!r.ok)return{running:false};return{running:true,models:((await r.json()).models||[]).map(m=>m.name)};}catch{return{running:false};}
+ try{return{running:true,models:await ollamaConnection.listModels()};}catch(e){return{running:false,models:[],error:e.message};}
 }
 async function pullModel(name,onProgress,signal){
- const r=await fetch('http://127.0.0.1:11434/api/pull',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,stream:true}),signal:sig(signal,30*60000)});
+ const r=await fetch(ollamaConnection.url('/api/pull'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,stream:true}),signal:sig(signal,30*60000)});
  if(!r.ok)throw Error('Ollama model download failed ('+r.status+').');
  const reader=r.body.getReader();let buf='';
  for(;;){const {done,value}=await reader.read();if(done)break;buf+=Buffer.from(value).toString('utf8');let i;while((i=buf.indexOf('\n'))>=0){const line=buf.slice(0,i);buf=buf.slice(i+1);try{const j=JSON.parse(line);if(j.status&&onProgress)onProgress(j.completed&&j.total?Math.round(100*j.completed/j.total):null,j.status);}catch{}}}
@@ -51,7 +52,7 @@ async function pullWithFallback(preferred,onProgress,signal){
  let lastErr=null;
  for(const name of order){
   if(signal?.aborted)throw Error('Setup cancelled.');try{await pullModel(name,onProgress,signal);
-   const probe=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:name,messages:[{role:'user',content:'hi'}],stream:false,options:{num_predict:4}}),signal:sig(signal,120000)});
+   const probe=await fetch(ollamaConnection.url('/api/chat'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:name,messages:[{role:'user',content:'hi'}],stream:false,options:{num_predict:4}}),signal:sig(signal,120000)});
    if(probe.ok)return{model:name,fellBack:name!==preferred};
    lastErr=Error('Model '+name+' could not run on this laptop ('+probe.status+').');
   }catch(e){lastErr=e;}

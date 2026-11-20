@@ -93,7 +93,7 @@ function parseTitleLines(text) {
 // --- provider calls (Ollama vision seam, same as context.describeScene) ------
 async function ollamaVision({ image, prompt, model = 'moondream', fetchFn = fetch, timeoutMs = 45000 } = {}) {
   if (!image || typeof image !== 'string') throw Error('No screenshot to look at.');
-  const r = await fetchFn('http://127.0.0.1:11434/api/generate', {
+  const r = await fetchFn(require('./ollama.cjs').url('/api/generate'), {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ model, prompt, images: [image], stream: false }),
     signal: AbortSignal.timeout(timeoutMs),

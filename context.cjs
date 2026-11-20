@@ -175,7 +175,7 @@ class ContextMonitor {
 // one-line scene description. Never writes the screenshot anywhere.
 async function describeScene({ image, model = 'moondream', fetchFn = fetch, timeoutMs = 30000 } = {}) {
   if (!image || typeof image !== 'string') throw Error('No screenshot to describe.');
-  const r = await fetchFn('http://127.0.0.1:11434/api/generate', {
+  const r = await fetchFn(require('./ollama.cjs').url('/api/generate'), {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ model, prompt: 'Describe what the user is doing on this screen in one short sentence. Name the app or activity, nothing else.', images: [image], stream: false }),
     signal: AbortSignal.timeout(timeoutMs),

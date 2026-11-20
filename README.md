@@ -38,6 +38,10 @@ Open the dashboard and choose **Run setup**. Setup checks available RAM, selects
 
 Use **Brain** settings to check installed Ollama models. Vision requires its own compatible model; do not assume chat setup also installs vision.
 
+Already have an Ollama model? Start Ollama, then open **Brain > Check installed models**, click the exact model name and **Save**. Text chat does not require Run setup. Run setup can choose/download a different recommended model; voice still needs its separate speech models.
+
+If model discovery fails, the error appears below the button with the server address. Relay defaults to `http://127.0.0.1:11434`. A custom local port can be set with `OLLAMA_HOST` before launching Relay; discovery, chat, setup and vision use that same address. Remote hosts are not accepted for local processing.
+
 Cloud chat is optional. Add your own provider key, select the provider and approve the message leaving your laptop. OpenRouter uses its free-router path; provider availability, quotas and pricing are outside this project's control. A failed request does not intentionally fall back to a paid model.
 
 ## Data and privacy
