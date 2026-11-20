@@ -138,13 +138,14 @@ test('events: a missing target sprite degrades (dex -> dex-idle, rex -> null)', 
 });
 
 // --- Vex (hooded horned kid, walk-cycle video + sit art, Nov 19 2026) -----
-const VEX_SPRITES = new Set(['vex-idle', 'vex-walk', 'vex-sit']);
+const VEX_SPRITES = new Set(['vex-idle', 'vex-walk', 'vex-sit', 'vex-drag']);
 const hasVex = (n) => VEX_SPRITES.has(n);
 
-test('vex: movement states play the walk loop', () => {
-  for (const n of ['walk', 'run', 'leap', 'drag']) {
+test('vex: movement states play the walk loop, drag shows his hanging art', () => {
+  for (const n of ['walk', 'run', 'leap']) {
     assert.equal(resolveSprite(n, 'vex', hasVex), 'vex-walk', n);
   }
+  assert.equal(resolveSprite('drag', 'vex', hasVex), 'vex-drag');
 });
 
 test('vex: sit and sleep show the seated pose', () => {

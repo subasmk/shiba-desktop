@@ -45,16 +45,18 @@
   };
   // Fourth mascot (Nov 19 2026): Vex, the hooded horned kid from his
   // walk-cycle video. He sends the animations one by one; so far there is
-  // only walk (45 frames from the video) and a seated pose (from his sit
-  // artwork), so movement states play the walk loop, sit/sleep show the
+  // walk (45 frames from the video), a seated pose (from his sit artwork)
+  // and a hanging-by-the-cloak pose for drags (Nov 20). Movement states
+  // play the walk loop, drag shows the hanging art, sit/sleep show the
   // seated pose and every other state idles until more art arrives.
-  const VEX_WALK_STATES = new Set(['walk', 'run', 'leap', 'drag']);
+  const VEX_WALK_STATES = new Set(['walk', 'run', 'leap']);
   // name: requested state ('idle', 'touch-head', 'dex-wave', ...).
   // mascot: 'dex' | 'rex' | 'vex'. has: (spriteName) => boolean.
   function resolveSprite(name, mascot, has) {
     if (typeof name !== 'string') return name;
     if (mascot === 'vex') {
       if (name.startsWith('vex-')) return has(name) ? name : 'vex-idle';
+      if (name === 'drag' && has('vex-drag')) return 'vex-drag';
       if (VEX_WALK_STATES.has(name) && has('vex-walk')) return 'vex-walk';
       if ((name === 'sit' || name === 'sleep') && has('vex-sit')) return 'vex-sit';
       return 'vex-idle';
