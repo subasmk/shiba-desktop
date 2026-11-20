@@ -134,7 +134,7 @@ function renderPet(m){
  +tg('Cursor play','paused for now - its art is being redrawn for the new mascot',swd('p-cursor'))
  +'</div><div class="card"><h3>Pet size</h3><p class="desc">How big the pet appears on your desktop.</p><div class="row"><button class="act ghost" data-size="small">Small</button><button class="act ghost" data-size="normal">Normal</button><button class="act ghost" data-size="large">Large</button></div><p class="desc" id="s-current"></p></div><div class="card"><h3>Personality</h3><p class="desc">Daru is mischievous and friendly, with playful teasing that is never mean.</p>'
  +tg('Proactive comments','the pet occasionally speaks up, from local signals only, with quiet hours and daily caps',sw('p-proactive',!!state.proactive))
- +'</div><div class="card"><h3>Daru</h3><p class="desc">Your hooded desktop companion. Preview his animations while he is on the desktop.</p><div class="row"><button class="act ghost" data-vex-anim="idle">Idle</button><button class="act ghost" data-vex-anim="walk">Walk</button><button class="act ghost" data-vex-anim="sit">Sit</button><button class="act ghost" data-vex-anim="drag">Drag</button><button class="act ghost" data-vex-anim="landing">Landing</button><button class="act ghost" data-vex-anim="rage">Angry</button><button class="act ghost" data-vex-anim="emote">Laugh</button></div></div>'
+ +'</div>'
  +'<div class="card"><h3>Notch</h3><p class="desc">The bar at the top of your screen: Daru peeks over the top edge, hover opens a deck of up to 12 tiles - your real apps, actions like Mic / Do Not Disturb / routines, and live CPU / RAM tiles. Tiles are edited inside the notch itself: open it and tap the pencil. Here you only choose whether it shows, how it wakes, and whether the floating stats pill (CPU / RAM / battery, right edge of the screen) shows.</p>'
  +tg('Notch','top-of-screen bar with the pet, status pill and tile deck',sw('pt-notch',state.notch!==false))
  +tg('Stats pill','small floating CPU / RAM / battery readout at the right edge of the screen',sw('pt-notch-stats',state.notchStats!==false))
@@ -146,7 +146,6 @@ function renderPet(m){
 
 
 
- m.querySelectorAll('[data-vex-anim]').forEach(b=>b.onclick=()=>api.send('action',b.dataset.vexAnim));
  m.querySelectorAll('[data-size]').forEach(b=>b.onclick=()=>task(async()=>{await save({size:b.dataset.size});$('#s-current').textContent='Current: '+b.dataset.size;status('Pet size: '+b.dataset.size);}));
  $('#pt-notch').onchange=()=>task(async()=>{await save({notch:$('#pt-notch').checked});status($('#pt-notch').checked?'Notch on.':'Notch off.');});
  $('#pt-notch-stats').onchange=()=>task(async()=>{await save({notchStats:$('#pt-notch-stats').checked});status($('#pt-notch-stats').checked?'Stats pill on.':'Stats pill off.');});
