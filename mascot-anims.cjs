@@ -54,9 +54,11 @@
   // puffed cheeks, anger mark and steam, back to calm), so it plays rage
   // and the tap-combo swing like dex-rage does for Dex. His 9:06 GIF is
   // a belly laugh, wired as emote plus the ambient-emote and react-success
-  // events. Movement states
-  // play the walk loop, drag shows the hanging art, sit/sleep show the
-  // seated pose and every other state idles until more art arrives.
+  // events. His 9:10 GIF dozes off standing (blinks, half-lidded, slumps
+  // asleep, jerks back awake), so sleep plays that while sit keeps the
+  // seated pose. Movement states
+  // play the walk loop, drag shows the hanging art, sit shows the seated
+  // pose, sleep plays the dozing beat, and every other state idles until more art arrives.
   const VEX_WALK_STATES = new Set(['walk', 'run', 'leap']);
   // name: requested state ('idle', 'touch-head', 'dex-wave', ...).
   // mascot: 'dex' | 'rex' | 'vex'. has: (spriteName) => boolean.
@@ -69,7 +71,8 @@
       if ((name === 'rage' || name === 'swing') && has('vex-rage')) return 'vex-rage';
       if (name === 'emote' && has('vex-laugh')) return 'vex-laugh';
       if (VEX_WALK_STATES.has(name) && has('vex-walk')) return 'vex-walk';
-      if ((name === 'sit' || name === 'sleep') && has('vex-sit')) return 'vex-sit';
+      if (name === 'sleep' && has('vex-sleep')) return 'vex-sleep';
+      if (name === 'sit' && has('vex-sit')) return 'vex-sit';
       return 'vex-idle';
     }
     if (mascot !== 'dex') return name;

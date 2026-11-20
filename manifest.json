@@ -4574,5 +4574,217 @@
    "y": 8640,
    "a": 5
   }
+ ],
+ "vex-sleep": [
+  {
+   "file": "vex-sleep1.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 8640,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep2.png",
+   "ms": 100,
+   "x": 0,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep3.png",
+   "ms": 100,
+   "x": 320,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep4.png",
+   "ms": 100,
+   "x": 640,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep5.png",
+   "ms": 100,
+   "x": 960,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep6.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep7.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep8.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 8960,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep9.png",
+   "ms": 100,
+   "x": 0,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep10.png",
+   "ms": 100,
+   "x": 320,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep11.png",
+   "ms": 100,
+   "x": 640,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep12.png",
+   "ms": 100,
+   "x": 960,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep13.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep14.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep15.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 9280,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep16.png",
+   "ms": 100,
+   "x": 0,
+   "y": 9600,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep17.png",
+   "ms": 100,
+   "x": 320,
+   "y": 9600,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep18.png",
+   "ms": 100,
+   "x": 640,
+   "y": 9600,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep19.png",
+   "ms": 100,
+   "x": 960,
+   "y": 9600,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep20.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 9600,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep21.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 9600,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep22.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 9600,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep23.png",
+   "ms": 100,
+   "x": 0,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep24.png",
+   "ms": 100,
+   "x": 320,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep25.png",
+   "ms": 100,
+   "x": 640,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep26.png",
+   "ms": 100,
+   "x": 960,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep27.png",
+   "ms": 100,
+   "x": 1280,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep28.png",
+   "ms": 100,
+   "x": 1600,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep29.png",
+   "ms": 100,
+   "x": 1920,
+   "y": 9920,
+   "a": 5
+  },
+  {
+   "file": "vex-sleep30.png",
+   "ms": 100,
+   "x": 0,
+   "y": 10240,
+   "a": 5
+  }
  ]
 }
