@@ -91,6 +91,7 @@
       // sustained wide-mouth flail, then settling back to neutral - wired
       // as his poke reaction (touch-head/body/paws), which had no art.
       if ((name === 'touch-head' || name === 'touch-body' || name === 'touch-paws') && has('vex-shock')) return 'vex-shock';
+      if (name === 'touch-scare' && has('vex-scare')) return 'vex-scare'; /* his 11:27 boo GIF is the SECOND hit animation (his 14:47 word: '2 HIT ANIMATION ANNUPUNEN ANA ONNU THA PLAY AGUTHU' - only one was playing); alternates with shock per region */
       // His 'Talking gif' MP4 (Nov 20 2026): standing talk loop, mouth
       // cycling open/closed/smile - the speaking state (voice-ui sends
       // 'talk' while the assistant voice speaks; it loops, not finite).
@@ -200,7 +201,14 @@
     }
     return sprite;
   }
-  const api = { DEX_FALLBACK, DEX_TOUCH_ROTATION, VEX_WALK_STATES, resolveSprite, DEX_EVENTS, REX_EVENTS, VEX_EVENTS, resolveEvent };
+  // Vex's two hit clips alternate per region (his 14:47 report: of the
+  // two hit animations he sent, only one ever played).
+  const VEX_TOUCH_ROTATION = {
+    'touch-head': ['touch-head', 'touch-scare'],
+    'touch-body': ['touch-body', 'touch-scare'],
+    'touch-paws': ['touch-paws', 'touch-scare'],
+  };
+  const api = { DEX_FALLBACK, DEX_TOUCH_ROTATION, VEX_TOUCH_ROTATION, VEX_WALK_STATES, resolveSprite, DEX_EVENTS, REX_EVENTS, VEX_EVENTS, resolveEvent };
   if (typeof module === 'object') module.exports = api;
   else root.MascotAnims = api;
 })(globalThis);
