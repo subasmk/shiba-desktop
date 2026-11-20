@@ -95,6 +95,13 @@
       // art is the full-body re-export): arm rises, open-palm wave side to
       // side. Wired as wave.
       if (name === 'wave' && has('vex-wave')) return 'vex-wave';
+      // His listening beat (Nov 20 2026, sent 12:41, his caption:
+      // 'Listening when I speak'): hand rises to cup beside the horn
+      // with a finger wiggle, head tilted in, big grin, happy eye
+      // squint - ear-cupped attention while the user talks. voice-ui
+      // sends 'listening' during the mic-open phase of a voice session;
+      // the counterpart 'talk' plays while the assistant speaks.
+      if (name === 'listening' && has('vex-listen')) return 'vex-listen';
       if ((name === 'sit' || name === 'sleep') && has('vex-sit')) return 'vex-sit';
       return 'vex-idle';
     }
