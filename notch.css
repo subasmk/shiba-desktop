@@ -71,3 +71,7 @@ html,body{color:#eeedf3;font:13px/1.45 system-ui,sans-serif}
 body.editing #quickbar{display:none}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 #pk-grid,#chat-reply{scrollbar-width:thin;scrollbar-color:#536479 transparent}
+
+#notch-nav{display:flex;gap:6px;margin:6px 0 12px}#notch-nav button,#view-service button{border:1px solid #405662;border-radius:10px;background:#243944;color:#b7edf1;padding:8px 12px;cursor:pointer;font:inherit}#view-service{font-size:12px;max-height:350px;overflow:auto;padding:2px 4px 12px}#view-service h2{font-size:17px;color:#dffbfc}#view-service p{line-height:1.6;color:#b6cad2}#view-service .service-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}#service-status{white-space:pre-wrap;margin-top:12px;color:#a6e8ec;line-height:1.6}body[data-subview="tools"] #view-deck,body[data-subview="setup"] #view-deck,body[data-subview="tools"] #view-chat,body[data-subview="setup"] #view-chat{display:none!important}#notch-nav button:focus-visible,#view-service button:focus-visible{outline:2px solid #a3e4eb}body.editing #notch-nav{display:none}#panel{max-height:calc(100vh - 24px);overflow-y:auto}#notch-nav{position:relative;z-index:2}
+
+#view-service input{display:block;width:100%;margin:8px 0;padding:9px 10px;background:#172730;border:1px solid #405662;border-radius:9px;color:#dffbfc;font:inherit}#setup-facts{margin:8px 0;line-height:1.6}#native-items{margin:10px 0}#view-service .service-grid button{text-align:left}#view-service{scrollbar-width:thin;scrollbar-color:#49616c transparent}

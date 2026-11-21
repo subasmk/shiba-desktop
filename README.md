@@ -34,11 +34,11 @@ Do not enable power mode or add credentials to an untrusted checkout.
 
 ### Notch quick start
 
-Hover over Daru at the top edge to open the Soft Cyan deck. The pencil edits your saved deck (up to 12 tiles); category tabs and search find more apps and actions. The chat icon opens text chat. In Local mode, choose an installed Ollama model from the local-model selector; selection saves immediately. Refresh retries model discovery and shows connection errors inline. OpenRouter and Groq still require your own key and consent for each message. The side stats pill shows CPU, RAM and battery, or `--` when a reading is unavailable. Existing timer, music and system-volume controls remain in the deck.
+Hover over Daru at the top edge to open the Soft Cyan deck. Named Tools, Setup and Dashboard buttons are inside the notch. Tools and Setup stay in this design; Dashboard opens the settings window. The pencil edits your saved deck (up to 12 tiles); category tabs and search find more apps and actions. The chat icon opens text chat. In Local mode, choose an installed Ollama model from the local-model selector; selection saves immediately. Refresh retries model discovery and shows connection errors inline. OpenRouter and Groq still require your own key and consent for each message. The side stats pill shows CPU, RAM and battery, or `--` when a reading is unavailable. Existing timer, music and system-volume controls remain in the deck.
 
 ### Local AI and voice setup
 
-Open the dashboard and choose **Run setup**. Setup checks available RAM, selects a local Ollama model and downloads brain/voice components. Internet access, disk space and time are needed for downloads; inference performance depends on your hardware.
+Open **Setup** in the notch to install speech recognition, local fallback voice or the local brain separately. ElevenLabs needs the local recognizer but does not require Kokoro unless local fallback is needed. Without an ElevenLabs key, an installed local fallback can still speak. For the full local setup, open the dashboard and choose **Run setup**. Setup checks available RAM, selects a local Ollama model and downloads brain/voice components. Internet access, disk space and time are needed for downloads; inference performance depends on your hardware.
 
 Use **Brain** settings to check installed Ollama models. Vision requires its own compatible model; do not assume chat setup also installs vision.
 
@@ -47,6 +47,12 @@ Already have an Ollama model? Start Ollama, then open **Brain > Check installed 
 If model discovery fails, the error appears below the button with the server address. Relay defaults to `http://127.0.0.1:11434`. A custom local port can be set with `OLLAMA_HOST` before launching Relay; discovery, chat, setup and vision use that same address. Remote hosts are not accepted for local processing.
 
 Cloud chat is optional. Add your own provider key, select the provider and approve the message leaving your laptop. OpenRouter uses its free-router path; provider availability, quotas and pricing are outside this project's control. A failed request does not intentionally fall back to a paid model.
+
+### Microphone, wake word and hotkey checks
+
+In **Dashboard > Voice**, enable Wake word or Hold-to-talk explicitly. Hold-to-talk defaults to `CommandOrControl+Shift+Space`. On Windows, hold it while speaking and release to send the recorded turn. The microphone closes on release while the reply finishes. Other systems use press-to-toggle. The saved wake-word setting resumes listening when Relay restarts. Say "Hey Daru" to start a voice session; `Ctrl+Shift+M` mutes wake listening.
+
+Use **Check mic & hotkey** in Voice settings to test microphone access and inspect shortcut registration and listener status. This test briefly opens the microphone, then closes its test stream. Existing wake listening or a live call stays as you set it. On Windows, a microphone denial may need **Settings > Privacy & security > Microphone > Let desktop apps access your microphone**. If another application owns the shortcut, choose another key. Missing recognition files are reported separately in Setup. The app cannot guarantee that every Windows microphone driver or system-wide key combination will work.
 
 ## Data and privacy
 

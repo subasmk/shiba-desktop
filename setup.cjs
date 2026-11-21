@@ -22,9 +22,9 @@ async function pullModel(name,onProgress,signal){
  for(;;){const {done,value}=await reader.read();if(done)break;buf+=Buffer.from(value).toString('utf8');let i;while((i=buf.indexOf('\n'))>=0){const line=buf.slice(0,i);buf=buf.slice(i+1);try{const j=JSON.parse(line);if(j.status&&onProgress)onProgress(j.completed&&j.total?Math.round(100*j.completed/j.total):null,j.status);}catch{}}}
 }
 function voiceModelsStatus(dir){
- const need=[['sherpa-onnx-whisper-tiny','tiny-encoder.int8.onnx'],['sherpa-onnx-whisper-tiny','tiny-decoder.int8.onnx'],['sherpa-onnx-whisper-tiny','tiny-tokens.txt'],['kokoro-int8-multi-lang-v1_0','model.int8.onnx'],['kokoro-int8-multi-lang-v1_0','voices.bin'],['kokoro-int8-multi-lang-v1_0','tokens.txt'],['kokoro-int8-multi-lang-v1_0','lexicon-us-en.txt'],['kokoro-int8-multi-lang-v1_0','lexicon-zh.txt'],['kokoro-int8-multi-lang-v1_0','phone-zh.fst']];
+ const need=[['sherpa-onnx-whisper-tiny','tiny-encoder.int8.onnx'],['sherpa-onnx-whisper-tiny','tiny-decoder.int8.onnx'],['sherpa-onnx-whisper-tiny','tiny-tokens.txt'],['kokoro-int8-multi-lang-v1_0','model.int8.onnx'],['kokoro-int8-multi-lang-v1_0','voices.bin'],['kokoro-int8-multi-lang-v1_0','tokens.txt'],['kokoro-int8-multi-lang-v1_0','lexicon-us-en.txt'],['kokoro-int8-multi-lang-v1_0','lexicon-zh.txt'],['kokoro-int8-multi-lang-v1_0','phone-zh.fst'],['kokoro-int8-multi-lang-v1_0','date-zh.fst'],['kokoro-int8-multi-lang-v1_0','number-zh.fst']];
  const missing=need.filter(([d,f])=>!fs.existsSync(path.join(dir,d,f)));
- return {ready:missing.length===0,missing:missing.map(([d,f])=>d+'/'+f)};
+ const paths=missing.map(([d,f])=>d+'/'+f);const asr=paths.filter(p=>p.startsWith('sherpa-')),local=paths.filter(p=>p.startsWith('kokoro'));return {ready:!paths.length,missing:paths,asr:{ready:!asr.length,missing:asr},local:{ready:!local.length,missing:local}};
 }
 async function downloadAndExtract(url,dir,onProgress,signal){
  if(process.platform!=='win32'&&process.platform!=='linux')throw Error('Voice setup supports Windows and Linux only.');
@@ -40,12 +40,12 @@ async function downloadAndExtract(url,dir,onProgress,signal){
   await new Promise((res,rej)=>execFile(process.platform==='win32'?'tar.exe':'tar',['-xf',tmp,'-C',dir],{windowsHide:true,timeout:120000},e=>e?rej(Error('Voice model unpack failed.')):res()));
  }finally{try{out.destroy();}catch{}fs.rmSync(tmp,{force:true});}
 }
-async function ensureVoiceModels(dir,onProgress,signal){
- const s=voiceModelsStatus(dir);if(s.ready)return s;
- if(s.missing.some(m=>m.startsWith('sherpa-onnx-whisper')))if(signal?.aborted)throw Error('Setup cancelled.');await downloadAndExtract(WHISPER_URL,dir,p=>onProgress?.('speech recognition',p),signal);
- if(s.missing.some(m=>m.startsWith('kokoro')))if(signal?.aborted)throw Error('Setup cancelled.');await downloadAndExtract(KOKORO_URL,dir,p=>onProgress?.('voice',p),signal);
- const after=voiceModelsStatus(dir);if(!after.ready)throw Error('Voice setup incomplete. No fallback voice was substituted.');
- return after;
+async function ensureVoiceModels(dir,onProgress,signal,scope='all'){
+ const s=voiceModelsStatus(dir);if(signal?.aborted)throw Error('Setup cancelled.');
+ if(scope!=='local'&&!s.asr.ready)await downloadAndExtract(WHISPER_URL,dir,p=>onProgress?.('speech recognition',p),signal);
+ if(signal?.aborted)throw Error('Setup cancelled.');
+ if(scope!=='asr'&&!s.local.ready)await downloadAndExtract(KOKORO_URL,dir,p=>onProgress?.('local voice',p),signal);
+ const after=voiceModelsStatus(dir);if(!(scope==='asr'?after.asr.ready:scope==='local'?after.local.ready:after.ready))throw Error('Voice setup incomplete. No fallback voice was substituted.');return after;
 }
 function fallbackModels(preferred){const ladder=['qwen3:8b','qwen3:1.7b','qwen3:0.6b'];const i=ladder.indexOf(preferred);return i<0?[preferred]:ladder.slice(i);}
 async function pullWithFallback(preferred,onProgress,signal){
@@ -89,7 +89,7 @@ async function waitForOllama(timeoutMs,signal){
  return {running:false};
 }
 let runController=null;
-function beginRun(){runController=new AbortController();return runController.signal;}
+function beginRun(){runController?.abort();runController=new AbortController();return runController.signal;}
 function cancelRun(){if(runController)runController.abort();}
 function sig(signal,ms){const t=AbortSignal.timeout(ms);return signal?(AbortSignal.any?AbortSignal.any([signal,t]):t):t;}
 async function headSize(url){try{const r=await dlFetch(url,{method:'HEAD',redirect:'follow',signal:AbortSignal.timeout(8000)});const n=Number(r.headers.get('content-length'));return Number.isFinite(n)&&n>0?n:null;}catch{return null;}}

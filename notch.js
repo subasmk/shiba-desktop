@@ -12,6 +12,7 @@ const LETTER_COLORS = ['#5B6CFF', '#d94f2b', '#2e9e63', '#8a5fd0', '#c9931b', '#
 const letterColor = (name) => { let h = 0; for (const ch of String(name || '')) h = (h * 31 + ch.charCodeAt(0)) % 997; return LETTER_COLORS[h % LETTER_COLORS.length]; };
 
 const machine = new N.NotchMachine({});
+let subview='',toolRequest=0;
 let deck = N.saneDeck(undefined); // replaced by the pushed state (scan default or saved deck)
 let mascotName = 'Daru';
 let pillState = { text: 'IDLE', tone: 'idle' };
@@ -36,6 +37,27 @@ const iconWanted = new Set();
 const ACTION_PATHS={chat:'M4 5h16v11H9l-5 4z',mic:'M9 4a3 3 0 0 1 6 0v7a3 3 0 0 1-6 0zm-3 6v2a6 6 0 0 0 12 0v-2M12 18v4M8 22h8',note:'M5 3h14v18H5zM8 8h8M8 12h8M8 16h5',timer:'M12 7v6l4 2M9 2h6M12 2v3M20 13a8 8 0 1 1-16 0 8 8 0 0 1 16 0',music:'M10 17V5l10-2v12M10 8l10-2M10 17a3 2 0 1 1-3-2 3 2 0 0 1 3 2M20 15a3 2 0 1 1-3-2 3 2 0 0 1 3 2',playlists:'M4 5h13M4 10h13M4 15h7M17 13v7M14 17l3 3 3-3',routines:'M8 5h13M8 12h13M8 19h13M2 5l1 1 2-3M2 12l1 1 2-3M2 19l1 1 2-3',setup:'M12 3v12M7 10l5 5 5-5M4 17v4h16v-4',vision:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zm13 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0',dnd:'M6 8a6 6 0 0 1 12 0c0 8 3 8 3 8H3s3 0 3-8M9 20h6M3 3l18 18',clipboard:'M9 4H5v18h14V4h-4M9 2h6v5H9z',apps:'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z',settings:'M4 6h16M4 12h16M4 18h16M8 3v6M16 9v6M9 15v6',close:'M6 6l12 12M6 18L18 6',volume:'M3 9h4l5-4v14l-5-4H3zM16 8q6 4 0 8',muted:'M3 9h4l5-4v14l-5-4H3zM16 9l6 6M16 15l6-6',battery:'M3 7h16v12H3zM19 11h3v4h-3M6 10v6M10 10v6',edit:'M4 16L16 4l4 4L8 20H4z'};
 function lineIcon(id){const alias={'run-routine':'routines','music-next':'music','discord-post':'chat','vol-up':'volume','vol-down':'volume','vol-mute':'muted','clip-clear':'clipboard'};const p=ACTION_PATHS[alias[id]||id];return p?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+p+'"/></svg>':'';}
 
+// Soft Cyan native tools/setup views. The legacy launcher is never opened here.
+function showRoute(route){toolRequest++;
+ if(route==='collapse'){subview='';machine.expanded='none';machine.awake=false;render();return;}
+ if(route==='dashboard'){api.send('open-dashboard');return;}
+ subview=['tools','setup'].includes(route)?route:'';machine.setView('deck');machine.expanded='open';machine.awake=true;render();
+ if(subview==='tools')$('#view-service').innerHTML='<h2>Tools</h2><p>Everything starts here, in the new notch.</p><div class="service-grid"><button data-route="setup">Setup & readiness</button><button data-route="dashboard">Dashboard & voice settings</button><button data-service="mic">Start / stop voice</button><button data-service="voice-settings">Hotkey & wake word</button><button data-service="chat">Brain chat</button><button data-service="notes">Notes</button><button data-service="apps">Installed apps</button><button data-service="routines">Routines</button><button data-service="timer">Focus timer</button><button data-service="pet">Personality & behavior</button></div><div id="service-status" role="status"></div>';
+ if(subview==='setup'){$('#view-service').innerHTML='<h2>Setup & readiness</h2><p>Install only what you need. ElevenLabs replaces speech output, not the local microphone recognizer or brain.</p><div id="setup-facts">Checking...</div><div class="service-grid"><button data-install="asr">Install speech recognition</button><button data-install="local">Install local fallback voice</button><button data-install="brain">Set up local brain</button><button data-route="dashboard">ElevenLabs & settings</button></div><button id="native-cancel" style="margin-top:8px">Cancel download</button><div id="service-status" role="status"></div>';loadSetup();}
+}
+async function loadSetup(){try{const s=await api.call('setup-status');if(subview!=='setup')return;const v=s.voice,r=s.readiness||{};$('#setup-facts').textContent='RAM '+(s.hardware.ramBytes/1073741824).toFixed(1)+' GB total, '+(s.hardware.freeRamBytes/1073741824).toFixed(1)+' GB free. Brain: '+(s.ollama.running?'running':'not running')+'. Speech recognition: '+(v.asr?.ready?'ready':'missing')+'. Selected output: '+(r.usingLocalFallback?'local fallback':r.selectedOutputReady?'configured':'not configured')+'. Local fallback: '+(v.local?.ready?'ready':'missing')+'.';}catch(e){serviceStatus(cleanErr(e));}}
+function serviceStatus(text){const e=$('#service-status');if(e)e.textContent=text;else flash(text);}
+document.addEventListener('click',async e=>{const route=e.target.closest('[data-route]');if(route){showRoute(route.dataset.route);return;}const b=e.target.closest('[data-install]');if(b){b.disabled=true;try{serviceStatus('Starting '+b.dataset.install+' setup...');await api.call('setup-run',{scope:b.dataset.install});serviceStatus('Setup finished.');await loadSetup();}catch(e){serviceStatus(cleanErr(e));}finally{b.disabled=false;}return;}if(e.target.closest('#native-cancel')){api.call('setup-cancel').catch(e=>serviceStatus(cleanErr(e)));return;}const action=e.target.closest('[data-service]')?.dataset.service;if(action==='apps'||action==='routines'){openNativeTool(action).catch(e=>serviceStatus(cleanErr(e)));}else if(action==='timer'){showRoute('deck');$('#t-toggle').focus();}else if(action==='chat'){subview='';machine.setView('chat');render();refreshLocalModels();}else if(action==='mic'){api.call('notch-action',{action:'mic'}).catch(e=>serviceStatus(cleanErr(e)));}else if(action){api.call('notch-action',{action:'dashboard-tab',tab:action==='voice-settings'?'voice':action==='pet'?'pet':'notes'}).catch(e=>serviceStatus(cleanErr(e)));}});
+async function openNativeTool(kind){const request=++toolRequest;
+ const host=$('#view-service');host.innerHTML='<h2>'+ (kind==='apps'?'Installed apps':'Routines')+'</h2><button data-route="tools">Back to Tools</button><p>Launch only. Nothing is installed or sent.</p><div id="native-items" class="service-grid"></div><div id="service-status" role="status">Loading...</div>';
+ const rows=await api.call(kind==='apps'?'installed-apps':'list-routines');if(request!==toolRequest||!$('#native-items'))return;const items=$('#native-items');
+ for(const row of rows){const b=document.createElement('button');b.textContent=row.name;b.onclick=async()=>{try{const r=await api.call(kind==='apps'?'launch-app':'run-routine',kind==='apps'?row.token:row.name);serviceStatus(kind==='apps'?r.name+': launch requested.':'Launch requested: '+(r.launched||[]).join(', ')+(r.problems?.length?'. Skipped: '+r.problems.join(', '):''));}catch(e){serviceStatus(cleanErr(e));}};items.append(b);}
+ serviceStatus(rows.length+' '+(kind==='apps'?'installed apps':'saved routines')+'.');
+ if(kind==='routines'){const name=document.createElement('input'),apps=document.createElement('input'),save=document.createElement('button');name.placeholder='Routine name';name.setAttribute('aria-label','Routine name');apps.placeholder='App names, comma separated';apps.setAttribute('aria-label','Routine apps');save.textContent='Save routine';save.onclick=async()=>{try{await api.call('save-routine',{name:name.value,apps:apps.value.split(',').map(s=>s.trim()).filter(Boolean)});await openNativeTool('routines');}catch(e){serviceStatus(cleanErr(e));}};host.append(name,apps,save);}
+}
+api.on('setup-progress',d=>serviceStatus(d.stage+(d.pct!=null?' '+d.pct+'%':'')));
+api.on('notch-route',showRoute);
+api.on('voice-feedback',d=>{serviceStatus(d.message||'');$('#chat-status').textContent=d.message||'';});
 // --- rendering -----------------------------------------------------------------
 function tileInner(tile) {
   if (tile.kind === 'app') {
@@ -145,7 +167,7 @@ $('#v-slider').addEventListener('input', (e) => {
 });
 function render() {
   document.body.dataset.state = machine.state;
-  document.body.dataset.view = machine.view;
+  document.body.dataset.view = machine.view;document.body.dataset.subview=subview;$('#view-service').hidden=!subview;
   document.body.classList.toggle('editing', machine.editing);
   $('#cat').classList.toggle('out', machine.petOut);
   $('#peek-cat').classList.toggle('out', machine.petOut);
@@ -242,7 +264,9 @@ function runTile(tile) {
     return;
   }
   switch (tile.id) {
-    case 'chat': machine.setView('chat'); render(); $('#chat-input').focus();refreshLocalModels(); break;
+    case 'setup':showRoute('setup');break;
+    case 'tools':showRoute('tools');break;
+    case 'chat': subview='';machine.setView('chat'); render(); $('#chat-input').focus();refreshLocalModels(); break;
     case 'vision': machine.setView('chat'); render(); prefill('where is '); break;
     case 'discord-post': machine.setView('chat'); render(); prefill('post to discord: '); break;
     case 'dnd': api.call('notch-action', { action: 'dnd' }).then((r) => { if (r && typeof r.dnd === 'boolean') { dnd = r.dnd; render(); } flash(dnd ? 'Do not disturb ON — the pet stays quiet.' : 'Do not disturb off.'); }).catch(() => flash('Could not toggle Do not disturb.')); break;
@@ -277,8 +301,8 @@ document.querySelectorAll('[data-util]').forEach((btn) => btn.addEventListener('
     api.send('notch-set-ignore', { ignore: true });
     render();
   } else if (what === 'dash') { api.send('open-dashboard'); }
-  else if (what === 'deck') { machine.setView('deck'); render(); }
-  else if (what === 'chat') { machine.setView('chat'); render(); $('#chat-input').focus();refreshLocalModels(); }
+  else if (what === 'deck') { subview='';machine.setView('deck'); render(); }
+  else if (what === 'chat') { subview='';machine.setView('chat'); render(); $('#chat-input').focus();refreshLocalModels(); }
 }));
 
 // --- chat view -----------------------------------------------------------------------------

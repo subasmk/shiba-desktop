@@ -23,7 +23,7 @@ function gb(b){return b==null?'unknown':(b/1073741824).toFixed(1)+' GB';}
 function mb(b){return b==null?'size unknown':'~'+Math.round(b/1048576)+' MB';}
 function setupSummary(s){
  if(!s)return 'Could not check this laptop yet.';
- let t='RAM '+gb(s.hardware.ramBytes)+' total, '+gb(s.hardware.freeRamBytes)+' free. Brain service: '+(s.ollama.running?'running ('+((s.ollama.models||[]).join(', ')||'no models yet')+')':'not found')+'. Voice models: '+(s.voice.ready?'ready':'missing')+'.';
+ let t='RAM '+gb(s.hardware.ramBytes)+' total, '+gb(s.hardware.freeRamBytes)+' free. Brain service: '+(s.ollama.running?'running ('+((s.ollama.models||[]).join(', ')||'no models yet')+')':'not found')+'. Speech recognition: '+(s.voice.asr?.ready?'ready':'missing')+'. Selected output: '+(s.readiness?.usingLocalFallback?'local fallback':s.readiness?.selectedOutputReady?'configured':'not configured')+'. Local fallback: '+(s.voice.local?.ready?'ready':'missing')+'.';
  if(s.sizes){const parts=[];if(!s.voice.ready)parts.push('voice models '+mb(s.sizes.whisperBytes)+' + '+mb(s.sizes.kokoroBytes));if(!s.ollama.running&&s.sizes.ollamaInstallerBytes)parts.push('Ollama installer '+mb(s.sizes.ollamaInstallerBytes));const want=s.hardware.recommendedModel;if(s.sizes.brainBytesApprox&&s.sizes.brainBytesApprox[want]&&!(s.ollama.models||[]).some(m=>m===want))parts.push('brain model '+want+' '+mb(s.sizes.brainBytesApprox[want]));if(parts.length)t+=' To download: '+parts.join('; ')+'.';}
  return t;
 }
@@ -41,8 +41,8 @@ function render(){setupSink=null;musicSink=null;shell();const m=$('#page-content
  if(tab==='privacy')return renderPrivacy(m);
 }
 function greet(){return '<section class="home-desk"><div class="desk-readout"><div class="eyebrow">01 / OVERVIEW</div><h2>DESKTOP<br>OPERATIONS<span class="title-period">.</span></h2>'+homeMetrics(setupStatus)+'<div class="desk-shortcuts"><button data-go="brain">Brain settings ↗</button><button data-go="voice">Voice settings ↗</button></div></div><button class="daru-peek" aria-label="Open Daru behavior settings" data-go="pet"><span class="daru-tag">DARU / ON DESKTOP DUTY</span><img src="dashboard-daru.png" alt="Daru"><span class="daru-callout">BEHAVIOR ↗</span></button></section>';}
-function homeMetrics(s){return '<section class="home-metrics" aria-label="Laptop status"><div><small>01 LOCAL BRAIN</small><strong id="metric-brain">'+(s?(s.ollama.running?'RUNNING':'OFFLINE'):'CHECKING')+'</strong></div><div><small>02 VOICE MODELS</small><strong id="metric-voice">'+(s?(s.voice.ready?'READY':'NOT INSTALLED'):'CHECKING')+'</strong></div><div><small>03 FREE RAM</small><strong id="metric-ram">'+(s?esc(gb(s.hardware.freeRamBytes)):'CHECKING')+'</strong></div></section>';}
-function updateHomeMetrics(){const s=setupStatus;if(!s)return;const values={'metric-brain':s.ollama.running?'RUNNING':'OFFLINE','metric-voice':s.voice.ready?'READY':'NOT INSTALLED','metric-ram':gb(s.hardware.freeRamBytes)};for(const [id,text] of Object.entries(values)){const el=document.getElementById(id);if(el)el.textContent=text;}}
+function homeMetrics(s){return '<section class="home-metrics" aria-label="Laptop status"><div><small>01 LOCAL BRAIN</small><strong id="metric-brain">'+(s?(s.ollama.running?'RUNNING':'OFFLINE'):'CHECKING')+'</strong></div><div><small>02 VOICE READINESS</small><strong id="metric-voice">'+(s?(s.readiness?.ready?'READY':'NEEDS SETUP'):'CHECKING')+'</strong></div><div><small>03 FREE RAM</small><strong id="metric-ram">'+(s?esc(gb(s.hardware.freeRamBytes)):'CHECKING')+'</strong></div></section>';}
+function updateHomeMetrics(){const s=setupStatus;if(!s)return;const values={'metric-brain':s.ollama.running?'RUNNING':'OFFLINE','metric-voice':s.readiness?.ready?'READY':'NEEDS SETUP','metric-ram':gb(s.hardware.freeRamBytes)};for(const [id,text] of Object.entries(values)){const el=document.getElementById(id);if(el)el.textContent=text;}}
 function renderHome(m){
  const s=setupStatus;
  const brainLocal=state.ollamaModel?esc(state.ollamaModel):'not set up yet';
@@ -103,9 +103,10 @@ function renderVoice(m){
  +'<label class="plain">Fish model</label><div class="row"><select id="v-fish-model" aria-label="Fish model"><option value="s2.1-pro-free">s2.1-pro-free (free, fair use)</option><option value="s2.1-pro">s2.1-pro (paid credit)</option></select></div>'
  +'<div class="row"><label class="plain">Daru - cloned voice ID</label><input id="v-fish-vex" aria-label="Daru Fish voice ID"><button class="act" id="v-fish-save-voices">Save voice ID</button></div></div>'
  +tg('Wake word "Hey Daru"','starts a voice call when you say it; the mic then listens only for that phrase, and Ctrl+Shift+M mutes it instantly',sw('v-wake',!!state.wakeWord))
- +tg('Hold-to-talk','hold the key anywhere to talk, release to stop; on Windows the release is read from the real key state, on other systems each press toggles',sw('v-hold',!!state.holdToTalk))
+ +tg('Hold-to-talk','hold the key anywhere to talk, release to send your turn; on Windows the release is read from the real key state, on other systems each press toggles',sw('v-hold',!!state.holdToTalk))
  +'<label class="plain">Hold-to-talk key (accelerator)</label><div class="row"><input type="text" id="v-hold-key" aria-label="Hold-to-talk key" placeholder="CommandOrControl+Shift+Space"></div>'
- +'</div><div class="status" id="d-status" role="status"></div>';
+ +'<div class="row"><button class="act" id="v-controls-check">Check mic & hotkey</button></div><pre id="v-controls-result"></pre></div><div class="status" id="d-status" role="status"></div>';
+ $('#v-controls-check').onclick=()=>task(async()=>{const c=await api.call('voice-controls');let mic='not checked';let media;try{media=await navigator.mediaDevices.getUserMedia({audio:true,video:false});mic='allowed, microphone found';}catch(e){mic=e.name+': '+e.message;}finally{media?.getTracks().forEach(t=>t.stop());}$('#v-controls-result').textContent='Microphone: '+mic+'\nHold-to-talk: '+(c.holdEnabled?'enabled':'off')+' | '+c.shortcut+'\nShortcut registered: '+c.registered+' | listener: '+c.mode+' | running: '+c.providerRunning+'\nWake word: '+(c.wakeEnabled?'enabled':'off')+' | listening: '+c.wakeListening+' | mute shortcut registered: '+c.wakeMuteRegistered+'\nIf Windows denies the microphone, enable Settings > Privacy & security > Microphone > Let desktop apps access your microphone. If another app owns the shortcut, choose another key above.';});
  $('#v-replies').onchange=()=>task(async()=>{await save({voice:$('#v-replies').checked});status('Saved.');});
  $('#v-engine').value=state.voiceEngine||'elevenlabs';$('#v-cb-command').value=state.chatterboxCommand||'';$('#v-cb-args').value=typeof state.chatterboxArgs==='string'?state.chatterboxArgs:'';
  const cbVis=()=>{$('#v-cb').classList.toggle('hidden',$('#v-engine').value!=='chatterbox');};cbVis();
@@ -128,7 +129,7 @@ function renderVoice(m){
  $('#v-fish-vex').value=typeof ffv.vex==='string'?ffv.vex:'';
  $('#v-fish-save-voices').onclick=()=>task(async()=>{await save({fishVoiceByMascot:{...ffv,vex:$('#v-fish-vex').value.trim()}});status('Daru Fish voice ID saved.');});
  $('#v-wake').onchange=()=>task(async()=>{await save({wakeWord:$('#v-wake').checked});status($('#v-wake').checked?'Wake word on: say "Hey Daru" to start a call.':'Wake word off.');});
- $('#v-hold').onchange=()=>task(async()=>{await save({holdToTalk:$('#v-hold').checked});status($('#v-hold').checked?'Hold-to-talk on: hold the key to talk, release to stop.':'Hold-to-talk off.');});
+ $('#v-hold').onchange=()=>task(async()=>{await save({holdToTalk:$('#v-hold').checked});const c=await api.call('voice-controls');status(!c.holdEnabled?'Hold-to-talk off.':!c.registered||!c.providerRunning?'Hotkey not ready. Use Check mic & hotkey below.':'Hold-to-talk on: hold the key to talk, release to send.');});
  $('#v-hold-key').value=state.holdToTalkKey||'';$('#v-hold-key').onchange=()=>task(async()=>{await save({holdToTalkKey:$('#v-hold-key').value.trim()});status('Hold-to-talk key saved.');});
 }
 function renderPet(m){
