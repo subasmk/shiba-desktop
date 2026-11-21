@@ -9,7 +9,7 @@ This project is under active development. Implemented features are not a promise
 ## What Relay includes
 
 - **Desktop companions:** drag, tap, resize, roam, perch on windows, or dock the mascot near the top-screen notch. Fast throws have bounded rebounds. Repeated interactions build annoyance; the screen-break effect ends with a one-second visual blackout, then returns automatically. Click or press Esc to dismiss it. It does not sleep or lock the computer.
-- **Dashboard and notch:** a settings window, customizable action tiles, and CPU/RAM/battery information.
+- **Dashboard and notch:** the Slate desk dashboard with sidebar navigation, real routine shortcuts, a local scratchpad, and an editable hold-to-talk shortcut card. Dedicated pages keep notes, music, reminders/workflows, integrations and setup close by. The Soft Cyan notch keeps its customizable action tiles and CPU/RAM/battery information.
 - **Chat:** local Ollama models, plus optional OpenRouter and Groq connections using your own keys and a cloud-consent gate for each message.
 - **Voice:** local Whisper recognition and Kokoro speech, voice sessions, interruption handling, hold-to-talk, and an optional wake phrase. System voice and a separately configured Chatterbox sidecar are also available.
 - **Notes, timers and routines:** local notes with search and pinning, focus timers, and saved app-launch routines.
