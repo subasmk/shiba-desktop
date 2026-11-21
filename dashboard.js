@@ -97,12 +97,11 @@ function renderSetup(m){
  +'<div class="tg"><button class="linkish" data-go="brain">Open Brain settings</button></div></div>'
  +'<div class="card"><h3><span class="tool-number">C.</span> VOICE</h3>'
  +tg('Voice replies','reads brain replies aloud',(state.voice?'<span class="pill ok">on</span>':'<span class="pill off">off</span>'))
- +tg('Voice input','push to talk in the top panel','')
  +'<div class="card"><h3>Hotkey &amp; wake word</h3>'
  +tg('Wake word "Hey Daru"','off until you enable it',(state.wakeWord?'<span class="pill ok">on</span>':'<span class="pill off">off</span>'))
  +'<div class="tg"><button class="linkish" data-go="voice">Open Voice settings</button></div></div>'
  +'<div class="card"><h3><span class="tool-number">D.</span> DARU</h3>'
- +tg('Roaming','',sw('h-roam',state.roaming!==false))
+ +tg('Roaming','',sw('h-roam',!!state.roaming))
  +tg('Perch on windows','',sw('h-perch',state.perch!==false))
  +tg('Cursor play','paused for now - its art is being redrawn for the new mascot',swd('h-cursor'))
  +tg('Proactive comments','',sw('h-proactive',!!state.proactive))
@@ -147,7 +146,7 @@ function renderVoice(m){
  +'<label class="plain">Fish model</label><div class="row"><select id="v-fish-model" aria-label="Fish model"><option value="s2.1-pro-free">s2.1-pro-free (free, fair use)</option><option value="s2.1-pro">s2.1-pro (paid credit)</option></select></div>'
  +'<div class="row"><label class="plain">Daru - cloned voice ID</label><input id="v-fish-vex" aria-label="Daru Fish voice ID"><button class="act" id="v-fish-save-voices">Save voice ID</button></div></div>'
  +'<div class="card"><h3>Hotkey &amp; wake word</h3>'
- +tg('Wake word "Hey Daru"','starts a voice call when you say it; the mic then listens only for that phrase, and Ctrl+Shift+M mutes it instantly',sw('v-wake',!!state.wakeWord))
+ +tg('Wake word "Hey Daru"','needs the voice models from First-run setup; starts a voice call when you say it; the mic then listens only for that phrase, and Ctrl+Shift+M mutes it instantly',sw('v-wake',!!state.wakeWord))
  +tg('Hold-to-talk','hold the key anywhere to talk, release to send your turn; on Windows the release is read from the real key state, on other systems each press toggles',sw('v-hold',!!state.holdToTalk))
  +'<label class="plain">Hold-to-talk key (accelerator)</label><div class="row"><input type="text" id="v-hold-key" aria-label="Hold-to-talk key" placeholder="CommandOrControl+Shift+Space"></div>'
  +'<div class="row"><button class="act" id="v-controls-check">Check mic & hotkey</button></div><pre id="v-controls-result"></pre></div><div class="status" id="d-status" role="status"></div>';
@@ -180,7 +179,7 @@ function renderVoice(m){
 function renderPet(m){
  m.innerHTML='<h2>Pet behavior</h2><div class="sub">How your pet moves, reacts and talks. Friendly teasing uses only pet-local action counts, never your laptop activity.</div>'
  +'<div class="card"><h3>Movement</h3>'
- +tg('Roaming','the pet wanders the desktop while idle',sw('p-roam',state.roaming!==false))
+ +tg('Roaming','the pet wanders the desktop while idle',sw('p-roam',!!state.roaming))
  +tg('Perch on windows','while roaming, the pet may sit on the front window title bar',sw('p-perch',state.perch!==false))
  +tg('Cursor play','paused for now - its art is being redrawn for the new mascot',swd('p-cursor'))
  +'</div><div class="card"><h3>Pet size</h3><p class="desc">How big the pet appears on your desktop.</p><div class="row"><button class="act ghost" data-size="small">Small</button><button class="act ghost" data-size="normal">Normal</button><button class="act ghost" data-size="large">Large</button></div><p class="desc" id="s-current"></p></div><div class="card"><h3>Personality</h3><p class="desc">Daru is mischievous and friendly, with playful teasing that is never mean.</p>'
