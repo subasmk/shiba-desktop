@@ -47,8 +47,9 @@ async function ensureVoiceModels(dir,onProgress,signal){
  const after=voiceModelsStatus(dir);if(!after.ready)throw Error('Voice setup incomplete. No fallback voice was substituted.');
  return after;
 }
+function fallbackModels(preferred){const ladder=['qwen3:8b','qwen3:1.7b','qwen3:0.6b'];const i=ladder.indexOf(preferred);return i<0?[preferred]:ladder.slice(i);}
 async function pullWithFallback(preferred,onProgress,signal){
- const order=[preferred,...['qwen3:8b','qwen3:1.7b','qwen3:0.6b'].filter(m=>m!==preferred)];
+ const order=fallbackModels(preferred);
  let lastErr=null;
  for(const name of order){
   if(signal?.aborted)throw Error('Setup cancelled.');try{await pullModel(name,onProgress,signal);
@@ -93,4 +94,4 @@ function cancelRun(){if(runController)runController.abort();}
 function sig(signal,ms){const t=AbortSignal.timeout(ms);return signal?(AbortSignal.any?AbortSignal.any([signal,t]):t):t;}
 async function headSize(url){try{const r=await dlFetch(url,{method:'HEAD',redirect:'follow',signal:AbortSignal.timeout(8000)});const n=Number(r.headers.get('content-length'));return Number.isFinite(n)&&n>0?n:null;}catch{return null;}}
 async function downloadSizes(){const [whisper,kokoro,ollama]=await Promise.all([headSize(WHISPER_URL),headSize(KOKORO_URL),process.platform==='win32'?headSize(OLLAMA_SETUP_URL):Promise.resolve(null)]);return {whisperBytes:whisper,kokoroBytes:kokoro,ollamaInstallerBytes:ollama,brainBytesApprox:{'qwen3:8b':5200000000,'qwen3:1.7b':1400000000,'qwen3:0.6b':520000000}};}
-module.exports={dlFetch,hardware,beginRun,cancelRun,downloadSizes,ollamaStatus,pullModel,pullWithFallback,voiceModelsStatus,ensureVoiceModels,pickModel,downloadOllamaInstaller,waitForOllama,OLLAMA_SETUP_URL};
+module.exports={fallbackModels,dlFetch,hardware,beginRun,cancelRun,downloadSizes,ollamaStatus,pullModel,pullWithFallback,voiceModelsStatus,ensureVoiceModels,pickModel,downloadOllamaInstaller,waitForOllama,OLLAMA_SETUP_URL};

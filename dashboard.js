@@ -206,7 +206,7 @@ function renderFeatures(m){
  +'</div><div class="status" id="d-status" role="status"></div>';
  const bind=(id,key)=>{const n=$(id);n.onchange=()=>task(async()=>{await save({[key]:n.checked});status('Saved.');});};
  bind('#f-context','contextAware');bind('#f-vision','contextVision');bind('#f-vpoint','visionPoint');bind('#f-scout','scout');bind('#f-web','webTools');bind('#f-power','powerMode');
- $('#f-vpoint-go').onclick=()=>task(async()=>{const q=$('#f-vpoint-q').value.trim();if(!q)return status('Type what to find first.');status('Looking at the screen...');const r=await api.call('vision-locate',{target:q});status('Pointed at "'+q+'" ('+r.point.x+', '+r.point.y+' of 1000).');});
+ $('#f-vpoint-go').onclick=()=>task(async()=>{const q=$('#f-vpoint-q').value.trim();if(!q)return status('Type what to find first.');status('Looking at the screen...');const r=await api.call('vision-locate',{target:q});status(r.via==='fast-pick'?'Pointed at "'+q+'" using the local control match.':'Pointed at "'+q+'" ('+r.point.x+', '+r.point.y+' of 1000).');});
  $('#f-vision-model').value=state.visionModel||'moondream';$('#f-vision-model').onchange=()=>task(async()=>{await save({visionModel:$('#f-vision-model').value.trim()||'moondream'});status('Vision model saved.');});
  $('#f-vision-interval').value=state.visionIntervalSec||60;$('#f-vision-interval').onchange=()=>task(async()=>{const input=$('#f-vision-interval'),value=Math.min(300,Math.max(30,Number(input.value)||60));await save({visionIntervalSec:value});input.value=value;status('Vision interval saved.');});
  let musicState=null,linkIdx=-1;

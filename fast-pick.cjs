@@ -35,12 +35,9 @@ function scoreElement(name, target) {
 }
 
 function matchElement(elements, target, minScore = DEFAULT_MIN_SCORE) {
-  let best = null;
-  for (const el of elements || []) {
-    if (!el || !el.name || !(el.w > 0) || !(el.h > 0)) continue;
-    const s = scoreElement(el.name, target);
-    if (s >= minScore && (!best || s > best.score)) best = { element: el, score: s };
-  }
+  let best=null,ties=[];
+  for(const el of elements||[]){if(!el||!el.name||!(el.w>0)||!(el.h>0))continue;const score=scoreElement(el.name,target);if(score<minScore)continue;if(!best||score>best.score){best={element:el,score};ties=[el];}else if(score===best.score){if(!ties.some(x=>x.x===el.x&&x.y===el.y&&x.w===el.w&&x.h===el.h))ties.push(el);}}
+  if(ties.length>1)return {ambiguous:true,choices:ties.map(x=>x.name),score:best.score};
   return best;
 }
 
@@ -83,6 +80,7 @@ async function tryPoint(target, deps = {}) {
   if (!elements || !elements.length) return null;
   const m = matchElement(elements, target, deps.minScore || DEFAULT_MIN_SCORE);
   if (!m) return null;
+  if(m.ambiguous)return {ambiguous:true,choices:m.choices};
   const el = m.element;
   return { x: Math.round(el.x + el.w / 2), y: Math.round(el.y + el.h / 2), name: el.name, score: m.score, via: 'fast-pick' };
 }

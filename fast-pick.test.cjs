@@ -58,3 +58,5 @@ test('tryPoint misses cleanly: no list, no match, lister failure', async () => {
   a.equal(await tryPoint('steam', { listElements: async () => [{ name: 'Other', x: 0, y: 0, w: 9, h: 9 }] }), null);
   a.equal(await tryPoint('steam', { listElements: async () => { throw Error('uia down'); } }), null);
 });
+
+test('equally good controls at different locations ask rather than picking first',async()=>{const rows=[{name:'Save',x:10,y:20,w:50,h:20},{name:'Save',x:400,y:500,w:50,h:20}];a.equal(matchElement(rows,'Save').ambiguous,true);a.deepEqual(await tryPoint('Save',{listElements:async()=>rows}),{ambiguous:true,choices:['Save','Save']});a.equal(matchElement([rows[0],{...rows[0]}],'Save').element,rows[0]);a.equal(matchElement([...rows,{name:'Save document',x:10,y:200,w:40,h:20}],'Save document').element.name,'Save document');});
