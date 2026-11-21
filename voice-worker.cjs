@@ -7,10 +7,10 @@ const path=require('node:path'),fs=require('node:fs');
 const sherpa=require('sherpa-onnx-node');
 const base=process.env.SHIBA_MODELS;
 const wasmDir=path.join(__dirname,'tts-wasm');
-let recognizer,tts,ttsModule,taTts,taModule,taDirLoaded;
+let recognizer,tts,ttsModule;
 function gc(){if(global.gc){for(let i=0;i<3;i++)global.gc();}}
 // Load one instance of the vendored sherpa WASM TTS runtime + its JS API.
-// Each TTS flavour (Kokoro, Tamil VITS) gets its own Module instance.
+// One local English Kokoro instance.
 async function loadTtsRuntime(){
  const preset={print:()=>{},printErr:()=>{},locateFile:(p,sd)=>(sd||'')+p};
  let src=fs.readFileSync(path.join(wasmDir,'sherpa-onnx-wasm-main-tts.js'),'utf8');
@@ -44,46 +44,6 @@ async function ensureTts(){
  const cfg={offlineTtsModelConfig:{offlineTtsVitsModelConfig:emptyVits,offlineTtsMatchaModelConfig:{acousticModel:'',vocoder:'',lexicon:'',tokens:'',dataDir:'',noiseScale:0.667,noiseScaleW:0.8,lengthScale:1.0},offlineTtsKokoroModelConfig:kokoro,offlineTtsKittenModelConfig:{model:'',voices:'',tokens:'',dataDir:'',lengthScale:1.0,lexicon:''},offlineTtsZipVoiceModelConfig:{tokens:'',encoder:'',decoder:'',vocoder:'',dataDir:'',lexicon:'',featScale:0.1,tShift:0.5,targetRMS:0.1,guidanceScale:1.0},offlineTtsPocketModelConfig:{lmFlow:'',lmMain:'',encoder:'',decoder:'',textConditioner:'',vocabJson:'',tokenScoresJson:'',voiceEmbeddingCacheCapacity:50},offlineTtsSupertonicModelConfig:{durationPredictor:'',textEncoder:'',vectorEstimator:'',vocoder:'',ttsJson:'',unicodeIndexer:'',voiceStyle:''},numThreads:2,debug:0,provider:'cpu'},ruleFsts:'/kokoro-phone-zh.fst,/kokoro-date-zh.fst,/kokoro-number-zh.fst',ruleFars:'',maxNumSentences:1};
  tts=m.exports.createOfflineTts(Module,cfg);ttsModule=Module;
 }
-// Tamil VITS branch (last-mile item 1): the same vendored sherpa WASM
-// runtime, a second Module instance, with the Piper Tamil model + tokens
-// prepared by tools/tamil-voice-setup.cjs mounted into its filesystem.
-// The model carries the setup-injected metadata (model_type=vits,
-// comment=piper, has_espeak=1, language=Tamil), but this WASM build has
-// no built-in espeak frontend, so - exactly like the spike - the text is
-// phonemized by the separate piper-phonemize WASM (fetched by the setup
-// script into <modelDir>/piper-phonemize/) and the phoneme codepoints go
-// to generateWithConfig. Text arriving here is already Tamil script
-// (tamil-voice.cjs prepares/transliterates before the call).
-let taPhonemizer=null;
-async function loadPhonemizer(phDir){
- const preset={print:()=>{},printErr:()=>{},locateFile:(p,sd)=>(sd||'')+p};
- const src=fs.readFileSync(path.join(phDir,'piper-phonemize-wasm-main.js'),'utf8');
- const prevCwd=process.cwd();process.chdir(phDir);
- const Module=await new Promise((res,rej)=>{preset.onRuntimeInitialized=()=>res(preset);preset.onAbort=e=>rej(Error('Tamil phonemizer failed to start: '+e));try{new Function('Module','__dirname','require',src+';return Module;')(preset,phDir,require);}catch(e){rej(e);}});
- process.chdir(prevCwd);
- const apiSrc=fs.readFileSync(path.join(phDir,'piper-phonemize.js'),'utf8');
- const api=new Function('Module','__dirname','require',apiSrc+';return {piperPhonemizeInitialize,piperPhonemize};')(Module,phDir,require);
- const sr=api.piperPhonemizeInitialize();
- if(!(sr>0))throw Error('Tamil phonemizer could not initialize espeak-ng.');
- return api;
-}
-async function ensureTtsTa(modelDir){
- if(taTts&&taDirLoaded===modelDir)return;
- if(typeof modelDir!=='string'||!modelDir)throw Error('Tamil voice model folder is not configured.');
- const modelPath=path.join(modelDir,'ta_IN-ValluvarNeural-medium.onnx');
- const tokensPath=path.join(modelDir,'ta-tokens.txt');
- if(!fs.existsSync(modelPath)||!fs.existsSync(tokensPath))throw Error('Tamil voice is not set up. Run: node tools/tamil-voice-setup.cjs <dir> first (experimental spike).');
- const phDir=path.join(modelDir,'piper-phonemize');
- for(const f of ['piper-phonemize-wasm-main.js','piper-phonemize-wasm-main.wasm','piper-phonemize-wasm-main.data','piper-phonemize.js'])
-  if(!fs.existsSync(path.join(phDir,f)))throw Error('Tamil phonemizer files are missing. Re-run: node tools/tamil-voice-setup.cjs <dir> - it also fetches the phonemizer (one-time).');
- const {Module,api}=await loadTtsRuntime();
- Module['FS_createDataFile']('/ta-model.onnx',null,new Uint8Array(fs.readFileSync(modelPath)),true,true,true);
- Module['FS_createDataFile']('/ta-tokens.txt',null,new Uint8Array(fs.readFileSync(tokensPath)),true,true,true);
- const cfg={offlineTtsModelConfig:emptyTtsCfg(),ruleFsts:'',ruleFars:'',maxNumSentences:1};
- cfg.offlineTtsModelConfig.offlineTtsVitsModelConfig={model:'/ta-model.onnx',lexicon:'',tokens:'/ta-tokens.txt',dataDir:'',noiseScale:0.667,noiseScaleW:0.8,lengthScale:1.0};
- taTts=api.createOfflineTts(Module,cfg);taModule=Module;taDirLoaded=modelDir;
- taPhonemizer=await loadPhonemizer(phDir);
-}
 process.on('message',async m=>{if(!m||!Number.isInteger(m.id))return;try{let result;
  if(m.type==='transcribe'){
   await ensureAsr();
@@ -93,16 +53,5 @@ process.on('message',async m=>{if(!m||!Number.isInteger(m.id))return;try{let res
   if(typeof m.text!=='string'||m.text.length>2500)throw Error('Voice reply is too long.');const __t1=Date.now();// Per-assistant voice (assistant-voice.cjs via main): m.sid picks the Kokoro speaker, m.speed the rate. Absent/invalid values keep the historic defaults (sid 0, speed 1.05); sid is clamped to the loaded model's real speaker count when the runtime exposes it.
   let sid=Number.isInteger(m.sid)&&m.sid>=0?m.sid:0;const nSpk=tts&&tts.numSpeakers?tts.numSpeakers:0;if(nSpk>0&&sid>=nSpk)sid=nSpk-1;const speed=typeof m.speed==='number'&&m.speed>=0.5&&m.speed<=2?m.speed:1.05;
   let audio;try{audio=tts.generate({text:m.text,sid,speed});}catch(e1){const clean=m.text.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}]/gu,'').replace(/\s{2,}/g,' ').trim();const retryText=(!clean||clean===m.text)?m.text:clean;try{audio=tts.generate({text:retryText,sid,speed});}catch(e2){gc();gc();audio=tts.generate({text:retryText,sid,speed});}}if(process.env.VOICE_TIMING)fs.appendFileSync(process.env.VOICE_TIMING,'synthesize '+(Date.now()-__t1)+'ms swap='+(process.env.VOICE_SWAP||'0')+'\n');result={samples:Array.from(audio.samples),sampleRate:audio.sampleRate};
- }else if(m.type==='synthesize-ta'){
-  if(typeof m.text!=='string'||m.text.length>2500)throw Error('Voice reply is too long.');
-  await ensureTtsTa(m.modelDir);
-  const __t2=Date.now();
-  const sentences=taPhonemizer.piperPhonemize(m.text,'ta');
-  if(!sentences)throw Error('Tamil phonemizer failed on that text.');
-  const cps=sentences.filter(x=>x.length>0);
-  if(!cps.length)throw Error('Tamil phonemizer produced no phonemes for that text.');
-  const audio=taTts.generateWithConfig('',{phonemeCodepoints:cps,sid:0,speed:1.0});
-  if(!audio||!audio.samples||!audio.samples.length)throw Error('Tamil voice produced no audio.');
-  if(process.env.VOICE_TIMING)fs.appendFileSync(process.env.VOICE_TIMING,'synthesize-ta '+(Date.now()-__t2)+'ms\n');result={samples:Array.from(audio.samples),sampleRate:audio.sampleRate};
  }else if(m.type==='ready')result={ready:true};else throw Error('Unknown voice operation');gc();gc();process.send({id:m.id,result});
  }catch(e){process.send({id:m.id,error:e.message});}});

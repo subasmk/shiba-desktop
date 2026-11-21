@@ -27,7 +27,7 @@ const fs = require('node:fs');
 const { resolveVoice } = require('./assistant-voice.cjs');
 const { fishSpeak, resolveFishVoice, resolveFishModel } = require('./fish-voice.cjs');
 
-const ENGINES = ['kokoro', 'system', 'chatterbox', 'fish'];
+const ENGINES = ['kokoro', 'system', 'chatterbox', 'fish', 'elevenlabs'];
 function resolveEngine(settings) {
   const e = settings && settings.voiceEngine;
   return ENGINES.includes(e) ? e : 'kokoro';
@@ -119,14 +119,7 @@ class ChatterboxSidecar {
 // Returns the worker/sidecar {samples, sampleRate}, or {system:true, text}
 // for the system engine (the renderer speaks it via speechSynthesis).
 //
-// Tamil branch (last-mile item 1): when settings.voiceLang is 'ta' or
-// 'tanglish' AND the engine is the default kokoro path, replies go to the
-// injected tamilSynthesize instead. An explicit system/chatterbox choice
-// always wins over the language setting. If Tamil synthesis fails (model
-// not prepared, worker error), we fall back to Kokoro for this reply and
-// call onTamilFallback(err) so main can surface an honest notice - the
-// fallback is never silent and the audio is never faked.
-function createVoiceEngine({ getSettings, kokoroSynthesize, sidecarFactory, tamilSynthesize, onTamilFallback, getFishKey } = {}) {
+function createVoiceEngine({ getSettings, kokoroSynthesize, sidecarFactory, getFishKey, elevenClient, onCloudFallback } = {}) {
   let sidecar = null;
   const makeSidecar = sidecarFactory || ((s) => new ChatterboxSidecar({ command: s.chatterboxCommand, args: s.chatterboxArgs }));
   return {
@@ -138,29 +131,19 @@ function createVoiceEngine({ getSettings, kokoroSynthesize, sidecarFactory, tami
         if (!sidecar) sidecar = makeSidecar(settings);
         return sidecar.speak(text);
       }
+      if (engine === 'elevenlabs') {
+        try { if(!elevenClient)throw Error('ElevenLabs is not configured.');return await elevenClient.speak(text,settings.elevenVoiceId); }
+        catch(e){if(e.code==='VOICE_CANCELLED')throw e;if(typeof onCloudFallback==='function')try{onCloudFallback(e);}catch{}return kokoroSynthesize(text,resolveVoice(settings,settings.mascot));}
+      }
       if (engine === 'fish') {
         // Cloud cloned voice: the ACTIVE assistant's own Fish voice ID
         // (settings.fishVoiceByMascot) and the key main decrypted at
-        // boot. An explicit engine choice, so it wins over the Tamil
-        // branch below exactly like system/chatterbox do.
+        // boot. Explicitly selected cloud engine.
         const key = typeof getFishKey === 'function' ? getFishKey() : '';
         const buf = await fishSpeak({ apiKey: key, text, referenceId: resolveFishVoice(settings, settings.mascot), model: resolveFishModel(settings) });
         try { return decodeWav(buf); } catch { throw Error('Fish Audio returned unreadable audio.'); }
       }
-      // Per-assistant voice: Rex and Dex are separate assistants, so the
-      // Kokoro path speaks with the ACTIVE assistant's own speaker + speed
-      // (settings.voiceByMascot, see assistant-voice.cjs). The Tamil voice
-      // is single-speaker and the system/chatterbox engines speak for
-      // themselves, so the choice applies here only.
       const voice = resolveVoice(settings, settings.mascot);
-      const lang = settings.voiceLang;
-      if ((lang === 'ta' || lang === 'tanglish') && typeof tamilSynthesize === 'function') {
-        try { return await tamilSynthesize(text); }
-        catch (e) {
-          if (typeof onTamilFallback === 'function') { try { onTamilFallback(e); } catch { /* notice must never break speech */ } }
-          return kokoroSynthesize(text, voice);
-        }
-      }
       return kokoroSynthesize(text, voice);
     },
     stopSidecar() { if (sidecar) { sidecar.stop(); sidecar = null; } },

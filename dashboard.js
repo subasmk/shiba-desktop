@@ -13,11 +13,11 @@ function tg(label,sub,control){return '<div class="tg"><span class="lab">'+esc(l
 function sw(id,on){return '<input type="checkbox" class="sw" id="'+id+'"'+(on?' checked':'')+'>';}
 function swd(id){return '<input type="checkbox" class="sw" id="'+id+'" disabled>';}
 // One-time global listeners (re-rendering tabs must not stack them).
-let setupSink=null,tamilSink=null,musicSink=null;
+let setupSink=null,musicSink=null;
 api.on('setup-progress',d=>{if(setupSink)setupSink(d);});
 api.on('dash-tab',k=>{if(TABS.some(t=>t[0]===k)&&tab!==k){tab=k;render();}});
 api.on('music-state',d=>{if(musicSink)musicSink(d);});
-api.on('tamil-setup-progress',d=>{if(tamilSink)tamilSink(d);});
+api.on('voice-fallback',msg=>status(String(msg)));
 async function refreshSetup(){try{setupStatus=await api.call('setup-status');}catch{setupStatus=null;}return setupStatus;}
 function gb(b){return b==null?'unknown':(b/1073741824).toFixed(1)+' GB';}
 function mb(b){return b==null?'size unknown':'~'+Math.round(b/1048576)+' MB';}
@@ -31,7 +31,7 @@ function shell(){
  document.querySelector('#dash').innerHTML='<nav class="side" aria-label="Dashboard"><h1>RELAY<span>DESKTOP / DARU</span></h1><div class="nav-label">INDEX</div>'+TABS.map(([k,n],i)=>'<button data-tab="'+k+'"'+(k===tab?' class="on" aria-current="page"':'')+'><span class="nav-index">0'+(i+1)+'</span>'+n+'</button>').join('')+'<div class="sp"></div><div class="side-companion"><img src="vex-head.png" alt=""><strong>DARU</strong><span>LOCAL COMPANION</span></div><small class="side-foot">SETTINGS STAY ON DEVICE</small></nav><main class="main" id="d-main"><header class="page-top"><span>RELAY <b>/</b> '+esc(TABS.find(t=>t[0]===tab)[1])+'</span><span class="top-label">DESKTOP CONTROLS</span></header><div id="page-content"></div></main>';
  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();});
 }
-function render(){setupSink=null;tamilSink=null;musicSink=null;shell();const m=$('#page-content');
+function render(){setupSink=null;musicSink=null;shell();const m=$('#page-content');
  if(tab==='home')return renderHome(m);
  if(tab==='brain')return renderBrain(m);
  if(tab==='voice')return renderVoice(m);
@@ -90,13 +90,14 @@ function renderBrain(m){
  $('#d-save-groq-model').onclick=()=>task(async()=>{await save({groqModel:$('#d-groq-model').value.trim()});status('Groq model saved.');});
 }
 function renderVoice(m){
- m.innerHTML='<h2>Voice</h2><div class="sub">Speech is recognized and spoken on this laptop. The microphone is off unless you start a voice session in the top panel.</div>'
+ m.innerHTML='<h2>Voice</h2><div class="sub">Speech recognition is local. Speech is local unless you select a cloud voice. The microphone is off unless you start a voice session in the top panel.</div>'
  +'<div class="card"><h3>Speaking</h3>'
  +tg('Voice replies','reads brain replies aloud',sw('v-replies',!!state.voice))
- +'<label class="plain">Voice engine</label><div class="row"><select id="v-engine" aria-label="Voice engine"><option value="kokoro">Kokoro (local, default)</option><option value="system">System voice</option><option value="chatterbox">Chatterbox cloned voice (sidecar)</option><option value="fish">Fish Audio S2.1 cloned voices (cloud)</option></select></div>'
+ +'<label class="plain">Voice engine</label><div class="row"><select id="v-engine" aria-label="Voice engine"><option value="kokoro">Kokoro (local fallback)</option><option value="system">System voice</option><option value="chatterbox">Chatterbox cloned voice (sidecar)</option><option value="elevenlabs">ElevenLabs (cloud, Free only, default)</option><option value="fish">Fish Audio S2.1 cloned voices (cloud)</option></select></div>'
  +'<div id="v-cb" class="hidden"><div class="row"><input type="text" id="v-cb-command" aria-label="Chatterbox sidecar command" placeholder="Chatterbox command"></div><div class="row"><input type="text" id="v-cb-args" aria-label="Chatterbox sidecar arguments" placeholder="Chatterbox arguments"></div></div>'
- +'<label class="plain">Voice language</label><div class="row"><select id="v-lang" aria-label="Voice language"><option value="en">English (Kokoro)</option><option value="ta">Tamil (experimental)</option><option value="tanglish">Tanglish (experimental)</option></select></div><p class="desc">Tamil and Tanglish use the experimental local Tamil voice; picking either downloads its model automatically (one-time, about 150 MB, public sources, checksum-verified). If it is missing or fails, the pet falls back to English and tells you.</p></div>'
- +'<div class="card"><h3>Daru voice</h3><p class="desc">Choose Daru&apos;s local Kokoro voice. Tamil, system and Chatterbox use their own voices.</p><div class="row"><select id="v-voice-vex" aria-label="Daru voice"></select></div></div>'
+ +'<p class="desc">Voice language: English.</p></div>'
+ +'<div class="card"><h3>Daru voice</h3><p class="desc">Choose Daru&apos;s local Kokoro voice. System and Chatterbox use their own voices.</p><div class="row"><select id="v-voice-vex" aria-label="Daru voice"></select></div></div>'
+ +'<div class="card"><h3>ElevenLabs (optional cloud voice)</h3><p class="desc">Callum is the default playful English voice. Uses your own Free account. Spoken reply text is sent to ElevenLabs. Internet required; no zero-retention guarantee. Free quota is limited and non-commercial only. Shared recordings need ElevenLabs attribution. Never add a card or enable overages. Errors use the local voice with a notice.</p><p class="desc">Create a restricted key on elevenlabs.io. Allow Text to Speech plus read-only User and Voices access; set a small credit cap. Save it only on this device below, never in chat.</p><div class="row"><input type="password" id="v-eleven-key" autocomplete="off" aria-label="ElevenLabs API key" placeholder="API key, stored encrypted on this device"><button class="act" id="v-eleven-save-key">Save / clear</button></div><p class="desc">Key: '+(state.hasElevenKey?'saved':'not saved')+'</p><div class="row"><button class="act ghost" id="v-eleven-check">Check Free quota</button><button class="act ghost" id="v-eleven-load">Load voices</button><select id="v-eleven-voice" aria-label="ElevenLabs voice"><option value="">Choose a voice</option></select></div><p class="desc">Voice ID: <span id="v-eleven-current"></span></p></div>'
  +'<div class="card"><h3>Fish Audio (cloud clones)</h3><p class="desc">Opt-in cloud voice (S2.1). Pick the Fish Audio engine above, then: make a free account at fish.audio, clone a voice for Daru (about 10-30 seconds of clean audio) and paste its voice ID here, and save your API key (fish.audio/app/api-keys) - stored encrypted on this device, never shown again. The s2.1-pro-free model costs nothing under fair use; s2.1-pro uses paid credit. Reply text is sent to Fish Audio to be spoken; nothing else leaves this laptop.</p>'
  +'<div class="row"><input type="password" id="v-fish-key" autocomplete="off" placeholder="'+(state.hasFishKey?'Key saved on this device - type to replace':'Your Fish Audio API key')+'"><button class="act" id="v-fish-save-key">Save / clear</button></div>'
  +'<label class="plain">Fish model</label><div class="row"><select id="v-fish-model" aria-label="Fish model"><option value="s2.1-pro-free">s2.1-pro-free (free, fair use)</option><option value="s2.1-pro">s2.1-pro (paid credit)</option></select></div>'
@@ -106,18 +107,20 @@ function renderVoice(m){
  +'<label class="plain">Hold-to-talk key (accelerator)</label><div class="row"><input type="text" id="v-hold-key" aria-label="Hold-to-talk key" placeholder="CommandOrControl+Shift+Space"></div>'
  +'</div><div class="status" id="d-status" role="status"></div>';
  $('#v-replies').onchange=()=>task(async()=>{await save({voice:$('#v-replies').checked});status('Saved.');});
- $('#v-engine').value=state.voiceEngine||'kokoro';$('#v-cb-command').value=state.chatterboxCommand||'';$('#v-cb-args').value=typeof state.chatterboxArgs==='string'?state.chatterboxArgs:'';
+ $('#v-engine').value=state.voiceEngine||'elevenlabs';$('#v-cb-command').value=state.chatterboxCommand||'';$('#v-cb-args').value=typeof state.chatterboxArgs==='string'?state.chatterboxArgs:'';
  const cbVis=()=>{$('#v-cb').classList.toggle('hidden',$('#v-engine').value!=='chatterbox');};cbVis();
  $('#v-engine').onchange=()=>task(async()=>{cbVis();await save({voiceEngine:$('#v-engine').value,chatterboxCommand:$('#v-cb-command').value,chatterboxArgs:$('#v-cb-args').value});status('Voice engine saved.');});
  $('#v-cb-command').onchange=$('#v-cb-args').onchange=()=>task(async()=>{await save({chatterboxCommand:$('#v-cb-command').value,chatterboxArgs:$('#v-cb-args').value});status('Chatterbox sidecar saved.');});
- $('#v-lang').value=state.voiceLang||'en';
- $('#v-lang').onchange=()=>task(async()=>{const lang=$('#v-lang').value;await save({voiceLang:lang});status('Voice language: '+lang);
-  if(lang==='ta'||lang==='tanglish'){const st=await api.call('tamil-setup-status');if(st&&st.ready){status('Tamil voice is ready.');return;}status('Downloading the Tamil voice - one-time, about 150 MB. The pet uses English until this finishes.');tamilSink=p=>{const pct=p.total?Math.round(100*p.bytes/p.total)+'%':Math.round(p.bytes/1048576)+' MB';status('Downloading Tamil voice: '+p.step+' '+pct);};try{const r=await api.call('tamil-setup-run');if(r&&r.ok)status('Tamil voice ready.');else status('Tamil voice download is already running.');}catch(e){status('Tamil voice download failed: '+e.message+' Falling back to English for now.');}finally{tamilSink=null;}}});
- const VOICE_OPTS=[[0,'Heart - warm US female'],[3,'Bella - bright US female'],[7,'Nova - lively US female'],[21,'Emma - soft UK female'],[11,'Adam - steady US male'],[16,'Michael - calm US male'],[18,'Puck - playful US male'],[26,'George - mellow UK male']];
+ const VOICE_OPTS=[[0,'Alloy - US female'],[3,'Heart - warm US female'],[2,'Bella - bright US female'],[7,'Nova - lively US female'],[21,'Emma - soft UK female'],[11,'Adam - steady US male'],[16,'Michael - calm US male'],[18,'Puck - playful US male'],[26,'George - mellow UK male']];
  const vbm=(state.voiceByMascot&&typeof state.voiceByMascot==='object')?state.voiceByMascot:{};
  const fillVoice=(id,pick,def)=>{const sel=$(id);sel.innerHTML=VOICE_OPTS.map(([sid,label])=>'<option value="'+sid+'"'+(sid===pick?' selected':'')+'>'+label+'</option>').join('');if(!VOICE_OPTS.some(([sid])=>sid===pick))sel.value=String(def);};
  fillVoice('#v-voice-vex',(vbm.vex&&Number.isInteger(vbm.vex.sid))?vbm.vex.sid:18,18);
  $('#v-voice-vex').onchange=()=>task(async()=>{const next={...vbm,vex:{...vbm.vex,sid:parseInt($('#v-voice-vex').value,10)}};await save({voiceByMascot:next});status('Daru voice saved.');});
+ $('#v-eleven-current').textContent=state.elevenVoiceId||'not selected';
+ $('#v-eleven-save-key').onclick=()=>task(async()=>{await api.call('eleven-key',$('#v-eleven-key').value);$('#v-eleven-key').value='';state=await api.call('get-state');render();status(state.hasElevenKey?'ElevenLabs key saved securely on this device.':'ElevenLabs key removed.');});
+ $('#v-eleven-check').onclick=()=>task(async()=>{const r=await api.call('eleven-status');status('Free quota: '+r.remaining+' characters remaining. No payment attempted.');});
+ $('#v-eleven-load').onclick=()=>task(async()=>{const voices=await api.call('eleven-voices');const sel=$('#v-eleven-voice');sel.replaceChildren(new Option('Choose a voice',''));for(const v of voices)sel.add(new Option(v.name,v.id));sel.value=state.elevenVoiceId||'';status('Voices loaded. Pick one before enabling ElevenLabs.');});
+ $('#v-eleven-voice').onchange=()=>task(async()=>{await save({elevenVoiceId:$('#v-eleven-voice').value});$('#v-eleven-current').textContent=state.elevenVoiceId||'not selected';status('ElevenLabs voice saved.');});
  $('#v-fish-save-key').onclick=()=>task(async()=>{await api.call('fish-key',$('#v-fish-key').value);state=await api.call('get-state');$('#v-fish-key').value='';render();status(state.hasFishKey?'Fish Audio key saved securely on this device.':'Fish Audio key removed.');});
  $('#v-fish-model').value=state.fishModel||'s2.1-pro-free';
  $('#v-fish-model').onchange=()=>task(async()=>{await save({fishModel:$('#v-fish-model').value});status('Fish model saved.');});

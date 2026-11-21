@@ -3,8 +3,9 @@ const MAX_SID = 52;
 const MIN_SPEED = 0.6, MAX_SPEED = 1.5;
 
 const VOICES = [
-  { sid: 0, label: 'Heart - warm US female' },
-  { sid: 3, label: 'Bella - bright US female' },
+  { sid: 0, label: 'Alloy - US female' },
+  { sid: 3, label: 'Heart - warm US female' },
+  { sid: 2, label: 'Bella - bright US female' },
   { sid: 7, label: 'Nova - lively US female' },
   { sid: 21, label: 'Emma - soft UK female' },
   { sid: 11, label: 'Adam - steady US male' },

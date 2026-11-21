@@ -35,18 +35,7 @@ test('groq only matters when selected; key presence only, no live call', () => {
   const r2 = runSelfTest({ ...good, groqSelected: true, hasGroqKey: true });
   a.equal(byId(r2, 'groq').status, 'pass'); a.match(byId(r2, 'groq').detail, /no live Groq call/);
 });
-test('tamil selected without a prepared model warns with the setup fix', () => {
-  const r = runSelfTest({ ...good, voiceLang: 'tanglish', tamilModelReady: false, tamilModelDir: 'D:/models/tamil-voice' });
-  const c = byId(r, 'tamil-model');
-  a.equal(c.status, 'warn'); a.match(c.fix, /Voice session drawer/);
-  const r2 = runSelfTest({ ...good, voiceLang: 'ta', tamilModelReady: true, tamilPhonemizerReady: true });
-  a.equal(byId(r2, 'tamil-model').status, 'pass');
-});
-test('tamil model ready but phonemizer missing warns with the re-run fix', () => {
-  const r = runSelfTest({ ...good, voiceLang: 'ta', tamilModelReady: true, tamilPhonemizerReady: false, tamilModelDir: 'D:/m' });
-  const c = byId(r, 'tamil-model');
-  a.equal(c.status, 'warn'); a.match(c.detail, /phonemizer files are missing/);
-});
+test('retired language has no download diagnostics',()=>{const r=runSelfTest({...good,voiceLang:'ta'});a.equal(r.checks.some(c=>c.id==='tamil-model'),false);});
 test('vision on with a missing model fails; vision off passes quietly', () => {
   const r = runSelfTest({ ...good, visionOn: true, visionModel: 'qwen2.5vl:7b' });
   a.equal(byId(r, 'vision-model').status, 'fail');

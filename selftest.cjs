@@ -9,7 +9,7 @@
 //
 // A check only FAILs when a feature the user has actually enabled cannot
 // work. Disabled optional features report 'pass' with an "off" note, or
-// 'warn' when something is half-configured (e.g. Tamil selected but the
+// 'warn' when something is half-configured (e.g. voice enabled but the
 // model was never prepared) - warn means "works, but not the way you
 // asked", fail means "broken".
 
@@ -35,13 +35,6 @@ function checkVoiceModels(f) {
   if (!f.voice) return { status: 'warn', detail: 'Voice model status unknown.', fix: 'Re-run diagnostics; if it persists, run First-run setup.' };
   if (f.voice.ready) return { status: 'pass', detail: 'Whisper (ears) and Kokoro (voice) model files are present.' };
   return { status: 'fail', detail: 'Voice model files are missing: ' + (f.voice.missing || []).slice(0, 3).join(', ') + ((f.voice.missing || []).length > 3 ? '…' : ''), fix: 'Run First-run setup to download the free local voice models.' };
-}
-function checkTamil(f) {
-  const lang = f.voiceLang || 'en';
-  if (lang !== 'ta' && lang !== 'tanglish') return { status: 'pass', detail: 'Tamil voice is not selected (voice language: English).' };
-  if (!f.tamilModelReady) return { status: 'warn', detail: 'Tamil/Tanglish voice is selected but the Tamil model is not prepared - replies will fall back to the English voice with a notice.', fix: 'Open the Voice session drawer and re-pick Tamil/Tanglish - the app downloads the model itself (one-time, ~150 MB, checksum-verified).' };
-  if (f.tamilPhonemizerReady === false) return { status: 'warn', detail: 'Tamil model is prepared but the phonemizer files are missing (older setup run) - replies will fall back to the English voice with a notice.', fix: 'Open the Voice session drawer and re-pick Tamil/Tanglish - the app downloads the phonemizer itself.' };
-  return { status: 'pass', detail: 'Tamil voice model (Valluvar) and phonemizer are prepared and ready.' };
 }
 function checkVision(f) {
   if (!f.visionOn) return { status: 'pass', detail: 'Screen vision comments are off.' };
@@ -82,7 +75,6 @@ const CHECKS = [
   { id: 'brain-model', label: 'Brain model installed', run: checkBrainModel },
   { id: 'groq', label: 'Groq key (only if Groq selected)', run: checkGroq },
   { id: 'voice-models', label: 'Voice models (Whisper + Kokoro)', run: checkVoiceModels },
-  { id: 'tamil-model', label: 'Tamil voice model', run: checkTamil },
   { id: 'vision-model', label: 'Vision model (only if vision on)', run: checkVision },
   { id: 'mic', label: 'Microphone', run: checkMic },
   { id: 'power-roots', label: 'Power-mode folders', run: checkPowerRoots },
@@ -90,7 +82,7 @@ const CHECKS = [
 ];
 
 // facts: {ollama:{running,models}, brainModel, groqSelected, hasGroqKey,
-//   voice:{ready,missing}, voiceLang, tamilModelReady, tamilModelDir,
+//   voice:{ready,missing},
 //   visionOn, visionModel, mic:'ok'|'denied'|'no-device'|'unknown',
 //   powerRoots:[{path,exists}], powerMode, wakeWord, roaming, perch, cursorPlay}
 function runSelfTest(facts = {}, { now = () => Date.now() } = {}) {

@@ -1,0 +1,7 @@
+const test=require('node:test'),a=require('node:assert/strict'),fs=require('node:fs');const {migrateEnglish}=require('./english-voice.cjs');
+test('stale languages migrate while preserving saved data and numeric speakers',()=>{for(const voiceLang of ['ta','tanglish',undefined]){const s={voiceLang,notes:'keep',voiceByMascot:{vex:{sid:0,speed:.9}},elevenVoiceId:'voice1'};a.equal(migrateEnglish(s).voiceLang,'en');a.equal(s.notes,'keep');a.equal(s.voiceByMascot.vex.sid,0);a.equal(s.elevenVoiceId,'voice1');}});
+test('malformed settings migrate safely',()=>{for(const s of [null,42,'bad',[]])a.equal(migrateEnglish(s).voiceLang,'en');});
+test('retired language UI, download IPC and worker operations are absent',()=>{for(const f of ['main.cjs','preload.cjs','renderer.js','dashboard.js','voice-worker.cjs']){const s=fs.readFileSync(__dirname+'/'+f,'utf8');a.doesNotMatch(s,/tamil-setup|synthesize-ta|value="ta"|value="tanglish"/);}});
+test('Heart/Bella labels match the real Kokoro v1 model speaker table',()=>{const {VOICES}=require('./assistant-voice.cjs');a.match(VOICES.find(v=>v.sid===3).label,/Heart/);a.match(VOICES.find(v=>v.sid===2).label,/Bella/);a.match(VOICES.find(v=>v.sid===0).label,/Alloy/);});
+
+test('Callum default migration is one-time and preserves later local choice',()=>{const s=migrateEnglish({voiceEngine:'kokoro'});a.equal(s.voiceEngine,'elevenlabs');a.equal(s.elevenVoiceId,require('./eleven-voice.cjs').DEFAULT_VOICE);s.voiceEngine='kokoro';migrateEnglish(s);a.equal(s.voiceEngine,'kokoro');});
